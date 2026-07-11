@@ -1,0 +1,18 @@
+{
+  "name": "claude-inc",
+  "owner": {
+    "name": "Alexandre Beguel",
+    "url": "https://github.com/alebgl77"
+  },
+  "metadata": {
+    "description": "The Claude, Inc. marketplace — hire the whole company in one install.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "claude-inc",
+      "source": "./",
+      "description": "All 7 departments, all 42 employees, one CEO. The complete 'Build Your Whole Team with Claude' org chart as agents + skills."
+    }
+  ]
+}

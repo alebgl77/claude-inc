@@ -16,6 +16,8 @@
 
 </div>
 
+<img src="assets/banner.png" alt="Claude, Inc. — hire a 42-employee AI company in one command" width="100%">
+
 ---
 
 ## Why
@@ -196,6 +198,8 @@ The infographic maps 1:1 onto Claude Code primitives — no magic, just org desi
 you ──mission──▶ CEO ──briefs──▶ VP(s) ──hire──▶ skill(s) ──ship──▶ files + Board Memo
 ```
 
+![The full org chart — 1 CEO, 7 departments, 42 employees](assets/org-chart.svg)
+
 Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes 42 of them manageable — and what makes PRs reviewable.
 
 ## Works with any CLI
@@ -230,12 +234,4 @@ No Claude Code? No problem. The hierarchy travels as plain text.
 
 ## License
 
-[MIT](LICENSE) — take the whole company, it's yours.
-
----
-
-<div align="center">
-
-**If your new workforce ships something, [⭐ star the company](https://github.com/alebgl77/claude-inc) — it's cheaper than payroll.**
-
-</div>
+[MIT](LICENSE) — take the whol

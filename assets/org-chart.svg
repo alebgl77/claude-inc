@@ -1,0 +1,119 @@
+<svg viewBox="0 0 1200 452" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">
+  <style>
+    .bg{fill:#0d1117}.ceo{fill:#1c2128;stroke:#e8833a;stroke-width:2}
+    .hdr{fill:#161b22}.chip{fill:#161b22}
+    .t{fill:#e6edf3}.d{fill:#8b949e}.o{fill:#e8833a}
+    .ln{stroke:#30363d;stroke-width:1.5;fill:none}
+    text{dominant-baseline:middle}
+  </style>
+  <rect class="bg" width="1200" height="452" rx="8"/>
+
+  <!-- CEO -->
+  <rect class="ceo" x="500" y="18" width="200" height="58" rx="10"/>
+  <text class="o" x="600" y="40" text-anchor="middle" font-size="17" font-weight="700">CEO</text>
+  <text class="d" x="600" y="60" text-anchor="middle" font-size="10">your AI CLI · CLAUDE.md</text>
+
+  <!-- connectors -->
+  <path class="ln" d="M600 76 V104 H101 V132"/>
+  <path class="ln" d="M600 104 H267 V132"/>
+  <path class="ln" d="M600 104 H433 V132"/>
+  <path class="ln" d="M600 76 V132"/>
+  <path class="ln" d="M600 104 H767 V132"/>
+  <path class="ln" d="M600 104 H933 V132"/>
+  <path class="ln" d="M600 104 H1099 V132"/>
+
+  <!-- DEVELOPERS -->
+  <rect class="hdr" x="24" y="132" width="154" height="44" rx="8" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="101" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">DEVELOPERS</text>
+  <text class="d" x="101" y="164" text-anchor="middle" font-size="9">VP of Engineering</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="24" y="186" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="200" text-anchor="middle">superpowers</text>
+    <rect class="chip" x="24" y="219" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="233" text-anchor="middle">context7</text>
+    <rect class="chip" x="24" y="252" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="266" text-anchor="middle">mcp-builder</text>
+    <rect class="chip" x="24" y="285" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="299" text-anchor="middle">skill-creator</text>
+    <rect class="chip" x="24" y="318" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="332" text-anchor="middle">webapp-testing</text>
+    <rect class="chip" x="24" y="351" width="154" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t" x="101" y="365" text-anchor="middle">claude-mem</text>
+  </g>
+
+  <!-- DESIGNERS -->
+  <rect class="hdr" x="190" y="132" width="154" height="44" rx="8" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="267" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#58a6ff">DESIGNERS</text>
+  <text class="d" x="267" y="164" text-anchor="middle" font-size="9">VP of Design</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="190" y="186" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="200" text-anchor="middle">ui-ux-pro-max</text>
+    <rect class="chip" x="190" y="219" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="233" text-anchor="middle">taste</text>
+    <rect class="chip" x="190" y="252" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="266" text-anchor="middle">frontend-design</text>
+    <rect class="chip" x="190" y="285" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="299" text-anchor="middle">transitions</text>
+    <rect class="chip" x="190" y="318" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="332" text-anchor="middle">web-artifacts</text>
+    <rect class="chip" x="190" y="351" width="154" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t" x="267" y="365" text-anchor="middle">brand-guidelines</text>
+  </g>
+
+  <!-- MARKETING -->
+  <rect class="hdr" x="356" y="132" width="154" height="44" rx="8" stroke="#e8833a" stroke-width="1.5"/>
+  <text x="433" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#e8833a">MARKETING</text>
+  <text class="d" x="433" y="164" text-anchor="middle" font-size="9">CMO</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="356" y="186" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="200" text-anchor="middle">copywriting</text>
+    <rect class="chip" x="356" y="219" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="233" text-anchor="middle">ai-seo</text>
+    <rect class="chip" x="356" y="252" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="266" text-anchor="middle">cro</text>
+    <rect class="chip" x="356" y="285" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="299" text-anchor="middle">ad-creative</text>
+    <rect class="chip" x="356" y="318" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="332" text-anchor="middle">customer-research</text>
+    <rect class="chip" x="356" y="351" width="154" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t" x="433" y="365" text-anchor="middle">lead-magnets</text>
+  </g>
+
+  <!-- SOCIAL MEDIA -->
+  <rect class="hdr" x="522" y="132" width="154" height="44" rx="8" stroke="#f778ba" stroke-width="1.5"/>
+  <text x="599" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#f778ba">SOCIAL MEDIA</text>
+  <text class="d" x="599" y="164" text-anchor="middle" font-size="9">Head of Social</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="522" y="186" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="200" text-anchor="middle">post-writer</text>
+    <rect class="chip" x="522" y="219" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="233" text-anchor="middle">profile-optimizer</text>
+    <rect class="chip" x="522" y="252" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="266" text-anchor="middle">reels-scripting</text>
+    <rect class="chip" x="522" y="285" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="299" text-anchor="middle">hook-generator</text>
+    <rect class="chip" x="522" y="318" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="332" text-anchor="middle">voice-builder</text>
+    <rect class="chip" x="522" y="351" width="154" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t" x="599" y="365" text-anchor="middle">youtube-thumbnail</text>
+  </g>
+
+  <!-- FINANCE -->
+  <rect class="hdr" x="688" y="132" width="154" height="44" rx="8" stroke="#2dd4bf" stroke-width="1.5"/>
+  <text x="765" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#2dd4bf">FINANCE</text>
+  <text class="d" x="765" y="164" text-anchor="middle" font-size="9">CFO</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="688" y="186" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="200" text-anchor="middle">financial-statements</text>
+    <rect class="chip" x="688" y="219" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="233" text-anchor="middle">journal-entry</text>
+    <rect class="chip" x="688" y="252" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="266" text-anchor="middle">reconciliation</text>
+    <rect class="chip" x="688" y="285" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="299" text-anchor="middle">variance-analysis</text>
+    <rect class="chip" x="688" y="318" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="332" text-anchor="middle">audit-support</text>
+    <rect class="chip" x="688" y="351" width="154" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t" x="765" y="365" text-anchor="middle">close-management</text>
+  </g>
+
+  <!-- SMALL BUSINESS -->
+  <rect class="hdr" x="854" y="132" width="154" height="44" rx="8" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="931" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#e3b341">SMALL BUSINESS</text>
+  <text class="d" x="931" y="164" text-anchor="middle" font-size="9">COO</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="854" y="186" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="200" text-anchor="middle">cash-flow-snapshot</text>
+    <rect class="chip" x="854" y="219" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="233" text-anchor="middle">invoice-chase</text>
+    <rect class="chip" x="854" y="252" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="266" text-anchor="middle">plan-payroll</text>
+    <rect class="chip" x="854" y="285" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="299" text-anchor="middle">margin-analyzer</text>
+    <rect class="chip" x="854" y="318" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="332" text-anchor="middle">tax-prep</text>
+    <rect class="chip" x="854" y="351" width="154" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t" x="931" y="365" text-anchor="middle">run-campaign</text>
+  </g>
+
+  <!-- LEGAL -->
+  <rect class="hdr" x="1020" y="132" width="154" height="44" rx="8" stroke="#bc8cff" stroke-width="1.5"/>
+  <text x="1097" y="148" text-anchor="middle" font-size="12" font-weight="700" fill="#bc8cff">LEGAL</text>
+  <text class="d" x="1097" y="164" text-anchor="middle" font-size="9">General Counsel</text>
+  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
+    <rect class="chip" x="1020" y="186" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="200" text-anchor="middle">review-contract</text>
+    <rect class="chip" x="1020" y="219" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="233" text-anchor="middle">triage-nda</text>
+    <rect class="chip" x="1020" y="252" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="266" text-anchor="middle">compliance-check</text>
+    <rect class="chip" x="1020" y="285" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="299" text-anchor="middle">legal-risk-assessment</text>
+    <rect class="chip" x="1020" y="318" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="332" text-anchor="middle">vendor-check</text>
+    <rect class="chip" x="1020" y="351" width="154" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t" x="1097" y="365" text-anchor="middle">signature-request</text>
+  </g>
+
+  <!-- footer -->
+  <text class="d" x="600" y="412" text-anchor="middle" font-size="11">1 CEO · 7 departments · 42 employees — every VP is a subagent, every employee is a skill</text>
+  <text class="o" x="600" y="432" text-anchor="middle" font-size="11" font-weight="600">github.com/alebgl77/claude-inc</text>
+</svg>

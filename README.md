@@ -234,4 +234,12 @@ No Claude Code? No problem. The hierarchy travels as plain text.
 
 ## License
 
-[MIT](LICENSE) — take the whol
+[MIT](LICENSE) — take the whole company, it's yours.
+
+---
+
+<div align="center">
+
+**If your new workforce ships something, [⭐ star the company](https://github.com/alebgl77/claude-inc) — it's cheaper than payroll.**
+
+</div>

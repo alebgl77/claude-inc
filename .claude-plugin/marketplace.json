@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "The Claude, Inc. marketplace — hire the whole company in one install.",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "claude-inc",
       "source": "./",
-      "description": "All 7 departments, all 42 employees, one CEO. The complete 'Build Your Whole Team with Claude' org chart as agents + skills."
+      "description": "1 CEO, 8 departments, 50 employees: the founding 42 from 'Build Your Whole Team with Claude' + the Series A class (Sales dept, chief-of-staff, token-accountant)."
     }
   ]
 }

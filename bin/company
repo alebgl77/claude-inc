@@ -22,7 +22,7 @@ else
 fi
 
 # ---------------------------------------------------------------- org registry
-DEPTS=(developers designers marketing social-media finance small-business legal)
+DEPTS=(developers designers marketing social-media finance small-business legal sales)
 
 dept_of() { # alias -> canonical department
   case "$1" in
@@ -33,6 +33,7 @@ dept_of() { # alias -> canonical department
     finance|fin|cfo)                 echo "finance" ;;
     smb|small-business|business|ops) echo "small-business" ;;
     legal|law|counsel)               echo "legal" ;;
+    sales|sell|revenue|deals)        echo "sales" ;;
     *)                               echo "" ;;
   esac
 }
@@ -46,6 +47,7 @@ skills_of() {
     finance)        echo "financial-statements journal-entry reconciliation variance-analysis audit-support close-management" ;;
     small-business) echo "cash-flow-snapshot invoice-chase plan-payroll margin-analyzer tax-prep run-campaign" ;;
     legal)          echo "review-contract triage-nda compliance-check legal-risk-assessment vendor-check signature-request" ;;
+    sales)          echo "account-research draft-outreach call-prep proposal-builder objection-handler pipeline-review" ;;
   esac
 }
 
@@ -73,6 +75,14 @@ compose_dept() { # $1=dept $2=task -> full self-contained prompt on stdout
 compose_brief() { # $1=mission
   local mission="$1"
   cat "$ROOT/CLAUDE.md"
+  local s
+  for s in chief-of-staff token-accountant; do
+    if [ -f "$ROOT/skills/${s}/SKILL.md" ]; then
+      echo
+      echo "----- CEO STAFF: ${s} -----"
+      cat "$ROOT/skills/${s}/SKILL.md"
+    fi
+  done
   echo
   echo "----- NOTE -----"
   echo "If your environment has no subagent/Task tool, simulate the departments sequentially yourself: for each relevant department, adopt its charter and skills (in agents/ and skills/), do the work, then produce the final Board Memo."
@@ -98,7 +108,7 @@ run_prompt() { # $1=prompt $2=print_only
 
 # --------------------------------------------------------------------- roster
 roster() {
-  echo "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 7 departments · 42 employees${R}"
+  echo "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 8 departments · 50 employees (founding 42 + Series A)${R}"
   echo
   echo "                        ${B}CEO${R} ${DIM}(your AI CLI)${R}"
   echo "  ┌──────────┬──────────┬─────┴─────┬──────────┬──────────┬──────────┐"
@@ -106,6 +116,7 @@ roster() {
   for d in "${DEPTS[@]}"; do
     printf '  %s%-15s%s %s\n' "$B" "$d" "$R" "$(skills_of "$d" | sed 's/ / · /g')"
   done
+  printf '  %s%-15s%s %s\n' "$DIM" "staff (CEO)" "$R" "chief-of-staff · token-accountant"
   echo
   echo "  ${DIM}company brief \"<mission>\"    → CEO routes across departments${R}"
   echo "  ${DIM}company <dept> \"<task>\"      → talk to one department directly${R}"
@@ -123,7 +134,7 @@ USAGE
   company help                       This help
 
 DEPARTMENTS (aliases)
-  dev · design · marketing · social · finance · smb · legal
+  dev · design · marketing · social · finance · smb · legal · sales
 
 OPTIONS
   -p, --print                        Print the composed prompt instead of running it

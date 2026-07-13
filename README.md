@@ -2,13 +2,13 @@
 
 # 🏢 Claude, Inc.
 
-### Hire a 42-employee AI company in one command.
+### Hire a whole AI company in one command.
 
-**7 departments · 42 skills · 1 CEO — the whole org chart, running inside Claude Code (or any AI CLI).**
+**8 departments · 50 employees · 1 CEO — the founding 42 of the org chart plus the Series A class, running inside Claude Code (or any AI CLI).**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Employees](https://img.shields.io/badge/employees-42-orange)
-![Departments](https://img.shields.io/badge/departments-7-8A2BE2)
+![Employees](https://img.shields.io/badge/employees-50-orange)
+![Departments](https://img.shields.io/badge/departments-8-8A2BE2)
 ![Works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20any%20CLI-green)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome%20(we're%20hiring)-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -26,6 +26,8 @@ Everyone screenshots the org-chart infographics. Nobody ships them.
 
 **Claude, Inc.** turns the *"Build Your Whole Team with Claude"* org chart into a working company: every department is a real Claude Code **subagent**, every employee is a real **skill**, and the CEO is a routing brain that briefs them, parallelizes them, and reports back like a board memo.
 
+*(The founding class is the 42 of the infographic — the banner honours founding day. At Series A the company hired its 8th floor: a full Sales department, plus a chief of staff and a token accountant on the executive floor. Headcount: 50.)*
+
 No SaaS. No API keys. No framework. Just markdown with a job description — the way Claude was meant to be staffed.
 
 ## The org chart
@@ -40,6 +42,9 @@ graph TD
     CEO --> FIN["💰 Finance<br/>6 skills"]
     CEO --> SMB["🏪 Small Business<br/>6 skills"]
     CEO --> LEG["⚖️ Legal<br/>6 skills"]
+    CEO --> SAL["🤝 Sales<br/>6 skills"]
+    CEO -.-> COS["📋 chief-of-staff"]
+    FIN -.-> TOK["🧮 token-accountant"]
 ```
 
 You talk to the CEO. The CEO briefs the departments. The departments put their employees to work. You get files and a board memo. **That's the whole product.**
@@ -184,6 +189,30 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 
 </details>
 
+<details>
+<summary><b>🤝 Sales</b> — VP of Sales <i>(Series A hire)</i></summary>
+
+| Employee | Role | Superpower |
+|---|---|---|
+| `account-research` | Prospector | Actionable prospect intel |
+| `draft-outreach` | Cold Emailer | Outreach that earns replies |
+| `call-prep` | Deal Prepper | Walk into calls sharp |
+| `proposal-builder` | Rainmaker | Proposals that close |
+| `objection-handler` | Persuader | Turn pushback into progress |
+| `pipeline-review` | Pipeline Doctor | Pipeline truth, weekly plan |
+
+</details>
+
+<details>
+<summary><b>🏛️ Executive staff</b> — attached to the C-suite <i>(Series A hires)</i></summary>
+
+| Employee | Reports to | Superpower |
+|---|---|---|
+| `chief-of-staff` | CEO | Mission ledger, decision log, weekly review |
+| `token-accountant` | CFO | The company audits its own token payroll |
+
+</details>
+
 ## How it works
 
 The infographic maps 1:1 onto Claude Code primitives — no magic, just org design:
@@ -191,8 +220,9 @@ The infographic maps 1:1 onto Claude Code primitives — no magic, just org desi
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
 | **CEO** | `CLAUDE.md` + `/company` | Routing brain: parses the mission, delegates, arbitrates, writes the Board Memo |
-| **7 departments** | `agents/*.md` | Subagents with their own context windows — they run **in parallel** |
-| **42 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions — VPs hire them per task, or they self-trigger |
+| **8 departments** | `agents/*.md` | Subagents with their own context windows — they run **in parallel** |
+| **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions — VPs hire them per task, or they self-trigger |
+| **2 staff hires** | `chief-of-staff`, `token-accountant` | Attached to CEO and CFO — org memory and self-auditing of token spend |
 
 ```
 you ──mission──▶ CEO ──briefs──▶ VP(s) ──hire──▶ skill(s) ──ship──▶ files + Board Memo

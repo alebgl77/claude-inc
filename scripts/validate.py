@@ -10,6 +10,7 @@ Usage: python3 scripts/validate.py
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -163,13 +164,19 @@ def check_scripts():
             if subprocess.run([sys.executable, "-c", f"compile(open('{script}').read(), '{script}', 'exec')"],
                               capture_output=True).returncode:
                 err(f"{script}: syntax error")
-        elif subprocess.run(["bash", "-n", script], capture_output=True).returncode:
-            err(f"{script}: bash syntax error")
+        elif shutil.which("bash"):
+            proc = subprocess.run(["bash", "-n", script], capture_output=True, text=True)
+            if proc.returncode:
+                err(f"{script}: bash syntax error\n{proc.stderr.strip()}")
+        else:
+            warn(f"{script}: bash not available on this platform, syntax check skipped (CI covers it)")
         if b"\r\n" in open(script, "rb").read():
             err(f"{script}: CRLF line endings would break execution (see .gitattributes)")
         mode = subprocess.run(["git", "ls-files", "-s", script], capture_output=True, text=True).stdout.split()
         if mode and mode[0] != "100755":
             err(f"{script}: not executable in git (fix: git update-index --chmod=+x {script})")
+    if os.name == "nt":
+        warn("running on Windows: shell checks are advisory here, CI is authoritative")
     if os.path.exists("assets/org-chart.svg"):
         import xml.dom.minidom
         try:

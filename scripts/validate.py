@@ -27,6 +27,26 @@ err = errors.append
 warn = warnings.append
 
 
+def bash_works():
+    """True only if bash can actually execute.
+
+    Windows ships a bash.exe stub for WSL that exists on PATH but fails when no
+    distribution is installed, so probing the binary matters more than finding it.
+    """
+    if bash_works.cache is None:
+        bash_works.cache = False
+        if shutil.which("bash"):
+            try:
+                probe = subprocess.run(["bash", "-c", "exit 0"], capture_output=True, timeout=10)
+                bash_works.cache = probe.returncode == 0
+            except (OSError, subprocess.SubprocessError):
+                bash_works.cache = False
+    return bash_works.cache
+
+
+bash_works.cache = None
+
+
 def frontmatter(path):
     text = open(path, encoding="utf-8").read()
     m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
@@ -164,12 +184,12 @@ def check_scripts():
             if subprocess.run([sys.executable, "-c", f"compile(open('{script}').read(), '{script}', 'exec')"],
                               capture_output=True).returncode:
                 err(f"{script}: syntax error")
-        elif shutil.which("bash"):
+        elif bash_works():
             proc = subprocess.run(["bash", "-n", script], capture_output=True, text=True)
             if proc.returncode:
                 err(f"{script}: bash syntax error\n{proc.stderr.strip()}")
         else:
-            warn(f"{script}: bash not available on this platform, syntax check skipped (CI covers it)")
+            warn(f"{script}: no working bash here, syntax check skipped (CI is authoritative)")
         if b"\r\n" in open(script, "rb").read():
             err(f"{script}: CRLF line endings would break execution (see .gitattributes)")
         mode = subprocess.run(["git", "ls-files", "-s", script], capture_output=True, text=True).stdout.split()

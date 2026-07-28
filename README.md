@@ -6,6 +6,7 @@
 
 **7 departments · 42 skills · 1 CEO — the whole org chart, running inside Claude Code (or any AI CLI).**
 
+[![compliance](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml/badge.svg)](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Employees](https://img.shields.io/badge/employees-42-orange)
 ![Departments](https://img.shields.io/badge/departments-7-8A2BE2)
@@ -201,6 +202,8 @@ you ──mission──▶ CEO ──briefs──▶ VP(s) ──hire──▶ s
 ![The full org chart — 1 CEO, 7 departments, 42 employees](assets/org-chart.svg)
 
 Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes 42 of them manageable — and what makes PRs reviewable.
+
+And the company audits itself: `python3 scripts/validate.py` (run in CI on every push) checks every job description, cross-references the CLI roster against the departments, and fails the build if an employee is hired twice, orphaned, or missing from the docs.
 
 ## Works with any CLI
 

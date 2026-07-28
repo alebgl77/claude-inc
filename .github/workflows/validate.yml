@@ -1,0 +1,41 @@
+name: compliance
+
+on:
+  push:
+    branches: [main, series-a]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  org-chart:
+    name: The company audits itself
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Every employee has a valid job description
+        run: python3 scripts/validate.py
+
+      - name: The CLI can brief every department
+        run: |
+          chmod +x bin/company
+          for dept in $(grep -oP '(?<=^DEPTS=\().*(?=\))' bin/company); do
+            count=$(./bin/company "$dept" "ci smoke test" --print | grep -c '^----- EMPLOYEE:')
+            echo "$dept -> $count employees"
+            [ "$count" -eq 6 ] || { echo "::error::$dept composed $count employees, expected 6"; exit 1; }
+          done
+          ./bin/company brief "ci smoke test" --print | grep -q 'CEO Operating Manual'
+          ./bin/company roster > /dev/null
+          ./bin/company help > /dev/null
+
+      - name: A fresh hire installs cleanly
+        run: |
+          export HOME="$RUNNER_TEMP/fresh"
+          mkdir -p "$HOME"
+          bash install.sh
+          skills=$(ls "$HOME/.claude/skills" | wc -l)
+          agents=$(ls "$HOME/.claude/agents" | wc -l)
+          expected_skills=$(ls skills | wc -l)
+          expected_agents=$(ls agents/*.md | wc -l)
+          echo "installed $skills/$expected_skills skills, $agents/$expected_agents agents"
+          [ "$skills" -eq "$expected_skills" ] && [ "$agents" -eq "$expected_agents" ]

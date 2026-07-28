@@ -1,0 +1,11 @@
+# Shell scripts and markdown MUST keep LF endings, otherwise bash on macOS/Linux
+# chokes on \r after a checkout on Windows (core.autocrlf=true is the default there).
+* text=auto eol=lf
+*.sh text eol=lf
+bin/company text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.svg text eol=lf
+*.yml text eol=lf
+*.png binary
+*.bat text eol=crlf

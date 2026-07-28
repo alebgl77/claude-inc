@@ -4,6 +4,20 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
+## [1.1.0] — Series A
+
+### Added
+- **Sales department** (8th floor, 6 hires): `account-research`, `draft-outreach`, `call-prep`,
+  `proposal-builder`, `objection-handler`, `pipeline-review`
+- **Executive staff** (2 hires): `chief-of-staff` (mission ledger, decision log, weekly review)
+  and `token-accountant` (books the company's own token spend, reporting to the CFO)
+- `company sales` and aliases (`sell`, `revenue`, `deals`); `company brief` now ships the two
+  staff manuals alongside the CEO manual
+
+### Changed
+- Headcount 42 → 50, departments 7 → 8; README, org chart, CLAUDE.md routing table and manifests updated
+- The founding 42 are untouched: the original org chart remains canonical
+
 ## [1.0.1] — Founding day, patched
 
 ### Fixed

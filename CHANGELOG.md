@@ -4,7 +4,7 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
-## [1.0.1] — Founding day, patched
+## [1.0.1] — 2026-07-28
 
 ### Fixed
 - `install.sh` and `bin/company` are executable in git again — `git clone && ./install.sh` works
@@ -17,7 +17,7 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 - GitHub Actions workflow running that validation plus CLI and install smoke tests on every push and PR
 - Issue templates ("Propose a new hire", bug report), `SECURITY.md`, `CODE_OF_CONDUCT.md`, this changelog
 
-## [1.0.0] — Founding day
+## [1.0.0] — 2026-07-12
 
 ### Added
 - 1 CEO (`CLAUDE.md`, `/company`, `/standup`), 7 departments as subagents, 42 employees as skills

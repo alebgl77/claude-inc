@@ -1,6 +1,6 @@
 {
   "name": "claude-inc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hire a 42-employee AI company in one command. 7 departments, 42 skills, 1 CEO — a full org chart running inside Claude Code.",
   "author": {
     "name": "Alexandre Beguel",

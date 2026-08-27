@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# company — run Claude, Inc. from any terminal, with any AI CLI.
+# company - run Claude, Inc. from any terminal, with any AI CLI.
 # https://github.com/alebgl77/claude-inc
 set -euo pipefail
 
@@ -54,7 +54,7 @@ skills_of() {
 # ------------------------------------------------------------------ composers
 compose_dept() { # $1=dept $2=task -> full self-contained prompt on stdout
   local dept="$1" task="$2" s
-  echo "# Claude, Inc. — ${dept} department"
+  echo "# Claude, Inc. - ${dept} department"
   echo
   echo "You are the head of the ${dept} department. Your charter follows, then the full instruction manual of each employee (skill) on your team. Use them."
   echo
@@ -101,14 +101,14 @@ run_prompt() { # $1=prompt $2=print_only
   elif command -v "$ENGINE" >/dev/null 2>&1; then
     exec "$ENGINE" "$prompt"
   else
-    echo "${DIM}engine '$ENGINE' not found — printing prompt (pipe it into any AI CLI, or set CLAUDE_INC_ENGINE)${R}" >&2
+    echo "${DIM}engine '$ENGINE' not found: printing prompt (pipe it into any AI CLI, or set CLAUDE_INC_ENGINE)${R}" >&2
     printf '%s\n' "$prompt"
   fi
 }
 
 # --------------------------------------------------------------------- roster
 roster() {
-  echo "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 8 departments · 50 employees (founding 42 + Series A)${R}"
+  echo "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 8 departments · 50 employees${R}"
   echo
   echo "                        ${B}CEO${R} ${DIM}(your AI CLI)${R}"
   echo "  ┌──────────┬──────────┬─────┴─────┬──────────┬──────────┬──────────┐"
@@ -124,7 +124,7 @@ roster() {
 
 usage() {
   cat <<EOF
-${OR}${B}company${R} v${VERSION} — run Claude, Inc. from any terminal
+${OR}${B}company${R} v${VERSION} - run Claude, Inc. from any terminal
 
 USAGE
   company brief "<mission>"          Brief the CEO; routes across all departments
@@ -179,7 +179,7 @@ case "$CMD" in
       run_prompt "$(compose_dept "$DEPT" "$*")" "$PRINT_ONLY"
     else
       echo "unknown command or department: $CMD" >&2
-      echo "departments: dev · design · marketing · social · finance · smb · legal" >&2
+      echo "departments: dev · design · marketing · social · finance · smb · legal · sales" >&2
       exit 1
     fi
     ;;

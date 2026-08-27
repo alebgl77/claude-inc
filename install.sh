@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
-# Claude, Inc. installer — puts 7 departments and 42 employees on your payroll.
+# Claude, Inc. installer: puts 8 departments and 50 employees on your payroll.
 #   curl -fsSL https://raw.githubusercontent.com/alebgl77/claude-inc/main/install.sh | bash
+# Requires Bash and standard macOS/Linux tools. Git is required only when the
+# installer is not running from a local checkout.
 # Flags:
 #   --project   install into ./.claude (current project) instead of ~/.claude
 #   --no-bin    skip installing the 'company' CLI into ~/.local/bin
 set -euo pipefail
 
-REPO_URL="https://github.com/alebgl77/claude-inc"
+REPO_URL="${CLAUDE_INC_REPO_URL:-https://github.com/alebgl77/claude-inc}"
+: "${HOME:?HOME must be set}"
 CLONE_DIR="${CLAUDE_INC_HOME:-$HOME/.claude-inc}"
+
+die() { printf 'claude-inc: %s\n' "$*" >&2; exit 1; }
+need_command() { command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"; }
 
 PROJECT="no"; NO_BIN="no"
 for a in "$@"; do
@@ -18,19 +24,35 @@ for a in "$@"; do
   esac
 done
 
+for command in dirname mkdir cp rm basename; do need_command "$command"; done
+if [ "$NO_BIN" = "no" ]; then
+  need_command ln
+  need_command chmod
+fi
+
 if [ -t 1 ]; then B=$'\033[1m'; OR=$'\033[38;5;208m'; G=$'\033[32m'; R=$'\033[0m'; else B=""; OR=""; G=""; R=""; fi
 say() { printf '%s\n' "${OR}${B}claude-inc${R} $*"; }
 
 # --- locate source: already inside the repo, or clone/update it -------------
-SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]:-$0}")" >/dev/null 2>&1 && pwd || true)"
-if [ -n "$SCRIPT_DIR" ] && [ -d "$SCRIPT_DIR/skills" ] && [ -d "$SCRIPT_DIR/agents" ]; then
+SCRIPT_SOURCE="${BASH_SOURCE[0]:-}"
+SCRIPT_DIR=""
+if [ -n "$SCRIPT_SOURCE" ] && [ -f "$SCRIPT_SOURCE" ]; then
+  SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_SOURCE")" >/dev/null 2>&1 && pwd || true)"
+fi
+if [ -n "$SCRIPT_DIR" ] \
+  && [ -d "$SCRIPT_DIR/skills" ] \
+  && [ -d "$SCRIPT_DIR/agents" ] \
+  && [ -f "$SCRIPT_DIR/bin/company" ] \
+  && [ -f "$SCRIPT_DIR/.claude-plugin/plugin.json" ]; then
   SRC="$SCRIPT_DIR"
   say "installing from local checkout: $SRC"
 else
+  need_command git
   if [ -d "$CLONE_DIR/.git" ]; then
     say "updating $CLONE_DIR"
     git -C "$CLONE_DIR" pull --ff-only >/dev/null
   else
+    [ ! -e "$CLONE_DIR" ] || die "cache path exists but is not a git checkout: $CLONE_DIR"
     say "cloning $REPO_URL -> $CLONE_DIR"
     git clone --depth 1 "$REPO_URL" "$CLONE_DIR" >/dev/null
   fi
@@ -64,6 +86,7 @@ fi
 
 # --- the company CLI ---------------------------------------------------------
 if [ "$NO_BIN" = "no" ]; then
+  [ -f "$SRC/bin/company" ] || die "company CLI not found in source: $SRC/bin/company"
   mkdir -p "$HOME/.local/bin"
   ln -sf "$SRC/bin/company" "$HOME/.local/bin/company"
   chmod +x "$SRC/bin/company"
@@ -77,8 +100,10 @@ echo
 say "${G}hired ${n_agents} department heads and ${n_skills} employees${R} -> $TARGET"
 echo
 echo "  ${B}Next:${R}"
-echo "    company roster                       # meet the team"
-echo "    company brief \"launch my product\"    # brief the CEO"
+if [ "$NO_BIN" = "no" ]; then
+  echo "    company roster                       # meet the team"
+  echo "    company brief \"launch my product\"    # brief the CEO"
+fi
 echo "    claude                               # skills + agents are live in Claude Code"
 echo
 echo "  ${B}Claude Code plugin route (alternative):${R}"

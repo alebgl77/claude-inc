@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Claude, Inc. — the company's compliance officer.
+"""Claude, Inc.: the company's compliance officer.
 
 Runs on every push and pull request: verifies that the org chart, the employees'
 job descriptions, the CLI roster and the docs all agree with each other.
@@ -18,6 +18,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
 STAFF = {"chief-of-staff", "token-accountant"}
+EXPECTED_EMPLOYEES = 50
+EXPECTED_DEPARTMENTS = 8
+EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
+EXPECTED_VERSION = "1.1.0"
 REQUIRED_SECTIONS = ["When to use", "Workflow", "Output format", "Quality bar", "Example"]
 ALLOWED_SKILL_KEYS = {"name", "description", "allowed-tools", "license", "metadata", "model"}
 ALLOWED_AGENT_KEYS = {"name", "description", "tools", "model", "color"}
@@ -110,6 +114,8 @@ def check_roster(cli, skills, agents):
         err("bin/company: DEPTS array not found")
         return
     cli_depts = depts.group(1).split()
+    if len(cli_depts) != EXPECTED_DEPARTMENTS:
+        err(f"bin/company has {len(cli_depts)} departments, expected {EXPECTED_DEPARTMENTS}")
     if sorted(cli_depts) != agents:
         err(f"bin/company DEPTS {sorted(cli_depts)} != agents/ {agents}")
     seen = {}
@@ -119,8 +125,8 @@ def check_roster(cli, skills, agents):
             err(f"bin/company: skills_of() has no entry for '{dept}'")
             continue
         staffed = m.group(1).split()
-        if len(staffed) != 6:
-            warn(f"{dept}: {len(staffed)} employees (the company standard is 6)")
+        if len(staffed) != EXPECTED_EMPLOYEES_PER_DEPARTMENT:
+            err(f"{dept}: {len(staffed)} employees, expected {EXPECTED_EMPLOYEES_PER_DEPARTMENT}")
         if f'echo "{dept}"' not in cli:
             err(f"bin/company: dept_of() cannot resolve '{dept}'")
         if not os.path.exists(f"agents/{dept}.md"):
@@ -138,6 +144,9 @@ def check_roster(cli, skills, agents):
     for slug in skills:
         if slug not in seen and slug not in STAFF:
             err(f"skills/{slug}/ belongs to no department (add it to bin/company and its agent)")
+    expected_staffed = EXPECTED_DEPARTMENTS * EXPECTED_EMPLOYEES_PER_DEPARTMENT
+    if len(seen) != expected_staffed:
+        err(f"bin/company staffs {len(seen)} employees, expected {expected_staffed}")
 
 
 def check_docs(skills, agents):
@@ -171,11 +180,43 @@ def check_packaging(cli):
     except (json.JSONDecodeError, OSError) as exc:
         err(f"invalid plugin manifest: {exc}")
         return
-    if plugin.get("version") != market.get("metadata", {}).get("version"):
+    plugin_version = plugin.get("version")
+    market_version = market.get("metadata", {}).get("version")
+    if plugin_version != EXPECTED_VERSION:
+        err(f"plugin.json version {plugin_version!r} != required {EXPECTED_VERSION}")
+    if market_version != EXPECTED_VERSION:
+        err(f"marketplace.json version {market_version!r} != required {EXPECTED_VERSION}")
+    if plugin_version != market_version:
         err("plugin.json and marketplace.json versions disagree")
     cli_version = re.search(r'^VERSION="([^"]+)"', cli, re.M)
-    if cli_version and cli_version.group(1) != plugin.get("version"):
-        err(f"bin/company VERSION {cli_version.group(1)} != plugin.json {plugin.get('version')}")
+    if not cli_version:
+        err("bin/company VERSION not found")
+    elif cli_version.group(1) != EXPECTED_VERSION:
+        err(f"bin/company VERSION {cli_version.group(1)!r} != required {EXPECTED_VERSION}")
+
+
+def check_powershell_installer():
+    script = "install.ps1"
+    if not os.path.exists(script):
+        err(f"{script}: missing")
+        return
+    shell = shutil.which("pwsh") or shutil.which("powershell")
+    if not shell:
+        warn(f"{script}: PowerShell unavailable, syntax check skipped (Windows CI is authoritative)")
+        return
+    parser = (
+        "$tokens = $null; $errors = $null; "
+        "[void][System.Management.Automation.Language.Parser]::ParseFile("
+        "(Resolve-Path 'install.ps1'), [ref]$tokens, [ref]$errors); "
+        "if ($errors.Count -gt 0) { $errors | ForEach-Object { Write-Error $_ }; exit 1 }"
+    )
+    proc = subprocess.run(
+        [shell, "-NoProfile", "-NonInteractive", "-Command", parser],
+        capture_output=True, text=True
+    )
+    if proc.returncode:
+        detail = proc.stderr.strip() or proc.stdout.strip()
+        err(f"{script}: PowerShell syntax error\n{detail}")
 
 
 def check_scripts():
@@ -195,6 +236,7 @@ def check_scripts():
         mode = subprocess.run(["git", "ls-files", "-s", script], capture_output=True, text=True).stdout.split()
         if mode and mode[0] != "100755":
             err(f"{script}: not executable in git (fix: git update-index --chmod=+x {script})")
+    check_powershell_installer()
     if os.name == "nt":
         warn("running on Windows: shell checks are advisory here, CI is authoritative")
     if os.path.exists("assets/org-chart.svg"):
@@ -210,6 +252,14 @@ def main():
     agents = sorted(f[:-3] for f in os.listdir("agents") if f.endswith(".md"))
     cli = open("bin/company", encoding="utf-8").read()
 
+    if len(skills) != EXPECTED_EMPLOYEES:
+        err(f"skills/ has {len(skills)} employees, expected {EXPECTED_EMPLOYEES}")
+    if len(agents) != EXPECTED_DEPARTMENTS:
+        err(f"agents/ has {len(agents)} departments, expected {EXPECTED_DEPARTMENTS}")
+    missing_staff = STAFF - set(skills)
+    if missing_staff:
+        err(f"executive staff missing from skills/: {sorted(missing_staff)}")
+
     check_employees(skills)
     check_departments(agents)
     check_roster(cli, skills, agents)
@@ -218,7 +268,7 @@ def main():
     check_scripts()
 
     staff = len(STAFF & set(skills))
-    print(f"Claude, Inc. — {len(skills)} employees across {len(agents)} departments "
+    print(f"Claude, Inc.: {len(skills)} employees across {len(agents)} departments "
           f"({len(skills) - staff} staffed + {staff} executive staff)")
     ci = os.getenv("GITHUB_ACTIONS")
     for w in warnings:
@@ -226,7 +276,7 @@ def main():
     for e in errors:
         print(f"::error::{e}" if ci else f"  ERROR: {e}")
     if errors:
-        print(f"\nFAILED — {len(errors)} error(s), {len(warnings)} warning(s)")
+        print(f"\nFAILED: {len(errors)} error(s), {len(warnings)} warning(s)")
         return 1
     print(f"\nAll checks passed ({len(warnings)} warning(s)). The company is in order.")
     return 0

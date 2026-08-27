@@ -4,7 +4,7 @@
 
 ### Hire a whole AI company in one command.
 
-**8 departments · 50 employees · 1 CEO — the founding 42 of the org chart plus the Series A class, running inside Claude Code (or any AI CLI).**
+**1 CEO · 8 departments · 50 employees, running inside Claude Code (or any AI CLI).**
 
 [![compliance](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml/badge.svg)](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -17,7 +17,7 @@
 
 </div>
 
-<img src="assets/banner.png" alt="Claude, Inc. — hire a 42-employee AI company in one command" width="100%">
+<img src="assets/banner.png" alt="Claude, Inc.: hire a 50-employee AI company in one command" width="100%">
 
 ---
 
@@ -27,9 +27,9 @@ Everyone screenshots the org-chart infographics. Nobody ships them.
 
 **Claude, Inc.** turns the *"Build Your Whole Team with Claude"* org chart into a working company: every department is a real Claude Code **subagent**, every employee is a real **skill**, and the CEO is a routing brain that briefs them, parallelizes them, and reports back like a board memo.
 
-*(The founding class is the 42 of the infographic — the banner honours founding day. At Series A the company hired its 8th floor: a full Sales department, plus a chief of staff and a token accountant on the executive floor. Headcount: 50.)*
+*(The company includes a full Sales department on its 8th floor, plus a chief of staff and a token accountant on the executive floor. Headcount: 50.)*
 
-No SaaS. No API keys. No framework. Just markdown with a job description — the way Claude was meant to be staffed.
+No SaaS. No API keys. No framework. Just markdown with a job description - the way Claude was meant to be staffed.
 
 ## The org chart
 
@@ -52,20 +52,20 @@ You talk to the CEO. The CEO briefs the departments. The departments put their e
 
 ## Hire everyone in 60 seconds
 
-**Option A — Claude Code plugin (recommended)**
+**Option A - Claude Code plugin (recommended)**
 
 ```
 /plugin marketplace add alebgl77/claude-inc
 /plugin install claude-inc@claude-inc
 ```
 
-**Option B — one-liner (installs skills + agents into `~/.claude`, plus the `company` CLI)**
+**Option B - one-liner (installs skills + agents into `~/.claude`, plus the `company` CLI)**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/alebgl77/claude-inc/main/install.sh | bash
 ```
 
-**Option C — clone and walk into the office**
+**Option C - clone and walk into the office**
 
 ```bash
 git clone https://github.com/alebgl77/claude-inc && cd claude-inc
@@ -73,13 +73,18 @@ git clone https://github.com/alebgl77/claude-inc && cd claude-inc
 claude
 ```
 
+On Windows PowerShell, run `./install.ps1 -Project` from the clone instead. Run
+`./install.ps1` without `-Project` for a global install. The `company` CLI
+requires Bash (Git for Windows includes it); use `./install.ps1 -NoBin` to
+install only the Claude Code files when Bash is unavailable.
+
 ## Your first day as founder
 
 ```bash
-# Brief the CEO — routes across departments, in parallel, returns a Board Memo
+# Brief the CEO: routes across departments, in parallel, returns a Board Memo
 /company ship a landing page for my invoicing app, with pricing, legal-clean claims and 3 LinkedIn posts
 
-# Morning standup — all 7 departments report on your current project
+# Morning standup: all 8 departments report on your current project
 /standup
 
 # Or talk to one department directly, from ANY terminal
@@ -88,12 +93,12 @@ company legal "triage this NDA: $(cat nda.md)"
 company marketing "10 ad variants for my beta launch"
 ```
 
-Skills also fire on their own — say *"review this contract"* in any conversation and the Contract Reviewer shows up to work. The org chart is there when you need coordination, invisible when you don't.
+Skills also fire on their own: say *"review this contract"* in any conversation and the Contract Reviewer shows up to work. The org chart is there when you need coordination, invisible when you don't.
 
 ## Meet the company
 
 <details open>
-<summary><b>👨‍💻 Developers</b> — VP of Engineering</summary>
+<summary><b>👨‍💻 Developers</b> - VP of Engineering</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -107,7 +112,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>🎨 Designers</b> — VP of Design</summary>
+<summary><b>🎨 Designers</b> - VP of Design</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -121,7 +126,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>📣 Marketing</b> — CMO</summary>
+<summary><b>📣 Marketing</b> - CMO</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -135,7 +140,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>📱 Social Media</b> — Head of Social</summary>
+<summary><b>📱 Social Media</b> - Head of Social</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -149,7 +154,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>💰 Finance</b> — CFO</summary>
+<summary><b>💰 Finance</b> - CFO</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -163,7 +168,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>🏪 Small Business</b> — COO</summary>
+<summary><b>🏪 Small Business</b> - COO</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -177,7 +182,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>⚖️ Legal</b> — General Counsel</summary>
+<summary><b>⚖️ Legal</b> - General Counsel</summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -191,7 +196,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>🤝 Sales</b> — VP of Sales <i>(Series A hire)</i></summary>
+<summary><b>🤝 Sales</b> - VP of Sales <i>(Series A hire)</i></summary>
 
 | Employee | Role | Superpower |
 |---|---|---|
@@ -205,7 +210,7 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 </details>
 
 <details>
-<summary><b>🏛️ Executive staff</b> — attached to the C-suite <i>(Series A hires)</i></summary>
+<summary><b>🏛️ Executive staff</b> - attached to the C-suite <i>(Series A hires)</i></summary>
 
 | Employee | Reports to | Superpower |
 |---|---|---|
@@ -216,22 +221,22 @@ Skills also fire on their own — say *"review this contract"* in any conversati
 
 ## How it works
 
-The infographic maps 1:1 onto Claude Code primitives — no magic, just org design:
+The infographic maps 1:1 onto Claude Code primitives: no magic, just org design:
 
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
 | **CEO** | `CLAUDE.md` + `/company` | Routing brain: parses the mission, delegates, arbitrates, writes the Board Memo |
-| **8 departments** | `agents/*.md` | Subagents with their own context windows — they run **in parallel** |
-| **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions — VPs hire them per task, or they self-trigger |
-| **2 staff hires** | `chief-of-staff`, `token-accountant` | Attached to CEO and CFO — org memory and self-auditing of token spend |
+| **8 departments** | `agents/*.md` | Subagents with their own context windows; they run **in parallel** |
+| **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions; VPs hire them per task, or they self-trigger |
+| **2 staff hires** | `chief-of-staff`, `token-accountant` | Attached to CEO and CFO: org memory and self-auditing of token spend |
 
 ```
 you ──mission──▶ CEO ──briefs──▶ VP(s) ──hire──▶ skill(s) ──ship──▶ files + Board Memo
 ```
 
-![The full org chart — 1 CEO, 7 departments, 42 employees](assets/org-chart.svg)
+![The full org chart: 1 CEO, 8 departments, 50 employees](assets/org-chart.svg)
 
-Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes 42 of them manageable — and what makes PRs reviewable.
+Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 50 manageable and PRs reviewable.
 
 And the company audits itself: `python3 scripts/validate.py` (run in CI on every push) checks every job description, cross-references the CLI roster against the departments, and fails the build if an employee is hired twice, orphaned, or missing from the docs.
 
@@ -251,28 +256,28 @@ No Claude Code? No problem. The hierarchy travels as plain text.
 
 ## FAQ
 
-**Is this over-engineering?** For "fix a typo", yes — which is why skills also trigger individually and the CEO skips ceremony on single-department tasks. For "prepare my product launch", a parallel org beats one long chat every time.
+**Is this over-engineering?** For "fix a typo", yes, which is why skills also trigger individually and the CEO skips ceremony on single-department tasks. For "prepare my product launch", a parallel org beats one long chat every time.
 
 **Does `/company` burn tokens?** Departments are subagents with their own context, so big missions fan out real work. Brief the CEO like you'd brief a real one: clear scope, only the departments you need.
 
 **Finance/Legal outputs?** Decision support with mandatory disclaimers, not professional advice. The VPs are contractually incapable of forgetting this.
 
-**Can I hire more employees?** Yes — [we're hiring](CONTRIBUTING.md). One PR = one new employee.
+**Can I hire more employees?** Yes: [we're hiring](CONTRIBUTING.md). One PR = one new employee.
 
 ## Credits
 
-- Org chart concept: **[Build Your Whole Team with Claude](https://charliehills.substack.com)** by Charlie Hills — this repo is the runnable formalisation of that map.
+- Org chart concept: **[Build Your Whole Team with Claude](https://charliehills.substack.com)** by Charlie Hills; this repo is the runnable formalisation of that map.
 - Some employees are self-contained homages to great ecosystem projects: [obra/superpowers](https://github.com/obra/superpowers), [Context7](https://github.com/upstash/context7), claude-mem.
 - Built with [Claude Code](https://docs.claude.com/en/docs/claude-code) subagents, skills and plugins.
 
 ## License
 
-[MIT](LICENSE) — take the whole company, it's yours.
+[MIT](LICENSE) - take the whole company, it's yours.
 
 ---
 
 <div align="center">
 
-**If your new workforce ships something, [⭐ star the company](https://github.com/alebgl77/claude-inc) — it's cheaper than payroll.**
+**If your new workforce ships something, [⭐ star the company](https://github.com/alebgl77/claude-inc) - it's cheaper than payroll.**
 
 </div>

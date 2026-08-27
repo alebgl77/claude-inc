@@ -8,18 +8,29 @@ on:
 
 jobs:
   org-chart:
-    name: The company audits itself
-    runs-on: ubuntu-latest
+    name: The company audits itself (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Every employee has a valid job description
+      - name: Every employee has a valid job description (macOS and Linux)
+        if: runner.os != 'Windows'
         run: python3 scripts/validate.py
 
-      - name: The CLI can brief every department
+      - name: Every employee has a valid job description (Windows)
+        if: runner.os == 'Windows'
+        run: python scripts/validate.py
+
+      - name: The CLI can brief every department (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           chmod +x bin/company
-          for dept in $(grep -oP '(?<=^DEPTS=\().*(?=\))' bin/company); do
+          for dept in developers designers marketing social-media finance small-business legal sales; do
             count=$(./bin/company "$dept" "ci smoke test" --print | grep -c '^----- EMPLOYEE:')
             echo "$dept -> $count employees"
             [ "$count" -eq 6 ] || { echo "::error::$dept composed $count employees, expected 6"; exit 1; }
@@ -27,15 +38,115 @@ jobs:
           ./bin/company brief "ci smoke test" --print | grep -q 'CEO Operating Manual'
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
+          [ "$(./bin/company version)" = "company v1.1.0" ]
 
-      - name: A fresh hire installs cleanly
+      - name: The CLI can brief every department (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          export HOME="$RUNNER_TEMP/fresh"
+          $departments = @('developers', 'designers', 'marketing', 'social-media', 'finance', 'small-business', 'legal', 'sales')
+          foreach ($department in $departments) {
+            $output = & bash ./bin/company $department 'ci smoke test' --print
+            if ($LASTEXITCODE -ne 0) { throw "CLI failed for $department" }
+            $count = @($output | Select-String '^----- EMPLOYEE:').Count
+            Write-Host "$department -> $count employees"
+            if ($count -ne 6) { throw "$department composed $count employees, expected 6" }
+          }
+          $brief = & bash ./bin/company brief 'ci smoke test' --print
+          if ($LASTEXITCODE -ne 0) { throw 'CLI brief failed' }
+          if (-not ($brief | Select-String 'CEO Operating Manual')) { throw 'CEO Operating Manual missing from CLI brief' }
+          & bash ./bin/company roster | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw 'CLI roster failed' }
+          $version = & bash ./bin/company version
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.1.0') { throw "Unexpected CLI version: $version" }
+
+      - name: Global, project and no-CLI installs work (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          workspace="$GITHUB_WORKSPACE"
+          test_root="$RUNNER_TEMP/install smoke"
+          export HOME="$test_root/global home"
           mkdir -p "$HOME"
-          bash install.sh
-          skills=$(ls "$HOME/.claude/skills" | wc -l)
-          agents=$(ls "$HOME/.claude/agents" | wc -l)
-          expected_skills=$(ls skills | wc -l)
-          expected_agents=$(ls agents/*.md | wc -l)
-          echo "installed $skills/$expected_skills skills, $agents/$expected_agents agents"
-          [ "$skills" -eq "$expected_skills" ] && [ "$agents" -eq "$expected_agents" ]
+          bash "$workspace/install.sh"
+          bash "$workspace/install.sh"
+          [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
+          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
+          [ -L "$HOME/.local/bin/company" ]
+          [ "$("$HOME/.local/bin/company" version)" = "company v1.1.0" ]
+
+          export HOME="$test_root/project home"
+          project="$test_root/project with spaces"
+          mkdir -p "$HOME" "$project"
+          (cd "$project" && bash "$workspace/install.sh" --project)
+          [ -f "$project/CLAUDE.md" ]
+          [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
+          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
+
+          export HOME="$test_root/no cli home"
+          mkdir -p "$HOME"
+          bash "$workspace/install.sh" --no-bin
+          [ ! -e "$HOME/.local/bin/company" ]
+
+      - name: Piped project install clones the checked-out commit (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          workspace="$GITHUB_WORKSPACE"
+          test_root="$(mktemp -d "$RUNNER_TEMP/claude-inc-piped.XXXXXX")"
+          project="$test_root/project"
+          mkdir -p "$project"
+
+          (
+            cd "$project"
+            export CLAUDE_INC_HOME="$test_root/cache"
+            export CLAUDE_INC_REPO_URL="file://$workspace"
+            cat "$workspace/install.sh" | bash -s -- --project --no-bin
+          )
+
+          [ "$(git -C "$test_root/cache" rev-parse HEAD)" = "$(git -C "$workspace" rev-parse HEAD)" ]
+          skill_count=0
+          for skill in "$project/.claude/skills"/*/; do
+            [ -d "$skill" ] || continue
+            skill_count=$((skill_count + 1))
+          done
+          agent_count=0
+          for agent in "$project/.claude/agents"/*.md; do
+            [ -f "$agent" ] || continue
+            agent_count=$((agent_count + 1))
+          done
+          [ "$skill_count" -eq 50 ]
+          [ "$agent_count" -eq 8 ]
+          [ -f "$project/CLAUDE.md" ]
+
+      - name: Global, project and no-CLI installs work (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $workspace = $env:GITHUB_WORKSPACE
+          $testRoot = Join-Path $env:RUNNER_TEMP 'install smoke'
+
+          $env:HOME = Join-Path $testRoot 'global home'
+          New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
+          & "$workspace/install.ps1"
+          & "$workspace/install.ps1"
+          if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 50) { throw 'Global skill count is not 50' }
+          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 8) { throw 'Global agent count is not 8' }
+          $wrapper = Join-Path $env:HOME '.local/bin/company.cmd'
+          if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
+          $version = & $wrapper version
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.1.0') { throw "Unexpected installed CLI version: $version" }
+
+          $env:HOME = Join-Path $testRoot 'project home'
+          $project = Join-Path $testRoot 'project with spaces'
+          New-Item -ItemType Directory -Force -Path $env:HOME, $project | Out-Null
+          Push-Location $project
+          try { & "$workspace/install.ps1" -Project } finally { Pop-Location }
+          if (-not (Test-Path -LiteralPath (Join-Path $project 'CLAUDE.md'))) { throw 'Project CLAUDE.md was not installed' }
+          if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 50) { throw 'Project skill count is not 50' }
+          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 8) { throw 'Project agent count is not 8' }
+
+          $env:HOME = Join-Path $testRoot 'no cli home'
+          New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
+          & "$workspace/install.ps1" -NoBin
+          if (Test-Path -LiteralPath "$env:HOME/.local/bin/company.cmd") { throw 'NoBin installed a CLI wrapper' }

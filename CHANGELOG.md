@@ -12,6 +12,14 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 - Suggestions-only skill-gap research policy with explicit consent, candidate
   quality gates and no automatic download, installation or execution
 
+### Fixed
+- `bin/company` ends quietly when a reader closes the pipe early
+  (`company brief | head -20`). Parents that ignore SIGPIPE (Node, .NET, CI runners)
+  pass that `SIG_IGN` down to the CLI, so a closed pipe surfaced as
+  `printf: write error: Broken pipe` and status 1 instead of the signal; every
+  stdout write now ends the way the default SIGPIPE would, silently with 141
+- CI probes a closed pipe on every command, so the noise cannot come back unnoticed
+
 ## [1.1.0] - 2026-08-27
 
 ### Added

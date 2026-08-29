@@ -21,6 +21,16 @@ else
   B=""; DIM=""; OR=""; R=""
 fi
 
+# ----------------------------------------------------------------------- stdout
+# Every write to the real stdout goes through these. A reader that leaves early
+# - `company roster | head -3` - should end us the way SIGPIPE does: silently,
+# with 141. But parents that ignore SIGPIPE (Node, .NET, CI runners) pass that
+# SIG_IGN down to us, so the signal never arrives and bash reports EPIPE as a
+# noisy write error with status 1 instead. A signal ignored on entry cannot be
+# reset from the script, so spell the intended ending out by hand.
+out()  { printf '%s\n' "$*" 2>/dev/null || exit 141; }
+outf() { printf "$@" 2>/dev/null || exit 141; }
+
 # ---------------------------------------------------------------- org registry
 DEPTS=(developers designers marketing social-media finance small-business legal sales)
 PROFILE_MAX_BYTES=32768
@@ -222,13 +232,13 @@ append_active_profile() {
 
 show_team() {
   if resolve_active_profile; then
-    echo "Active $ACTIVE_PROFILE_SCOPE team profile: $ACTIVE_PROFILE"
-    echo "Scope: $ACTIVE_PROFILE_SCOPE"
-    echo "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
-    echo "Skills: $ACTIVE_PROFILE_SKILLS"
-    echo "Research metadata (does not grant consent): $ACTIVE_PROFILE_RESEARCH"
+    out "Active $ACTIVE_PROFILE_SCOPE team profile: $ACTIVE_PROFILE"
+    out "Scope: $ACTIVE_PROFILE_SCOPE"
+    out "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
+    out "Skills: $ACTIVE_PROFILE_SKILLS"
+    out "Research metadata (does not grant consent): $ACTIVE_PROFILE_RESEARCH"
   else
-    echo "Full canonical company active: 50 employees across 8 departments."
+    out "Full canonical company active: 50 employees across 8 departments."
   fi
 }
 
@@ -245,9 +255,9 @@ compose_onboarding() { # $1=scope $2=target
 
 defer_onboarding() { # $1=scope
   if [ "$1" = "global" ]; then
-    echo "Onboarding deferred. Run: company onboard --global"
+    out "Onboarding deferred. Run: company onboard --global"
   else
-    echo "Onboarding deferred. Run: company onboard"
+    out "Onboarding deferred. Run: company onboard"
   fi
 }
 
@@ -267,7 +277,7 @@ onboard() {
   fi
   prompt="$(compose_onboarding "$scope" "$target")"
   if [ "$PRINT_ONLY" = "yes" ]; then
-    printf '%s\n' "$prompt"
+    out "$prompt"
   elif [ ! -t 0 ] || [ ! -t 1 ] || ! command -v "$ENGINE" >/dev/null 2>&1; then
     defer_onboarding "$scope"
   else
@@ -322,33 +332,33 @@ ENGINE="${CLAUDE_INC_ENGINE:-claude}"
 run_prompt() { # $1=prompt $2=print_only
   local prompt="$1" print_only="$2"
   if [ "$print_only" = "yes" ]; then
-    printf '%s\n' "$prompt"
+    out "$prompt"
   elif command -v "$ENGINE" >/dev/null 2>&1; then
     exec "$ENGINE" "$prompt"
   else
     echo "${DIM}engine '$ENGINE' not found: printing prompt (pipe it into any AI CLI, or set CLAUDE_INC_ENGINE)${R}" >&2
-    printf '%s\n' "$prompt"
+    out "$prompt"
   fi
 }
 
 # --------------------------------------------------------------------- roster
 roster() {
-  echo "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 8 departments · 50 employees${R}"
-  echo
-  echo "                        ${B}CEO${R} ${DIM}(your AI CLI)${R}"
-  echo "  ┌──────────┬──────────┬─────┴─────┬──────────┬──────────┬──────────┐"
+  out "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 8 departments · 50 employees${R}"
+  out
+  out "                        ${B}CEO${R} ${DIM}(your AI CLI)${R}"
+  out "  ┌──────────┬──────────┬─────┴─────┬──────────┬──────────┬──────────┐"
   local d
   for d in "${DEPTS[@]}"; do
-    printf '  %s%-15s%s %s\n' "$B" "$d" "$R" "$(skills_of "$d" | sed 's/ / · /g')"
+    outf '  %s%-15s%s %s\n' "$B" "$d" "$R" "$(skills_of "$d" | sed 's/ / · /g')"
   done
-  printf '  %s%-15s%s %s\n' "$DIM" "staff (CEO)" "$R" "chief-of-staff · token-accountant"
-  echo
-  echo "  ${DIM}company brief \"<mission>\"    → CEO routes across departments${R}"
-  echo "  ${DIM}company <dept> \"<task>\"      → talk to one department directly${R}"
+  outf '  %s%-15s%s %s\n' "$DIM" "staff (CEO)" "$R" "chief-of-staff · token-accountant"
+  out
+  out "  ${DIM}company brief \"<mission>\"    → CEO routes across departments${R}"
+  out "  ${DIM}company <dept> \"<task>\"      → talk to one department directly${R}"
 }
 
 usage() {
-  cat <<EOF
+  cat <<EOF 2>/dev/null || exit 141
 ${OR}${B}company${R} v${VERSION} - run Claude, Inc. from any terminal
 
 USAGE
@@ -395,7 +405,7 @@ case "$CMD" in
   team)           show_team ;;
   onboard)        onboard "$@" ;;
   help|-h|--help) usage ;;
-  version|-v)     echo "company v${VERSION}" ;;
+  version|-v)     out "company v${VERSION}" ;;
   hire|install)   exec bash "$ROOT/install.sh" "$@" ;;
   brief|ceo)
     [ $# -ge 1 ] || { echo "usage: company brief \"<mission>\"" >&2; exit 1; }

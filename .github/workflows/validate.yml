@@ -41,6 +41,43 @@ jobs:
           ./bin/company help > /dev/null
           [ "$(./bin/company version)" = "company v1.1.0" ]
 
+      - name: A closed pipe ends the CLI quietly (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -eu
+          err="$RUNNER_TEMP/broken-pipe.err"
+          # Node, .NET and the Actions runner itself ignore SIGPIPE and hand that
+          # SIG_IGN to every child, so a reader leaving early reaches the CLI as
+          # EPIPE rather than as a signal. It must still end the way the default
+          # SIGPIPE would - silently, with 141 - and never as a bash write error.
+          probe() {
+            set +e +o pipefail
+            trap '' PIPE
+            ./bin/company "$@" 2>"$err" | head -1 > /dev/null
+            echo "${PIPESTATUS[0]}"
+          }
+
+          # Bigger than any pipe buffer (64 KiB on Linux, 16 KiB on macOS), so the
+          # writer is certain to still be writing once the reader is gone.
+          padding="$(head -c 60000 < /dev/zero | tr '\0' x)"
+          : > "$err"
+          status="$(probe developers "$padding" --print)"
+          [ "$status" = 141 ] || { echo "::error::closed pipe: CLI exited $status, expected 141"; exit 1; }
+          [ ! -s "$err" ] || { echo "::error::closed pipe: CLI wrote to stderr"; cat "$err" >&2; exit 1; }
+
+          # The short commands may finish inside the buffer; either way, no noise.
+          for args in "roster" "help" "team" "version" "brief pipe probe --print" "onboard --print"; do
+            : > "$err"
+            status="$(probe $args)"
+            case "$status" in
+              0|141) ;;
+              *) echo "::error::company $args exited $status on a closed pipe"; exit 1 ;;
+            esac
+            [ ! -s "$err" ] || { echo "::error::company $args wrote to stderr on a closed pipe"; cat "$err" >&2; exit 1; }
+          done
+          echo "closed-pipe behaviour is quiet across every command"
+
       - name: Onboarding profiles are safe and reversible (macOS and Linux)
         if: runner.os != 'Windows'
         shell: bash

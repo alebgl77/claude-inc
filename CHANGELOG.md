@@ -4,6 +4,14 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
+### Added
+- Optional three-question team onboarding through `company onboard`, `/onboard`,
+  `install.sh --onboard` and `install.ps1 -Onboard`
+- Reversible project and global active-team profiles with strict validation;
+  all 50 skills remain installed as the available bench
+- Suggestions-only skill-gap research policy with explicit consent, candidate
+  quality gates and no automatic download, installation or execution
+
 ## [1.1.0] - 2026-08-27
 
 ### Added

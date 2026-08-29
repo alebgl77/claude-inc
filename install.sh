@@ -6,6 +6,7 @@
 # Flags:
 #   --project   install into ./.claude (current project) instead of ~/.claude
 #   --no-bin    skip installing the 'company' CLI into ~/.local/bin
+#   --onboard   optionally configure an active team after installation
 set -euo pipefail
 
 REPO_URL="${CLAUDE_INC_REPO_URL:-https://github.com/alebgl77/claude-inc}"
@@ -15,11 +16,12 @@ CLONE_DIR="${CLAUDE_INC_HOME:-$HOME/.claude-inc}"
 die() { printf 'claude-inc: %s\n' "$*" >&2; exit 1; }
 need_command() { command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"; }
 
-PROJECT="no"; NO_BIN="no"
+PROJECT="no"; NO_BIN="no"; ONBOARD="no"
 for a in "$@"; do
   case "$a" in
     --project) PROJECT="yes" ;;
     --no-bin)  NO_BIN="yes" ;;
+    --onboard) ONBOARD="yes" ;;
     *) echo "unknown flag: $a" >&2; exit 1 ;;
   esac
 done
@@ -42,7 +44,7 @@ fi
 if [ -n "$SCRIPT_DIR" ] \
   && [ -d "$SCRIPT_DIR/skills" ] \
   && [ -d "$SCRIPT_DIR/agents" ] \
-  && [ -f "$SCRIPT_DIR/bin/company" ] \
+  && { [ -f "$SCRIPT_DIR/bin/company" ] || [ "$NO_BIN" = "yes" ]; } \
   && [ -f "$SCRIPT_DIR/.claude-plugin/plugin.json" ]; then
   SRC="$SCRIPT_DIR"
   say "installing from local checkout: $SRC"
@@ -109,3 +111,40 @@ echo
 echo "  ${B}Claude Code plugin route (alternative):${R}"
 echo "    /plugin marketplace add alebgl77/claude-inc"
 echo "    /plugin install claude-inc@claude-inc"
+
+defer_install_onboarding() {
+  local scope_flag=""
+  [ "$PROJECT" = "yes" ] || scope_flag=" --global"
+  if [ "$NO_BIN" = "yes" ] && [ -f "$SRC/bin/company" ]; then
+    echo "Onboarding deferred. Run: bash \"$SRC/bin/company\" onboard${scope_flag}"
+  elif [ "$NO_BIN" = "yes" ]; then
+    if [ "$PROJECT" = "yes" ]; then
+      echo "Onboarding deferred. Install the Claude Code plugin, then run: /onboard"
+    else
+      echo "Onboarding deferred. Install the Claude Code plugin, then run: /onboard --global"
+    fi
+  elif [ "$PROJECT" = "yes" ]; then
+    echo "Onboarding deferred. Run: company onboard"
+  else
+    echo "Onboarding deferred. Run: company onboard --global"
+  fi
+}
+
+if [ "$ONBOARD" = "yes" ]; then
+  ENGINE="${CLAUDE_INC_ENGINE:-claude}"
+  if [ -t 0 ] && [ -t 1 ] && command -v "$ENGINE" >/dev/null 2>&1 && [ -f "$SRC/bin/company" ]; then
+    if [ "$PROJECT" = "yes" ]; then
+      if ! bash "$SRC/bin/company" onboard; then
+        say "onboarding did not complete"
+        defer_install_onboarding
+      fi
+    else
+      if ! bash "$SRC/bin/company" onboard --global; then
+        say "onboarding did not complete"
+        defer_install_onboarding
+      fi
+    fi
+  else
+    defer_install_onboarding
+  fi
+fi

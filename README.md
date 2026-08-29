@@ -78,6 +78,29 @@ On Windows PowerShell, run `./install.ps1 -Project` from the clone instead. Run
 requires Bash (Git for Windows includes it); use `./install.ps1 -NoBin` to
 install only the Claude Code files when Bash is unavailable.
 
+Team onboarding is optional. Plugin users can run `/onboard`. Installer users
+can add `--onboard` to `install.sh` or `-Onboard` to `install.ps1`, or run it
+later:
+
+```bash
+/onboard                    # plugin, project profile
+/onboard --global           # plugin, global profile
+company onboard             # CLI, project profile: .claude/company-team.md
+company onboard --global    # CLI, global fallback profile
+company team                # CLI, inspect the active profile
+```
+
+Onboarding asks three short questions, proposes the departments and skills to
+activate, and keeps all 50 installed as the available bench. Project profiles
+override global profiles. Existing installs and commands remain noninteractive
+unless onboarding is explicitly requested.
+
+Only `company brief` uses an active profile. The CLI validates the fixed
+frontmatter schema and sends only the normalized scope, department list, skill
+list to the engine. The free-form body and stored research status remain local,
+never enter the prompt and never authorize network access. The `/company`
+plugin command does not read profile files.
+
 ## Your first day as founder
 
 ```bash
@@ -246,6 +269,8 @@ The `company` CLI composes fully self-contained prompts (department charter + al
 
 ```bash
 company roster                                   # meet the team
+company team                                     # show active routing preferences
+company onboard --print                          # inspect the onboarding prompt
 company brief "launch my product"                # CEO mode
 company finance "reconcile bank.csv vs ledger.csv"
 company design "critique screenshot.png" --print | gemini   # any engine
@@ -253,6 +278,18 @@ CLAUDE_INC_ENGINE=codex company dev "add tests"              # or set an engine
 ```
 
 No Claude Code? No problem. The hierarchy travels as plain text.
+
+### Skill-gap research
+
+Onboarding can flag missing capabilities. It researches candidates only after
+separate, explicit consent and returns suggestions only. Each candidate is
+checked for source quality, current maintenance, compatibility, documentation,
+license, security, third-party adoption and available performance evidence.
+Stars include a collection date and never decide the ranking alone. Remote
+content is inspected read-only, treated as untrusted and never saved locally.
+Candidates fail if they are abandoned, opaque, unauditable, insecure,
+incompatible or poorly documented. No third-party content is downloaded,
+copied, installed or executed.
 
 ## FAQ
 

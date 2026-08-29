@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [switch]$Project,
-    [switch]$NoBin
+    [switch]$NoBin,
+    [switch]$Onboard
 )
 
 Set-StrictMode -Version Latest
@@ -72,27 +73,30 @@ if (-not (Test-Path -LiteralPath $SkillsSource -PathType Container) -or
 
 $BashPath = $null
 $CompanyScript = Join-Path $SourceRoot "bin/company"
-if (-not $NoBin) {
-    if (-not (Test-Path -LiteralPath $CompanyScript -PathType Leaf)) {
+if ((-not $NoBin) -or $Onboard) {
+    $CompanyScriptExists = Test-Path -LiteralPath $CompanyScript -PathType Leaf
+    if (-not $CompanyScriptExists -and -not $NoBin) {
         throw "Company CLI not found in source: $CompanyScript"
     }
-    $bashes = @(Get-Command -Name "bash" -CommandType Application -All -ErrorAction SilentlyContinue |
-        ForEach-Object { $_.Source })
-    $git = Get-Application "git"
-    if ($git) {
-        $gitBash = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $git.Source) "..\bin\bash.exe"))
-        if (Test-Path -LiteralPath $gitBash -PathType Leaf) {
-            $bashes += $gitBash
+    if ($CompanyScriptExists) {
+        $bashes = @(Get-Command -Name "bash" -CommandType Application -All -ErrorAction SilentlyContinue |
+            ForEach-Object { $_.Source })
+        $git = Get-Application "git"
+        if ($git) {
+            $gitBash = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $git.Source) "..\bin\bash.exe"))
+            if (Test-Path -LiteralPath $gitBash -PathType Leaf) {
+                $bashes += $gitBash
+            }
+        }
+        foreach ($bash in @($bashes | Select-Object -Unique)) {
+            $probe = & $bash -l $CompanyScript version 2>$null
+            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.1.0") {
+                $BashPath = $bash
+                break
+            }
         }
     }
-    foreach ($bash in @($bashes | Select-Object -Unique)) {
-        $probe = & $bash -l $CompanyScript version 2>$null
-        if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.1.0") {
-            $BashPath = $bash
-            break
-        }
-    }
-    if (-not $BashPath) {
+    if ((-not $NoBin) -and -not $BashPath) {
         throw "The company CLI requires a working Bash. Install Git for Windows, or rerun with -NoBin."
     }
 }
@@ -155,3 +159,42 @@ if (-not $NoBin) {
     Write-Host '    company brief "launch my product"'
 }
 Write-Host "    claude"
+
+if ($Onboard) {
+    $ScopeArgument = if ($Project) { "" } else { " --global" }
+    if ($NoBin -and $BashPath) {
+        $QuotedBash = "'" + $BashPath.Replace("'", "''") + "'"
+        $QuotedCompany = "'" + $CompanyScript.Replace("'", "''") + "'"
+        $DeferredCommand = "& $QuotedBash -l $QuotedCompany onboard$ScopeArgument"
+    } elseif ($NoBin) {
+        $QuotedInstaller = "'" + (Join-Path $SourceRoot "install.ps1").Replace("'", "''") + "'"
+        $ProjectArgument = if ($Project) { " -Project" } else { "" }
+        $DeferredCommand = "Install Git for Windows, then rerun: & $QuotedInstaller$ProjectArgument -Onboard"
+    } elseif ($Project) {
+        $DeferredCommand = "company onboard"
+    } else {
+        $DeferredCommand = "company onboard --global"
+    }
+    $EngineName = if (-not [string]::IsNullOrWhiteSpace($env:CLAUDE_INC_ENGINE)) {
+        $env:CLAUDE_INC_ENGINE
+    } else {
+        "claude"
+    }
+    $Engine = Get-Application $EngineName
+    $Interactive = [Environment]::UserInteractive -and
+        -not [Console]::IsInputRedirected -and
+        -not [Console]::IsOutputRedirected
+    if ($Interactive -and $BashPath -and $Engine) {
+        $OnboardArguments = @("-l", $CompanyScript, "onboard")
+        if (-not $Project) {
+            $OnboardArguments += "--global"
+        }
+        & $BashPath @OnboardArguments
+        if ($LASTEXITCODE -ne 0) {
+            Write-Status "onboarding did not complete"
+            Write-Output "Onboarding deferred. Next step: $DeferredCommand"
+        }
+    } else {
+        Write-Output "Onboarding deferred. Next step: $DeferredCommand"
+    }
+}

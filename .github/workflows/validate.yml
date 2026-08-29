@@ -35,7 +35,8 @@ jobs:
             echo "$dept -> $count employees"
             [ "$count" -eq 6 ] || { echo "::error::$dept composed $count employees, expected 6"; exit 1; }
           done
-          ./bin/company brief "ci smoke test" --print | grep -q 'CEO Operating Manual'
+          brief_output="$(./bin/company brief "ci smoke test" --print)"
+          [[ "$brief_output" == *'CEO Operating Manual'* ]]
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
           [ "$(./bin/company version)" = "company v1.1.0" ]
@@ -53,9 +54,9 @@ jobs:
           q3_line="$(printf '%s\n' "$prompt" | grep -n 'QUESTION 3/3' | cut -d: -f1)"
           proposal_line="$(printf '%s\n' "$prompt" | grep -n 'PROPOSAL' | cut -d: -f1)"
           [ "$q3_line" -lt "$proposal_line" ]
-          printf '%s\n' "$prompt" | grep -q 'remote pages and code may be inspected read-only'
-          printf '%s\n' "$prompt" | grep -q 'Stars alone never determine rank'
-          printf '%s\n' "$prompt" | grep -q 'PASS.*,.*FAIL.*or.*UNKNOWN'
+          grep -q 'remote pages and code may be inspected read-only' <<< "$prompt"
+          grep -q 'Stars alone never determine rank' <<< "$prompt"
+          grep -q 'PASS.*,.*FAIL.*or.*UNKNOWN' <<< "$prompt"
 
           test_root="$RUNNER_TEMP/onboarding profiles"
           project="$test_root/project"
@@ -64,10 +65,10 @@ jobs:
 
           (
             cd "$project"
-            CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" team |
-              grep -q 'Full canonical company active: 50 employees across 8 departments.'
+            default_team="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" team)"
+            grep -q 'Full canonical company active: 50 employees across 8 departments.' <<< "$default_team"
             missing_brief="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" brief 'missing profile' --print)"
-            ! printf '%s\n' "$missing_brief" | grep -q 'ACTIVE TEAM PREFERENCES'
+            ! grep -q 'ACTIVE TEAM PREFERENCES' <<< "$missing_brief"
           )
 
           printf '%s\n' \
@@ -75,26 +76,26 @@ jobs:
             'departments: [developers]' 'skills: [superpowers]' \
             'research: disabled' '---' '' '# Active team' 'GLOBAL_PROFILE_MARKER' > "$global_profile"
           global_brief="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'global fallback' --print)"
-          printf '%s\n' "$global_brief" | grep -q '^Scope: global$'
-          printf '%s\n' "$global_brief" | grep -q '^Departments: \[developers\]$'
-          ! printf '%s\n' "$global_brief" | grep -q 'GLOBAL_PROFILE_MARKER'
+          grep -q '^Scope: global$' <<< "$global_brief"
+          grep -q '^Departments: \[developers\]$' <<< "$global_brief"
+          ! grep -q 'GLOBAL_PROFILE_MARKER' <<< "$global_brief"
 
           printf '%s\n' \
             '---' 'schema: 1' 'scope: project' \
             'departments: [marketing]' 'skills: [copywriting]' \
             'research: suggestions-only' '---' '' '# Active team' 'INJECTION_MARKER' > "$project/.claude/company-team.md"
           project_brief="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'project override' --print)"
-          printf '%s\n' "$project_brief" | grep -q '^Scope: project$'
-          printf '%s\n' "$project_brief" | grep -q '^Departments: \[marketing\]$'
-          printf '%s\n' "$project_brief" | grep -q '^Skills: \[copywriting\]$'
-          printf '%s\n' "$project_brief" | grep -q 'explicit consent in the current session'
-          ! printf '%s\n' "$project_brief" | grep -q 'suggestions-only'
-          ! printf '%s\n' "$project_brief" | grep -q 'INJECTION_MARKER'
-          ! printf '%s\n' "$project_brief" | grep -q 'GLOBAL_PROFILE_MARKER'
+          grep -q '^Scope: project$' <<< "$project_brief"
+          grep -q '^Departments: \[marketing\]$' <<< "$project_brief"
+          grep -q '^Skills: \[copywriting\]$' <<< "$project_brief"
+          grep -q 'explicit consent in the current session' <<< "$project_brief"
+          ! grep -q 'suggestions-only' <<< "$project_brief"
+          ! grep -q 'INJECTION_MARKER' <<< "$project_brief"
+          ! grep -q 'GLOBAL_PROFILE_MARKER' <<< "$project_brief"
           team_output="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" team)"
-          printf '%s\n' "$team_output" | grep -q '^Skills: \[copywriting\]$'
-          printf '%s\n' "$team_output" | grep -q '^Research metadata (does not grant consent): suggestions-only$'
-          ! printf '%s\n' "$team_output" | grep -q 'INJECTION_MARKER'
+          grep -q '^Skills: \[copywriting\]$' <<< "$team_output"
+          grep -q '^Research metadata (does not grant consent): suggestions-only$' <<< "$team_output"
+          ! grep -q 'INJECTION_MARKER' <<< "$team_output"
 
           symlink_project="$test_root/symlink project"
           symlink_target="$test_root/symlink target.md"
@@ -277,8 +278,8 @@ jobs:
           onboard_project="$test_root/onboard project"
           mkdir -p "$HOME" "$onboard_project"
           onboard_output="$(cd "$onboard_project" && CLAUDE_INC_ENGINE=missing-company-engine bash "$workspace/install.sh" --project --no-bin --onboard)"
-          printf '%s\n' "$onboard_output" | grep -q '^Onboarding deferred. Run: bash ".*/bin/company" onboard$'
-          ! printf '%s\n' "$onboard_output" | grep -q 'Run: company onboard'
+          grep -q '^Onboarding deferred. Run: bash ".*/bin/company" onboard$' <<< "$onboard_output"
+          ! grep -q 'Run: company onboard' <<< "$onboard_output"
           [ ! -e "$onboard_project/.claude/company-team.md" ]
 
       - name: Piped project install clones the checked-out commit (macOS and Linux)

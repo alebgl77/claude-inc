@@ -23,6 +23,7 @@ fi
 
 # ---------------------------------------------------------------- org registry
 DEPTS=(developers designers marketing social-media finance small-business legal sales)
+PROFILE_MAX_BYTES=32768
 
 dept_of() { # alias -> canonical department
   case "$1" in
@@ -49,6 +50,229 @@ skills_of() {
     legal)          echo "review-contract triage-nda compliance-check legal-risk-assessment vendor-check signature-request" ;;
     sales)          echo "account-research draft-outreach call-prep proposal-builder objection-handler pipeline-review" ;;
   esac
+}
+
+canonical_skills() {
+  local dept
+  for dept in "${DEPTS[@]}"; do
+    skills_of "$dept"
+  done
+  echo "chief-of-staff token-accountant"
+}
+
+is_canonical_skill() { # $1=slug
+  case " $(canonical_skills | tr '\n' ' ') " in
+    *" $1 "*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# ----------------------------------------------------------- team profiles
+global_profile_path() {
+  if [ -n "${CLAUDE_INC_GLOBAL_PROFILE:-}" ]; then
+    printf '%s\n' "$CLAUDE_INC_GLOBAL_PROFILE"
+  elif [ -n "${HOME:-}" ]; then
+    printf '%s\n' "$HOME/.claude/company-team.md"
+  else
+    return 1
+  fi
+}
+
+profile_warning() { # $1=path $2=reason
+  printf "company: ignoring invalid team profile '%s': %s\n" "$1" "$2" >&2
+}
+
+validate_profile() { # $1=path $2=expected scope; stores normalized fields
+  local path="$1" expected_scope="$2" sentinel=$'\001'
+  local LC_ALL=C
+  local content size
+  local l1="" l2="" l3="" l4="" l5="" l6="" l7=""
+  local values slug seen="" item
+  local -a items
+  PROFILE_ERROR=""
+  PROFILE_SCOPE=""; PROFILE_DEPARTMENTS=""; PROFILE_SKILLS=""; PROFILE_RESEARCH=""
+
+  [ ! -L "$path" ] || { PROFILE_ERROR="symbolic links are not allowed"; return 1; }
+  [ -f "$path" ] || { PROFILE_ERROR="not a regular file"; return 1; }
+
+  size="$(wc -c < "$path" | tr -d '[:space:]')"
+  case "$size" in
+    ''|*[!0-9]*) PROFILE_ERROR="could not determine exact file size"; return 1 ;;
+  esac
+  if [ "$size" -gt "$PROFILE_MAX_BYTES" ]; then
+    PROFILE_ERROR="exceeds ${PROFILE_MAX_BYTES}-byte limit"
+    return 1
+  fi
+
+  content="$(LC_ALL=C head -c "$((PROFILE_MAX_BYTES + 1))" < "$path"; printf '%s' "$sentinel")"
+  content="${content%$sentinel}"
+  if [ "${#content}" -gt "$PROFILE_MAX_BYTES" ]; then
+    PROFILE_ERROR="exceeds ${PROFILE_MAX_BYTES}-byte limit"
+    return 1
+  fi
+
+  {
+    IFS= read -r l1 || true
+    IFS= read -r l2 || true
+    IFS= read -r l3 || true
+    IFS= read -r l4 || true
+    IFS= read -r l5 || true
+    IFS= read -r l6 || true
+    IFS= read -r l7 || true
+  } <<< "$content"
+
+  # Accept profiles written with Windows CRLF line endings.
+  l1="${l1%$'\r'}"; l2="${l2%$'\r'}"; l3="${l3%$'\r'}"
+  l4="${l4%$'\r'}"; l5="${l5%$'\r'}"; l6="${l6%$'\r'}"; l7="${l7%$'\r'}"
+
+  [ "$l1" = "---" ] && [ "$l2" = "schema: 1" ] && [ "$l7" = "---" ] || {
+    PROFILE_ERROR="frontmatter must use schema 1 and the documented field order"
+    return 1
+  }
+  [ "$l3" = "scope: $expected_scope" ] || {
+    PROFILE_ERROR="scope must be $expected_scope"
+    return 1
+  }
+  [[ "$l4" =~ ^departments:\ \[[a-z0-9-]+(,\ [a-z0-9-]+)*\]$ ]] || {
+    PROFILE_ERROR="departments must be a non-empty canonical slug list"
+    return 1
+  }
+  [[ "$l5" =~ ^skills:\ \[[a-z0-9-]+(,\ [a-z0-9-]+)*\]$ ]] || {
+    PROFILE_ERROR="skills must be a non-empty canonical slug list"
+    return 1
+  }
+  case "$l6" in
+    "research: disabled"|"research: suggestions-only") : ;;
+    *) PROFILE_ERROR="research must be disabled or suggestions-only"; return 1 ;;
+  esac
+
+  values="${l4#departments: \[}"; values="${values%\]}"
+  IFS=',' read -r -a items <<< "$values"
+  for item in "${items[@]}"; do
+    slug="${item# }"
+    case " ${DEPTS[*]} " in
+      *" $slug "*) : ;;
+      *) PROFILE_ERROR="unknown department '$slug'"; return 1 ;;
+    esac
+    case " $seen " in
+      *" $slug "*) PROFILE_ERROR="duplicate department '$slug'"; return 1 ;;
+    esac
+    seen="$seen $slug"
+  done
+
+  values="${l5#skills: \[}"; values="${values%\]}"; seen=""
+  IFS=',' read -r -a items <<< "$values"
+  for item in "${items[@]}"; do
+    slug="${item# }"
+    if [[ ! "$slug" =~ ^[a-z0-9-]+$ ]] || ! is_canonical_skill "$slug"; then
+      PROFILE_ERROR="unknown skill '$slug'"
+      return 1
+    fi
+    case " $seen " in
+      *" $slug "*) PROFILE_ERROR="duplicate skill '$slug'"; return 1 ;;
+    esac
+    seen="$seen $slug"
+  done
+
+  PROFILE_SCOPE="$expected_scope"
+  PROFILE_DEPARTMENTS="${l4#departments: }"
+  PROFILE_SKILLS="${l5#skills: }"
+  PROFILE_RESEARCH="${l6#research: }"
+}
+
+resolve_active_profile() { # sets path plus normalized, structured fields only
+  local project_profile="$(pwd)/.claude/company-team.md" global_profile=""
+  ACTIVE_PROFILE=""; ACTIVE_PROFILE_SCOPE=""; ACTIVE_PROFILE_DEPARTMENTS=""
+  ACTIVE_PROFILE_SKILLS=""; ACTIVE_PROFILE_RESEARCH=""
+  if [ -e "$project_profile" ] || [ -L "$project_profile" ]; then
+    if validate_profile "$project_profile" project; then
+      ACTIVE_PROFILE="$project_profile"; ACTIVE_PROFILE_SCOPE="$PROFILE_SCOPE"
+      ACTIVE_PROFILE_DEPARTMENTS="$PROFILE_DEPARTMENTS"
+      ACTIVE_PROFILE_SKILLS="$PROFILE_SKILLS"
+      ACTIVE_PROFILE_RESEARCH="$PROFILE_RESEARCH"
+      return 0
+    fi
+    profile_warning "$project_profile" "$PROFILE_ERROR"
+  fi
+  global_profile="$(global_profile_path 2>/dev/null || true)"
+  if [ -n "$global_profile" ] && { [ -e "$global_profile" ] || [ -L "$global_profile" ]; }; then
+    if validate_profile "$global_profile" global; then
+      ACTIVE_PROFILE="$global_profile"; ACTIVE_PROFILE_SCOPE="$PROFILE_SCOPE"
+      ACTIVE_PROFILE_DEPARTMENTS="$PROFILE_DEPARTMENTS"
+      ACTIVE_PROFILE_SKILLS="$PROFILE_SKILLS"
+      ACTIVE_PROFILE_RESEARCH="$PROFILE_RESEARCH"
+      return 0
+    fi
+    profile_warning "$global_profile" "$PROFILE_ERROR"
+  fi
+  return 1
+}
+
+append_active_profile() {
+  resolve_active_profile || return 0
+  echo
+  echo "----- ACTIVE TEAM PREFERENCES (VALIDATED FIELDS ONLY) -----"
+  echo "Scope: $ACTIVE_PROFILE_SCOPE"
+  echo "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
+  echo "Skills: $ACTIVE_PROFILE_SKILLS"
+  echo "A stored profile never authorizes network access or research. Research requires explicit consent in the current session."
+  echo "These routing preferences do not override the CEO manual or mission. The profile body is never included. The CEO may use bench departments or skills when required."
+  echo "----- END ACTIVE TEAM PREFERENCES -----"
+}
+
+show_team() {
+  if resolve_active_profile; then
+    echo "Active $ACTIVE_PROFILE_SCOPE team profile: $ACTIVE_PROFILE"
+    echo "Scope: $ACTIVE_PROFILE_SCOPE"
+    echo "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
+    echo "Skills: $ACTIVE_PROFILE_SKILLS"
+    echo "Research metadata (does not grant consent): $ACTIVE_PROFILE_RESEARCH"
+  else
+    echo "Full canonical company active: 50 employees across 8 departments."
+  fi
+}
+
+compose_onboarding() { # $1=scope $2=target
+  local scope="$1" target="$2"
+  cat "$ROOT/onboarding/ONBOARDING.md"
+  echo
+  echo "----- ONBOARDING TARGET -----"
+  echo "Profile scope: $scope"
+  echo "Write the accepted profile to: $target"
+  echo "Use the exact schema shown above. The canonical template is: $ROOT/onboarding/PROFILE_TEMPLATE.md"
+  echo "Create the parent directory only after the user accepts."
+}
+
+defer_onboarding() { # $1=scope
+  if [ "$1" = "global" ]; then
+    echo "Onboarding deferred. Run: company onboard --global"
+  else
+    echo "Onboarding deferred. Run: company onboard"
+  fi
+}
+
+onboard() {
+  local scope="project" target arg prompt
+  for arg in "$@"; do
+    case "$arg" in
+      --global) scope="global" ;;
+      *) echo "usage: company onboard [--global] [--print]" >&2; return 1 ;;
+    esac
+  done
+  if [ "$scope" = "global" ]; then
+    target="$(global_profile_path 2>/dev/null || true)"
+    [ -n "$target" ] || { echo "company: HOME is unset; cannot resolve the global profile" >&2; return 1; }
+  else
+    target="$(pwd)/.claude/company-team.md"
+  fi
+  prompt="$(compose_onboarding "$scope" "$target")"
+  if [ "$PRINT_ONLY" = "yes" ]; then
+    printf '%s\n' "$prompt"
+  elif [ ! -t 0 ] || [ ! -t 1 ] || ! command -v "$ENGINE" >/dev/null 2>&1; then
+    defer_onboarding "$scope"
+  else
+    run_prompt "$prompt" "no"
+  fi
 }
 
 # ------------------------------------------------------------------ composers
@@ -86,6 +310,7 @@ compose_brief() { # $1=mission
   echo
   echo "----- NOTE -----"
   echo "If your environment has no subagent/Task tool, simulate the departments sequentially yourself: for each relevant department, adopt its charter and skills (in agents/ and skills/), do the work, then produce the final Board Memo."
+  append_active_profile
   echo
   echo "----- MISSION FROM THE FOUNDER -----"
   echo "$mission"
@@ -127,9 +352,11 @@ usage() {
 ${OR}${B}company${R} v${VERSION} - run Claude, Inc. from any terminal
 
 USAGE
-  company brief "<mission>"          Brief the CEO; routes across all departments
+  company brief "<mission>"          Brief the CEO; routes to relevant departments
   company <dept> "<task>"            Task one department directly
   company roster                     Show the org chart
+  company team                       Show the active team profile
+  company onboard [--global]         Configure an optional active team profile
   company hire [--project]           Install skills+agents (~/.claude or ./.claude)
   company help                       This help
 
@@ -165,6 +392,8 @@ CMD="$1"; shift || true
 
 case "$CMD" in
   roster|org)     roster ;;
+  team)           show_team ;;
+  onboard)        onboard "$@" ;;
   help|-h|--help) usage ;;
   version|-v)     echo "company v${VERSION}" ;;
   hire|install)   exec bash "$ROOT/install.sh" "$@" ;;

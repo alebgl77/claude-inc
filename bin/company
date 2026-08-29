@@ -27,7 +27,9 @@ fi
 # with 141. But parents that ignore SIGPIPE (Node, .NET, CI runners) pass that
 # SIG_IGN down to us, so the signal never arrives and bash reports EPIPE as a
 # noisy write error with status 1 instead. A signal ignored on entry cannot be
-# reset from the script, so spell the intended ending out by hand.
+# reset from the script, so spell the intended ending out by hand. Bash cannot
+# tell EPIPE from a full disk, so both end quietly here; a real write failure
+# still shows up as a truncated stream and a non-zero exit.
 out()  { printf '%s\n' "$*" 2>/dev/null || exit 141; }
 outf() { printf "$@" 2>/dev/null || exit 141; }
 

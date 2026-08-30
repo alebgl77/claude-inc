@@ -560,13 +560,19 @@ case "$CMD" in
   hire|install)   exec bash "$ROOT/install.sh" "$@" ;;
   brief|ceo)
     [ $# -ge 1 ] || { echo "usage: company brief \"<mission>\"" >&2; exit 1; }
-    run_prompt "$(compose_brief "$*")" "$PRINT_ONLY"
+    PROMPT=""; COMPOSE_STATUS=0
+    PROMPT="$(compose_brief "$*")" || COMPOSE_STATUS=$?
+    [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
+    run_prompt "$PROMPT" "$PRINT_ONLY"
     ;;
   *)
     DEPT="$(dept_of "$CMD")"
     if [ -n "$DEPT" ]; then
       [ $# -ge 1 ] || { echo "usage: company $CMD \"<task>\"" >&2; exit 1; }
-      run_prompt "$(compose_dept "$DEPT" "$*")" "$PRINT_ONLY"
+      PROMPT=""; COMPOSE_STATUS=0
+      PROMPT="$(compose_dept "$DEPT" "$*")" || COMPOSE_STATUS=$?
+      [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
+      run_prompt "$PROMPT" "$PRINT_ONLY"
     else
       echo "unknown command or department: $CMD" >&2
       echo "departments: dev · design · marketing · social · finance · smb · legal · sales" >&2

@@ -115,9 +115,7 @@ echo "    /plugin install claude-inc@claude-inc"
 defer_install_onboarding() {
   local scope_flag=""
   [ "$PROJECT" = "yes" ] || scope_flag=" --global"
-  if [ "$NO_BIN" = "yes" ] && [ -f "$SRC/bin/company" ]; then
-    echo "Onboarding deferred. Run: bash \"$SRC/bin/company\" onboard${scope_flag}"
-  elif [ "$NO_BIN" = "yes" ]; then
+  if [ "$NO_BIN" = "yes" ]; then
     if [ "$PROJECT" = "yes" ]; then
       echo "Onboarding deferred. Install the Claude Code plugin, then run: /onboard"
     else
@@ -132,7 +130,7 @@ defer_install_onboarding() {
 
 if [ "$ONBOARD" = "yes" ]; then
   ENGINE="${CLAUDE_INC_ENGINE:-claude}"
-  if [ -t 0 ] && [ -t 1 ] && command -v "$ENGINE" >/dev/null 2>&1 && [ -f "$SRC/bin/company" ]; then
+  if [ "$NO_BIN" = "no" ] && [ -t 0 ] && [ -t 1 ] && command -v "$ENGINE" >/dev/null 2>&1 && [ -f "$SRC/bin/company" ]; then
     if [ "$PROJECT" = "yes" ]; then
       if ! bash "$SRC/bin/company" onboard; then
         say "onboarding did not complete"

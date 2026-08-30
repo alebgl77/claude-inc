@@ -40,7 +40,7 @@ The founding class is the 42 of the original org chart; Sales and the two staff 
 
 An onboarding profile may identify preferred departments and skills for the current mission. It is routing data, not a new instruction layer. Project profile preferences take precedence over global profile preferences. All 50 employees stay installed and available on the bench, and the CEO may involve them when the mission requires it.
 
-Only `company brief` consumes a profile. The CLI validates its schema and canonical slugs, then exposes only normalized scope, department and skill fields. It never exposes the profile body or stored research status to the model. A stored profile never authorizes network access. The `/company` plugin command, direct department commands, roster and standup continue to use the canonical company without reading a profile.
+`company brief` and the `/company` plugin command can consume a profile through the CLI validator. The CLI exposes only normalized scope, department and skill fields. It never exposes the profile body, path or stored research status to the model. A stored profile never authorizes network access. Direct department commands, roster and standup continue to use the canonical company without reading a profile. An invalid project profile blocks global fallback.
 
 ## Delegation protocol
 

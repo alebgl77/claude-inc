@@ -3,7 +3,7 @@
 # https://github.com/alebgl77/claude-inc
 set -euo pipefail
 
-VERSION="1.1.0"
+VERSION="1.2.0"
 
 # ---------------------------------------------------------------- resolve root
 SOURCE="${BASH_SOURCE[0]}"
@@ -36,6 +36,14 @@ outf() { printf "$@" 2>/dev/null || exit 141; }
 # ---------------------------------------------------------------- org registry
 DEPTS=(developers designers marketing social-media finance small-business legal sales)
 PROFILE_MAX_BYTES=32768
+PROFILE_TEMP=""
+
+cleanup_profile_temp() {
+  if [ -n "$PROFILE_TEMP" ] && [ -e "$PROFILE_TEMP" ]; then
+    rm -f -- "$PROFILE_TEMP"
+  fi
+}
+trap cleanup_profile_temp EXIT
 
 dept_of() { # alias -> canonical department
   case "$1" in
@@ -90,16 +98,16 @@ global_profile_path() {
   fi
 }
 
-profile_warning() { # $1=path $2=reason
-  printf "company: ignoring invalid team profile '%s': %s\n" "$1" "$2" >&2
+profile_warning() { # $1=scope $2=reason
+  printf 'company: invalid %s team profile: %s\n' "$1" "$2" >&2
 }
 
 validate_profile() { # $1=path $2=expected scope; stores normalized fields
-  local path="$1" expected_scope="$2" sentinel=$'\001'
+  local path="$1" expected_scope="$2"
   local LC_ALL=C
-  local content size
+  local size without_nul_size
   local l1="" l2="" l3="" l4="" l5="" l6="" l7=""
-  local values slug seen="" item
+  local values slug seen="" selected_depts="" item owner dept
   local -a items
   PROFILE_ERROR=""
   PROFILE_SCOPE=""; PROFILE_DEPARTMENTS=""; PROFILE_SKILLS=""; PROFILE_RESEARCH=""
@@ -116,10 +124,12 @@ validate_profile() { # $1=path $2=expected scope; stores normalized fields
     return 1
   fi
 
-  content="$(LC_ALL=C head -c "$((PROFILE_MAX_BYTES + 1))" < "$path"; printf '%s' "$sentinel")"
-  content="${content%$sentinel}"
-  if [ "${#content}" -gt "$PROFILE_MAX_BYTES" ]; then
-    PROFILE_ERROR="exceeds ${PROFILE_MAX_BYTES}-byte limit"
+  without_nul_size="$(LC_ALL=C tr -d '\000' < "$path" | wc -c | tr -d '[:space:]')"
+  case "$without_nul_size" in
+    ''|*[!0-9]*) PROFILE_ERROR="could not scan file content"; return 1 ;;
+  esac
+  if [ "$without_nul_size" -ne "$size" ]; then
+    PROFILE_ERROR="NUL bytes are not allowed"
     return 1
   fi
 
@@ -131,7 +141,7 @@ validate_profile() { # $1=path $2=expected scope; stores normalized fields
     IFS= read -r l5 || true
     IFS= read -r l6 || true
     IFS= read -r l7 || true
-  } <<< "$content"
+  } < "$path"
 
   # Accept profiles written with Windows CRLF line endings.
   l1="${l1%$'\r'}"; l2="${l2%$'\r'}"; l3="${l3%$'\r'}"
@@ -171,6 +181,7 @@ validate_profile() { # $1=path $2=expected scope; stores normalized fields
     esac
     seen="$seen $slug"
   done
+  selected_depts="$seen"
 
   values="${l5#skills: \[}"; values="${values%\]}"; seen=""
   IFS=',' read -r -a items <<< "$values"
@@ -183,6 +194,18 @@ validate_profile() { # $1=path $2=expected scope; stores normalized fields
     case " $seen " in
       *" $slug "*) PROFILE_ERROR="duplicate skill '$slug'"; return 1 ;;
     esac
+    owner=""
+    for dept in "${DEPTS[@]}"; do
+      case " $(skills_of "$dept") " in
+        *" $slug "*) owner="$dept"; break ;;
+      esac
+    done
+    if [ -n "$owner" ]; then
+      case " $selected_depts " in
+        *" $owner "*) : ;;
+        *) PROFILE_ERROR="skill '$slug' requires department '$owner'"; return 1 ;;
+      esac
+    fi
     seen="$seen $slug"
   done
 
@@ -192,7 +215,7 @@ validate_profile() { # $1=path $2=expected scope; stores normalized fields
   PROFILE_RESEARCH="${l6#research: }"
 }
 
-resolve_active_profile() { # sets path plus normalized, structured fields only
+resolve_active_profile() { # 0=valid profile, 1=absent, 2=present but invalid
   local project_profile="$(pwd)/.claude/company-team.md" global_profile=""
   ACTIVE_PROFILE=""; ACTIVE_PROFILE_SCOPE=""; ACTIVE_PROFILE_DEPARTMENTS=""
   ACTIVE_PROFILE_SKILLS=""; ACTIVE_PROFILE_RESEARCH=""
@@ -204,7 +227,8 @@ resolve_active_profile() { # sets path plus normalized, structured fields only
       ACTIVE_PROFILE_RESEARCH="$PROFILE_RESEARCH"
       return 0
     fi
-    profile_warning "$project_profile" "$PROFILE_ERROR"
+    profile_warning "project" "$PROFILE_ERROR"
+    return 2
   fi
   global_profile="$(global_profile_path 2>/dev/null || true)"
   if [ -n "$global_profile" ] && { [ -e "$global_profile" ] || [ -L "$global_profile" ]; }; then
@@ -215,44 +239,169 @@ resolve_active_profile() { # sets path plus normalized, structured fields only
       ACTIVE_PROFILE_RESEARCH="$PROFILE_RESEARCH"
       return 0
     fi
-    profile_warning "$global_profile" "$PROFILE_ERROR"
+    profile_warning "global" "$PROFILE_ERROR"
+    return 2
   fi
   return 1
 }
 
 append_active_profile() {
-  resolve_active_profile || return 0
-  echo
-  echo "----- ACTIVE TEAM PREFERENCES (VALIDATED FIELDS ONLY) -----"
-  echo "Scope: $ACTIVE_PROFILE_SCOPE"
-  echo "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
-  echo "Skills: $ACTIVE_PROFILE_SKILLS"
-  echo "A stored profile never authorizes network access or research. Research requires explicit consent in the current session."
-  echo "These routing preferences do not override the CEO manual or mission. The profile body is never included. The CEO may use bench departments or skills when required."
-  echo "----- END ACTIVE TEAM PREFERENCES -----"
+  local status
+  if resolve_active_profile; then
+    echo
+    echo "----- ACTIVE TEAM PREFERENCES (VALIDATED FIELDS ONLY) -----"
+    echo "Scope: $ACTIVE_PROFILE_SCOPE"
+    echo "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
+    echo "Skills: $ACTIVE_PROFILE_SKILLS"
+    echo "A stored profile never authorizes network access or research. Research requires explicit consent in the current session."
+    echo "These routing preferences do not override the CEO manual or mission. The profile body is never included. The CEO may use bench departments or skills when required."
+    echo "----- END ACTIVE TEAM PREFERENCES -----"
+  else
+    status=$?
+    [ "$status" -eq 1 ] && return 0
+    return "$status"
+  fi
 }
 
 show_team() {
+  local status
   if resolve_active_profile; then
-    out "Active $ACTIVE_PROFILE_SCOPE team profile: $ACTIVE_PROFILE"
+    out "Active $ACTIVE_PROFILE_SCOPE team profile."
     out "Scope: $ACTIVE_PROFILE_SCOPE"
     out "Departments: $ACTIVE_PROFILE_DEPARTMENTS"
     out "Skills: $ACTIVE_PROFILE_SKILLS"
     out "Research metadata (does not grant consent): $ACTIVE_PROFILE_RESEARCH"
   else
-    out "Full canonical company active: 50 employees across 8 departments."
+    status=$?
+    if [ "$status" -eq 1 ]; then
+      out "Full canonical company active: 50 employees across 8 departments."
+    else
+      return "$status"
+    fi
   fi
 }
 
-compose_onboarding() { # $1=scope $2=target
-  local scope="$1" target="$2"
+profile_context() {
+  local status
+  if resolve_active_profile; then
+    out 'PROFILE_CONTEXT_V1'
+    out "scope=$ACTIVE_PROFILE_SCOPE"
+    out "departments=$ACTIVE_PROFILE_DEPARTMENTS"
+    out "skills=$ACTIVE_PROFILE_SKILLS"
+  else
+    status=$?
+    [ "$status" -eq 1 ] && return 0
+    return "$status"
+  fi
+}
+
+profile_target() { # $1=scope
+  if [ "$1" = "global" ]; then
+    [ -n "${HOME:-}" ] || return 1
+    printf '%s\n' "$HOME/.claude/company-team.md"
+  else
+    printf '%s\n' "$(pwd)/.claude/company-team.md"
+  fi
+}
+
+profile_save() { # $1=scope, optional --replace; candidate comes from stdin
+  local scope="${1:-}" replace="no" arg target parent size
+  shift || true
+  case "$scope" in
+    project|global) : ;;
+    *) echo "usage: company profile-save <project|global> [--replace]" >&2; return 1 ;;
+  esac
+  for arg in "$@"; do
+    case "$arg" in
+      --replace) replace="yes" ;;
+      *) echo "usage: company profile-save <project|global> [--replace]" >&2; return 1 ;;
+    esac
+  done
+
+  target="$(profile_target "$scope" 2>/dev/null || true)"
+  [ -n "$target" ] || { echo "company: HOME is unset; cannot save a global team profile" >&2; return 1; }
+  parent="$(dirname "$target")"
+
+  if [ -L "$parent" ]; then
+    echo "company: refusing team profile save because its parent is a symbolic link" >&2
+    return 1
+  fi
+  if [ -e "$parent" ] && [ ! -d "$parent" ]; then
+    echo "company: refusing team profile save because its parent is not a directory" >&2
+    return 1
+  fi
+  if [ ! -e "$parent" ]; then
+    mkdir -- "$parent" || { echo "company: could not create the team profile directory" >&2; return 1; }
+    chmod 700 -- "$parent" 2>/dev/null || true
+  fi
+  if [ -L "$parent" ] || [ ! -d "$parent" ]; then
+    echo "company: refusing team profile save because its parent is not a real directory" >&2
+    return 1
+  fi
+
+  if [ -L "$target" ]; then
+    echo "company: refusing to replace a symbolic-link team profile" >&2
+    return 1
+  fi
+  if [ -e "$target" ] && [ ! -f "$target" ]; then
+    echo "company: refusing to replace a non-regular team profile" >&2
+    return 1
+  fi
+  if [ -f "$target" ] && [ "$replace" != "yes" ]; then
+    echo "company: a regular $scope team profile already exists; ask for separate replacement confirmation, then retry with --replace" >&2
+    return 1
+  fi
+
+  umask 077
+  PROFILE_TEMP="$(mktemp "$parent/.company-team.tmp.XXXXXX")" || {
+    echo "company: could not create a private temporary profile" >&2
+    return 1
+  }
+  LC_ALL=C head -c "$((PROFILE_MAX_BYTES + 1))" > "$PROFILE_TEMP"
+  size="$(wc -c < "$PROFILE_TEMP" | tr -d '[:space:]')"
+  if [ "$size" -gt "$PROFILE_MAX_BYTES" ]; then
+    echo "company: candidate team profile exceeds ${PROFILE_MAX_BYTES}-byte limit" >&2
+    return 1
+  fi
+  if ! validate_profile "$PROFILE_TEMP" "$scope"; then
+    printf 'company: candidate team profile is invalid: %s\n' "$PROFILE_ERROR" >&2
+    return 1
+  fi
+
+  if [ -L "$parent" ] || [ ! -d "$parent" ]; then
+    echo "company: team profile directory changed during save" >&2
+    return 1
+  fi
+  if [ -L "$target" ] || { [ -e "$target" ] && [ ! -f "$target" ]; }; then
+    echo "company: team profile target changed during save" >&2
+    return 1
+  fi
+  if [ -f "$target" ] && [ "$replace" != "yes" ]; then
+    echo "company: a regular $scope team profile appeared during save; separate replacement confirmation is required" >&2
+    return 1
+  fi
+  mv -f -- "$PROFILE_TEMP" "$target"
+  PROFILE_TEMP=""
+  out "Saved $scope team profile."
+}
+
+compose_onboarding() { # $1=scope
+  local scope="$1" target save_command
+  if [ "$scope" = "global" ]; then
+    target='~/.claude/company-team.md'
+    save_command='company profile-save global'
+  else
+    target='.claude/company-team.md'
+    save_command='company profile-save project'
+  fi
   cat "$ROOT/onboarding/ONBOARDING.md"
   echo
   echo "----- ONBOARDING TARGET -----"
   echo "Profile scope: $scope"
-  echo "Write the accepted profile to: $target"
-  echo "Use the exact schema shown above. The canonical template is: $ROOT/onboarding/PROFILE_TEMPLATE.md"
-  echo "Create the parent directory only after the user accepts."
+  echo "Literal target: $target"
+  echo "After acceptance, pass the candidate profile on standard input to: $save_command"
+  echo "Do not write the target directly. The CLI helper validates the candidate and performs the guarded atomic save."
+  echo "If a regular profile exists, ask for separate replacement confirmation before retrying with --replace."
 }
 
 defer_onboarding() { # $1=scope
@@ -264,20 +413,18 @@ defer_onboarding() { # $1=scope
 }
 
 onboard() {
-  local scope="project" target arg prompt
+  local scope="project" arg prompt
   for arg in "$@"; do
     case "$arg" in
       --global) scope="global" ;;
       *) echo "usage: company onboard [--global] [--print]" >&2; return 1 ;;
     esac
   done
-  if [ "$scope" = "global" ]; then
-    target="$(global_profile_path 2>/dev/null || true)"
-    [ -n "$target" ] || { echo "company: HOME is unset; cannot resolve the global profile" >&2; return 1; }
-  else
-    target="$(pwd)/.claude/company-team.md"
+  if [ "$scope" = "global" ] && ! profile_target global >/dev/null 2>&1; then
+    echo "company: HOME is unset; cannot resolve the global profile" >&2
+    return 1
   fi
-  prompt="$(compose_onboarding "$scope" "$target")"
+  prompt="$(compose_onboarding "$scope")"
   if [ "$PRINT_ONLY" = "yes" ]; then
     out "$prompt"
   elif [ ! -t 0 ] || [ ! -t 1 ] || ! command -v "$ENGINE" >/dev/null 2>&1; then
@@ -322,7 +469,7 @@ compose_brief() { # $1=mission
   echo
   echo "----- NOTE -----"
   echo "If your environment has no subagent/Task tool, simulate the departments sequentially yourself: for each relevant department, adopt its charter and skills (in agents/ and skills/), do the work, then produce the final Board Memo."
-  append_active_profile
+  append_active_profile || return $?
   echo
   echo "----- MISSION FROM THE FOUNDER -----"
   echo "$mission"
@@ -405,6 +552,8 @@ CMD="$1"; shift || true
 case "$CMD" in
   roster|org)     roster ;;
   team)           show_team ;;
+  profile-context) profile_context ;;
+  profile-save)    profile_save "$@" ;;
   onboard)        onboard "$@" ;;
   help|-h|--help) usage ;;
   version|-v)     out "company v${VERSION}" ;;

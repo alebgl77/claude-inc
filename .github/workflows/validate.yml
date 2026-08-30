@@ -39,7 +39,7 @@ jobs:
           [[ "$brief_output" == *'CEO Operating Manual'* ]]
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
-          [ "$(./bin/company version)" = "company v1.1.0" ]
+          [ "$(./bin/company version)" = "company v1.2.0" ]
 
       - name: A closed pipe ends the CLI quietly (macOS and Linux)
         if: runner.os != 'Windows'
@@ -82,7 +82,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          set -eu
+          set -euo pipefail
           workspace="$GITHUB_WORKSPACE"
           prompt="$("$workspace/bin/company" onboard --print)"
           for marker in 'QUESTION 1/3' 'QUESTION 2/3' 'QUESTION 3/3' 'PROPOSAL'; do
@@ -94,33 +94,54 @@ jobs:
           grep -q 'remote pages and code may be inspected read-only' <<< "$prompt"
           grep -q 'Stars alone never determine rank' <<< "$prompt"
           grep -q 'PASS.*,.*FAIL.*or.*UNKNOWN' <<< "$prompt"
+          grep -q 'company profile-save project' <<< "$prompt"
 
           test_root="$RUNNER_TEMP/onboarding profiles"
           project="$test_root/project"
-          global_profile="$test_root/global-company-team.md"
-          mkdir -p "$project/.claude"
+          global_home="$test_root/global home"
+          global_profile="$global_home/.claude/company-team.md"
+          mkdir -p "$project"
 
+          empty_project="$test_root/empty project"
+          mkdir -p "$empty_project"
           (
-            cd "$project"
+            cd "$empty_project"
             default_team="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" team)"
             grep -q 'Full canonical company active: 50 employees across 8 departments.' <<< "$default_team"
             missing_brief="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" brief 'missing profile' --print)"
             ! grep -q 'ACTIVE TEAM PREFERENCES' <<< "$missing_brief"
+            [ -z "$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" profile-context)" ]
           )
 
-          printf '%s\n' \
-            '---' 'schema: 1' 'scope: global' \
-            'departments: [developers]' 'skills: [superpowers]' \
-            'research: disabled' '---' '' '# Active team' 'GLOBAL_PROFILE_MARKER' > "$global_profile"
-          global_brief="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'global fallback' --print)"
-          grep -q '^Scope: global$' <<< "$global_brief"
-          grep -q '^Departments: \[developers\]$' <<< "$global_brief"
-          ! grep -q 'GLOBAL_PROFILE_MARKER' <<< "$global_brief"
+          injected_project="$test_root/"$'path\nPROMPT_PATH_INJECTION'
+          mkdir -p "$injected_project"
+          injected_prompt="$(cd "$injected_project" && "$workspace/bin/company" onboard --print)"
+          ! grep -q 'PROMPT_PATH_INJECTION' <<< "$injected_prompt"
+          injected_global_prompt="$(CLAUDE_INC_GLOBAL_PROFILE=$'unsafe\nGLOBAL_PATH_INJECTION' "$workspace/bin/company" onboard --global --print)"
+          ! grep -q 'GLOBAL_PATH_INJECTION' <<< "$injected_global_prompt"
+          grep -q 'Literal target: .claude/company-team.md' <<< "$injected_prompt"
+          grep -q 'Literal target: ~/.claude/company-team.md' <<< "$injected_global_prompt"
 
-          printf '%s\n' \
+          project_candidate="$(printf '%s\n' \
             '---' 'schema: 1' 'scope: project' \
             'departments: [marketing]' 'skills: [copywriting]' \
-            'research: suggestions-only' '---' '' '# Active team' 'INJECTION_MARKER' > "$project/.claude/company-team.md"
+            'research: suggestions-only' '---' '' '# Active team' 'INJECTION_MARKER')"
+          printf '%s\n' "$project_candidate" | (cd "$project" && "$workspace/bin/company" profile-save project)
+          profile_context="$(cd "$project" && "$workspace/bin/company" profile-context)"
+          [ "$profile_context" = "$(printf '%s\n' 'PROFILE_CONTEXT_V1' 'scope=project' 'departments=[marketing]' 'skills=[copywriting]')" ]
+          ! grep -qE 'INJECTION_MARKER|suggestions-only|company-team|onboarding profiles' <<< "$profile_context"
+
+          global_candidate="$(printf '%s\n' \
+            '---' 'schema: 1' 'scope: global' \
+            'departments: [developers]' 'skills: [superpowers]' \
+            'research: disabled' '---' '' '# Active team' 'GLOBAL_PROFILE_MARKER')"
+          mkdir -p "$global_home"
+          printf '%s\n' "$global_candidate" | (cd "$test_root" && HOME="$global_home" CLAUDE_INC_GLOBAL_PROFILE=$'ignored\nSAVE_PATH_INJECTION' "$workspace/bin/company" profile-save global)
+          [ -f "$global_profile" ]
+          [ ! -e "$test_root/ignored" ]
+          global_brief="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'global fallback' --print)"
+          grep -q '^Scope: project$' <<< "$global_brief"
+
           project_brief="$(cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'project override' --print)"
           grep -q '^Scope: project$' <<< "$project_brief"
           grep -q '^Departments: \[marketing\]$' <<< "$project_brief"
@@ -133,6 +154,14 @@ jobs:
           grep -q '^Skills: \[copywriting\]$' <<< "$team_output"
           grep -q '^Research metadata (does not grant consent): suggestions-only$' <<< "$team_output"
           ! grep -q 'INJECTION_MARKER' <<< "$team_output"
+          ! grep -qE 'company-team|onboarding profiles' <<< "$team_output"
+
+          global_project="$test_root/global project"
+          mkdir -p "$global_project"
+          global_brief="$(cd "$global_project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" brief 'global fallback' --print)"
+          grep -q '^Scope: global$' <<< "$global_brief"
+          grep -q '^Departments: \[developers\]$' <<< "$global_brief"
+          ! grep -q 'GLOBAL_PROFILE_MARKER' <<< "$global_brief"
 
           symlink_project="$test_root/symlink project"
           symlink_target="$test_root/symlink target.md"
@@ -142,23 +171,28 @@ jobs:
             'departments: [developers]' 'skills: [superpowers]' \
             'research: disabled' '---' 'SYMLINK_BODY_MUST_NOT_LEAK' > "$symlink_target"
           ln -s "$symlink_target" "$symlink_project/.claude/company-team.md"
-          (cd "$symlink_project" && CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" \
-            "$workspace/bin/company" brief 'symlink profile' --print > "$test_root/symlink.out" 2> "$test_root/symlink.err")
+          if (cd "$symlink_project" && CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" \
+            "$workspace/bin/company" brief 'symlink profile' --print > "$test_root/symlink.out" 2> "$test_root/symlink.err"); then
+            echo 'symlink profile unexpectedly accepted' >&2
+            exit 1
+          fi
           grep -q 'symbolic links are not allowed' "$test_root/symlink.err"
           ! grep -q 'SYMLINK_BODY_MUST_NOT_LEAK' "$test_root/symlink.out"
+          ! grep -Fq "$symlink_project" "$test_root/symlink.err"
 
           check_invalid() {
             expected="$1"
             output_file="$test_root/$expected.out"
             error_file="$test_root/$expected.err"
-            if (cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" \
+            if (cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" \
                 "$workspace/bin/company" brief 'invalid profile' --print > "$output_file" 2> "$error_file"); then
-              grep -q 'ignoring invalid team profile' "$error_file"
-              ! grep -q 'INVALID_PROFILE_BODY' "$output_file"
-              ! grep -q 'ACTIVE TEAM PREFERENCES' "$output_file"
-            else
+              echo "$expected unexpectedly accepted" >&2
               return 1
             fi
+            grep -q 'company: invalid project team profile:' "$error_file"
+            ! grep -Fq "$project" "$error_file"
+            ! grep -q 'INVALID_PROFILE_BODY\|GLOBAL_PROFILE_MARKER' "$output_file"
+            ! grep -q 'ACTIVE TEAM PREFERENCES' "$output_file"
           }
 
           mkdir -p "$workspace/skills/evil"
@@ -196,8 +230,86 @@ jobs:
             '---' 'schema: 1' 'scope: project' \
             'departments: [developers]' 'skills: [superpowers]' \
             'research: disabled' '---' 'INVALID_PROFILE_BODY' > "$project/.claude/company-team.md"
-          head -c 33000 /dev/zero >> "$project/.claude/company-team.md"
-          check_invalid oversized-nul
+          printf '\0' >> "$project/.claude/company-team.md"
+          check_invalid nul-under-limit
+
+          printf '%s\n' \
+            '---' 'schema: 1' 'scope: project' \
+            'departments: [developers, developers]' 'skills: [superpowers]' \
+            'research: disabled' '---' 'INVALID_PROFILE_BODY' > "$project/.claude/company-team.md"
+          check_invalid duplicate-department
+          printf '%s\n' \
+            '---' 'schema: 1' 'departments: [developers]' \
+            'scope: project' 'skills: [superpowers]' \
+            'research: disabled' '---' 'INVALID_PROFILE_BODY' > "$project/.claude/company-team.md"
+          check_invalid reordered-frontmatter
+          printf '%s\n' \
+            '---' 'schema: 1' 'scope: project' \
+            'departments: [developers]' 'skills: [copywriting]' \
+            'research: disabled' '---' 'INVALID_PROFILE_BODY' > "$project/.claude/company-team.md"
+          check_invalid mismatched-skill-department
+
+          invalid_project_error="$test_root/invalid-project-no-fallback.err"
+          if (cd "$project" && CLAUDE_INC_GLOBAL_PROFILE="$global_profile" "$workspace/bin/company" profile-context > /dev/null 2> "$invalid_project_error"); then
+            echo 'invalid-project-no-fallback unexpectedly succeeded' >&2
+            exit 1
+          fi
+          grep -q 'invalid project team profile' "$invalid_project_error"
+          ! grep -Fq "$project" "$invalid_project_error"
+
+          exact_project="$test_root/exact-32768"
+          mkdir -p "$exact_project"
+          exact_prefix="$(printf '%s\n' '---' 'schema: 1' 'scope: project' 'departments: [developers]' 'skills: [superpowers]' 'research: disabled' '---')"
+          exact_prefix="$exact_prefix"$'\n'
+          exact_padding=$((32768 - ${#exact_prefix}))
+          { printf '%s' "$exact_prefix"; head -c "$exact_padding" /dev/zero | tr '\0' x; } | (cd "$exact_project" && "$workspace/bin/company" profile-save project)
+          [ "$(wc -c < "$exact_project/.claude/company-team.md" | tr -d '[:space:]')" -eq 32768 ]
+
+          nul_project="$test_root/nul-under-limit"
+          mkdir -p "$nul_project"
+          if { printf '%s\n' '---' 'schema: 1' 'scope: project' 'departments: [developers]' 'skills: [superpowers]' 'research: disabled' '---'; printf '\0'; } | (cd "$nul_project" && "$workspace/bin/company" profile-save project); then
+            echo 'nul-under-limit unexpectedly saved' >&2
+            exit 1
+          fi
+          [ ! -e "$nul_project/.claude/company-team.md" ]
+
+          save_rejects() {
+            name="$1"
+            candidate="$2"
+            save_project="$test_root/$name"
+            mkdir -p "$save_project"
+            if printf '%s\n' "$candidate" | (cd "$save_project" && "$workspace/bin/company" profile-save project); then
+              echo "$name unexpectedly saved" >&2
+              return 1
+            fi
+            [ ! -e "$save_project/.claude/company-team.md" ]
+          }
+          save_rejects duplicate-skill "$(printf '%s\n' '---' 'schema: 1' 'scope: project' 'departments: [developers]' 'skills: [superpowers, superpowers]' 'research: disabled' '---')"
+          save_rejects reordered-save "$(printf '%s\n' '---' 'scope: project' 'schema: 1' 'departments: [developers]' 'skills: [superpowers]' 'research: disabled' '---')"
+
+          symlink_save="$test_root/symlink-target"
+          mkdir -p "$symlink_save/.claude"
+          ln -s "$test_root/symlink target.md" "$symlink_save/.claude/company-team.md"
+          if printf '%s\n' "$project_candidate" | (cd "$symlink_save" && "$workspace/bin/company" profile-save project); then exit 1; fi
+
+          symlink_parent="$test_root/symlink-parent"
+          mkdir -p "$symlink_parent" "$test_root/real profile parent"
+          ln -s "$test_root/real profile parent" "$symlink_parent/.claude"
+          if printf '%s\n' "$project_candidate" | (cd "$symlink_parent" && "$workspace/bin/company" profile-save project); then exit 1; fi
+
+          special_project="$test_root/special-target"
+          mkdir -p "$special_project/.claude"
+          mkfifo "$special_project/.claude/company-team.md"
+          if printf '%s\n' "$project_candidate" | (cd "$special_project" && "$workspace/bin/company" profile-save project); then exit 1; fi
+
+          replace_project="$test_root/replace-confirmed"
+          mkdir -p "$replace_project"
+          printf '%s\n' "$project_candidate" | (cd "$replace_project" && "$workspace/bin/company" profile-save project)
+          if printf '%s\n' "$global_candidate" | (cd "$replace_project" && "$workspace/bin/company" profile-save project); then exit 1; fi
+          grep -q 'scope: project' "$replace_project/.claude/company-team.md"
+          replacement="$(printf '%s\n' '---' 'schema: 1' 'scope: project' 'departments: [developers]' 'skills: [superpowers]' 'research: disabled' '---' 'REPLACED')"
+          printf '%s\n' "$replacement" | (cd "$replace_project" && "$workspace/bin/company" profile-save project --replace)
+          grep -q 'REPLACED' "$replace_project/.claude/company-team.md"
 
           deferred="$(cd "$project" && CLAUDE_INC_ENGINE=missing-company-engine "$workspace/bin/company" onboard < /dev/null)"
           [ "$deferred" = 'Onboarding deferred. Run: company onboard' ]
@@ -220,7 +332,7 @@ jobs:
           & bash ./bin/company roster | Out-Null
           if ($LASTEXITCODE -ne 0) { throw 'CLI roster failed' }
           $version = & bash ./bin/company version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.1.0') { throw "Unexpected CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.2.0') { throw "Unexpected CLI version: $version" }
 
           $prompt = (& bash ./bin/company onboard --print) -join "`n"
           foreach ($marker in @('QUESTION 1/3', 'QUESTION 2/3', 'QUESTION 3/3', 'PROPOSAL')) {
@@ -228,38 +340,51 @@ jobs:
           }
           if (-not $prompt.Contains('remote pages and code may be inspected read-only')) { throw 'Research inspection boundary missing' }
           if (-not $prompt.Contains('Stars alone never determine rank')) { throw 'Research quality gate missing' }
+          if (-not $prompt.Contains('company profile-save project')) { throw 'Profile save helper missing from onboarding prompt' }
 
           $company = (Resolve-Path './bin/company').Path
           $testRoot = Join-Path $env:RUNNER_TEMP 'profile smoke with spaces'
           $project = Join-Path $testRoot 'project with spaces'
           $globalProject = Join-Path $testRoot 'global project with spaces'
-          $globalProfile = Join-Path $testRoot 'global profile.md'
-          New-Item -ItemType Directory -Force -Path (Join-Path $project '.claude'), $globalProject | Out-Null
+          $globalHome = Join-Path $testRoot 'global home'
+          $globalProfile = Join-Path $globalHome '.claude/company-team.md'
+          New-Item -ItemType Directory -Force -Path (Join-Path $project '.claude'), $globalProject, $globalHome | Out-Null
 
           function Write-TeamProfile([string]$Path, [string]$Scope, [string]$Departments, [string]$Skills, [string]$Body, [string]$Research = 'disabled') {
             $content = @('---', 'schema: 1', "scope: $Scope", "departments: $Departments", "skills: $Skills", "research: $Research", '---', '', $Body) -join "`n"
             [IO.File]::WriteAllText($Path, $content, [Text.UTF8Encoding]::new($false))
           }
 
-          Write-TeamProfile $globalProfile 'global' '[developers]' '[superpowers]' 'WINDOWS_GLOBAL_BODY'
+          $globalCandidate = Join-Path $testRoot 'global candidate.md'
+          Write-TeamProfile $globalCandidate 'global' '[developers]' '[superpowers]' 'WINDOWS_GLOBAL_BODY'
+          $env:HOME = $globalHome
           $env:CLAUDE_INC_GLOBAL_PROFILE = $globalProfile
+          & bash -l -c '"$1" profile-save global < "$2"' bash $company $globalCandidate
+          if ($LASTEXITCODE -ne 0) { throw 'Windows global profile-save failed' }
           Push-Location $globalProject
           try { $globalBrief = (& bash -l $company brief 'global fallback' --print) -join "`n" } finally { Pop-Location }
           if (-not $globalBrief.Contains('Scope: global') -or -not $globalBrief.Contains('Skills: [superpowers]')) { throw 'Windows global fallback failed' }
           if ($globalBrief.Contains('WINDOWS_GLOBAL_BODY')) { throw 'Windows global body leaked' }
 
           $projectProfile = Join-Path $project '.claude/company-team.md'
-          Write-TeamProfile $projectProfile 'project' '[marketing]' '[copywriting]' 'INJECTION_MARKER' 'suggestions-only'
+          $projectCandidate = Join-Path $testRoot 'project candidate.md'
+          Write-TeamProfile $projectCandidate 'project' '[marketing]' '[copywriting]' 'INJECTION_MARKER' 'suggestions-only'
           Push-Location $project
           try {
+            & bash -l -c '"$1" profile-save project < "$2"' bash $company $projectCandidate
+            if ($LASTEXITCODE -ne 0) { throw 'Windows project profile-save failed' }
             $projectBrief = (& bash -l $company brief 'project override' --print) -join "`n"
             $teamOutput = (& bash -l $company team) -join "`n"
+            $profileContext = (& bash -l $company profile-context) -join "`n"
           } finally { Pop-Location }
           if (-not $projectBrief.Contains('Scope: project') -or -not $projectBrief.Contains('Skills: [copywriting]')) { throw 'Windows project profile failed' }
           if (-not $projectBrief.Contains('explicit consent in the current session') -or $projectBrief.Contains('suggestions-only')) { throw 'Stored research metadata granted or implied consent' }
           if (-not $teamOutput.Contains('Research metadata (does not grant consent): suggestions-only')) { throw 'Windows team metadata display failed' }
           if ($projectBrief.Contains('INJECTION_MARKER') -or $teamOutput.Contains('INJECTION_MARKER')) { throw 'Windows profile body leaked' }
           if ($projectBrief.Contains('WINDOWS_GLOBAL_BODY')) { throw 'Windows project did not override global' }
+          if ($profileContext -ne "PROFILE_CONTEXT_V1`nscope=project`ndepartments=[marketing]`nskills=[copywriting]") { throw "Windows profile-context mismatch: $profileContext" }
+          if ($profileContext.Contains('INJECTION_MARKER') -or $profileContext.Contains('suggestions-only') -or $profileContext.Contains('company-team')) { throw 'Windows profile-context leaked profile data' }
+          if ($teamOutput.Contains($project) -or $teamOutput.Contains('company-team')) { throw 'Windows team output leaked a profile path' }
 
           $crlfContent = @('---','schema: 1','scope: project','departments: [developers]','skills: [superpowers]','research: disabled','---','CRLF_BODY') -join "`r`n"
           [IO.File]::WriteAllText($projectProfile, $crlfContent, [Text.UTF8Encoding]::new($false))
@@ -273,15 +398,69 @@ jobs:
             [pscustomobject]@{ Name = 'malformed'; Content = "not frontmatter`nINVALID_BODY" },
             [pscustomobject]@{ Name = 'unknown-department'; Content = (@('---','schema: 1','scope: project','departments: [evil]','skills: [superpowers]','research: disabled','---','INVALID_BODY') -join "`n") },
             [pscustomobject]@{ Name = 'unknown-skill'; Content = (@('---','schema: 1','scope: project','departments: [developers]','skills: [evil]','research: disabled','---','INVALID_BODY') -join "`n") },
+            [pscustomobject]@{ Name = 'duplicate-department'; Content = (@('---','schema: 1','scope: project','departments: [developers, developers]','skills: [superpowers]','research: disabled','---','INVALID_BODY') -join "`n") },
+            [pscustomobject]@{ Name = 'reordered-frontmatter'; Content = (@('---','scope: project','schema: 1','departments: [developers]','skills: [superpowers]','research: disabled','---','INVALID_BODY') -join "`n") },
             [pscustomobject]@{ Name = 'oversized'; Content = ((@('---','schema: 1','scope: project','departments: [developers]','skills: [superpowers]','research: disabled','---','INVALID_BODY') -join "`n") + ('x' * 33000)) }
           )
           foreach ($case in $invalidCases) {
             [IO.File]::WriteAllText($projectProfile, $case.Content, [Text.UTF8Encoding]::new($false))
             Push-Location $project
-            try { $invalidOutput = (& bash -l $company brief $case.Name --print 2>&1) -join "`n" } finally { Pop-Location }
-            if (-not $invalidOutput.Contains('ignoring invalid team profile')) { throw "Windows invalid profile was not warned: $($case.Name)" }
+            try {
+              $invalidOutput = (& bash -l $company brief $case.Name --print 2>&1) -join "`n"
+              $invalidExit = $LASTEXITCODE
+            } finally { Pop-Location }
+            if ($invalidExit -eq 0) { throw "Windows invalid profile was accepted: $($case.Name)" }
+            if (-not $invalidOutput.Contains('invalid project team profile')) { throw "Windows invalid profile was not warned: $($case.Name)" }
             if ($invalidOutput.Contains('INVALID_BODY') -or $invalidOutput.Contains('ACTIVE TEAM PREFERENCES')) { throw "Windows invalid profile leaked: $($case.Name)" }
+            if ($invalidOutput.Contains($project)) { throw "Windows invalid profile leaked its path: $($case.Name)" }
           }
+
+          # invalid-project-no-fallback
+          Write-TeamProfile $projectProfile 'project' '[developers]' '[copywriting]' 'INVALID_PROFILE_BODY'
+          Push-Location $project
+          try {
+            $invalidFallback = (& bash -l $company profile-context 2>&1) -join "`n"
+            $invalidFallbackExit = $LASTEXITCODE
+          } finally { Pop-Location }
+          if ($invalidFallbackExit -eq 0 -or -not $invalidFallback.Contains('invalid project team profile')) { throw 'Windows invalid project profile did not fail closed' }
+          if ($invalidFallback.Contains('WINDOWS_GLOBAL_BODY') -or $invalidFallback.Contains($project)) { throw 'Windows invalid project profile leaked or fell back' }
+
+          # exact-32768
+          $exactProject = Join-Path $testRoot 'exact-32768'
+          $exactCandidate = Join-Path $testRoot 'exact-32768.md'
+          New-Item -ItemType Directory -Force -Path $exactProject | Out-Null
+          $exactPrefix = (@('---','schema: 1','scope: project','departments: [developers]','skills: [superpowers]','research: disabled','---') -join "`n") + "`n"
+          $exactBytes = [Text.Encoding]::UTF8.GetBytes($exactPrefix)
+          $exactContent = New-Object byte[] 32768
+          [Array]::Copy($exactBytes, $exactContent, $exactBytes.Length)
+          for ($index = $exactBytes.Length; $index -lt 32768; $index++) { $exactContent[$index] = [byte][char]'x' }
+          [IO.File]::WriteAllBytes($exactCandidate, $exactContent)
+          Push-Location $exactProject
+          try { & bash -l -c '"$1" profile-save project < "$2"' bash $company $exactCandidate; $exactExit = $LASTEXITCODE } finally { Pop-Location }
+          if ($exactExit -ne 0 -or (Get-Item (Join-Path $exactProject '.claude/company-team.md')).Length -ne 32768) { throw 'Windows exact-32768 profile failed' }
+
+          # nul-under-limit
+          $nulProject = Join-Path $testRoot 'nul-under-limit'
+          $nulCandidate = Join-Path $testRoot 'nul-under-limit.md'
+          New-Item -ItemType Directory -Force -Path $nulProject | Out-Null
+          [byte[]]$nulBytes = [Text.Encoding]::UTF8.GetBytes($exactPrefix + 'body') + [byte]0
+          [IO.File]::WriteAllBytes($nulCandidate, $nulBytes)
+          Push-Location $nulProject
+          try { & bash -l -c '"$1" profile-save project < "$2"' bash $company $nulCandidate; $nulExit = $LASTEXITCODE } finally { Pop-Location }
+          if ($nulExit -eq 0 -or (Test-Path -LiteralPath (Join-Path $nulProject '.claude/company-team.md'))) { throw 'Windows nul-under-limit profile was accepted' }
+
+          # replace-confirmed
+          $replaceCandidate = Join-Path $testRoot 'replace candidate.md'
+          Write-TeamProfile $replaceCandidate 'project' '[developers]' '[superpowers]' 'REPLACED'
+          Push-Location $project
+          try {
+            & bash -l -c '"$1" profile-save project < "$2"' bash $company $replaceCandidate
+            $replaceRefused = $LASTEXITCODE
+            & bash -l -c '"$1" profile-save project --replace < "$2"' bash $company $replaceCandidate
+            $replaceAccepted = $LASTEXITCODE
+          } finally { Pop-Location }
+          if ($replaceRefused -eq 0 -or $replaceAccepted -ne 0) { throw 'Windows replacement confirmation contract failed' }
+          if (-not ([IO.File]::ReadAllText($projectProfile).Contains('REPLACED'))) { throw 'Windows confirmed replacement did not persist' }
 
       - name: Global, project and no-CLI installs work (macOS and Linux)
         if: runner.os != 'Windows'
@@ -296,7 +475,7 @@ jobs:
           [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
           [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
           [ -L "$HOME/.local/bin/company" ]
-          [ "$("$HOME/.local/bin/company" version)" = "company v1.1.0" ]
+          [ "$("$HOME/.local/bin/company" version)" = "company v1.2.0" ]
 
           export HOME="$test_root/project home"
           project="$test_root/project with spaces"
@@ -315,7 +494,7 @@ jobs:
           onboard_project="$test_root/onboard project"
           mkdir -p "$HOME" "$onboard_project"
           onboard_output="$(cd "$onboard_project" && CLAUDE_INC_ENGINE=missing-company-engine bash "$workspace/install.sh" --project --no-bin --onboard)"
-          grep -q '^Onboarding deferred. Run: bash ".*/bin/company" onboard$' <<< "$onboard_output"
+          grep -q '^Onboarding deferred. Install the Claude Code plugin, then run: /onboard$' <<< "$onboard_output"
           ! grep -q 'Run: company onboard' <<< "$onboard_output"
           [ ! -e "$onboard_project/.claude/company-team.md" ]
 
@@ -368,7 +547,7 @@ jobs:
           $wrapper = Join-Path $env:HOME '.local/bin/company.cmd'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.1.0') { throw "Unexpected installed CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.2.0') { throw "Unexpected installed CLI version: $version" }
 
           $wrapperProject = Join-Path $testRoot 'wrapper profile project with spaces'
           $wrapperProfileDir = Join-Path $wrapperProject '.claude'
@@ -403,5 +582,5 @@ jobs:
           try { $onboardOutput = & "$workspace/install.ps1" -Project -NoBin -Onboard | Out-String } finally { Pop-Location }
           if (-not $onboardOutput.Contains('Onboarding deferred.')) { throw 'Project onboarding did not defer safely' }
           if ($onboardOutput.Contains('Run: company onboard')) { throw 'NoBin advised an unavailable company command' }
-          if (-not (($onboardOutput.Contains(' -l ') -and $onboardOutput.Contains(' onboard')) -or $onboardOutput.Contains('Install Git for Windows'))) { throw 'NoBin deferred guidance is not actionable' }
+          if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /onboard')) { throw 'NoBin deferred guidance is not actionable' }
           if (Test-Path -LiteralPath (Join-Path $onboardProject '.claude/company-team.md')) { throw 'Deferred onboarding created a profile' }

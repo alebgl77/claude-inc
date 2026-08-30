@@ -37,7 +37,7 @@ After the third answer, show:
 
 Offer exactly these next actions: `accept`, `edit`, `use all 50`, or `research gaps`.
 
-- `accept`: write the profile only after confirmation.
+- `accept`: after confirmation, submit the candidate to the CLI profile-save helper. Never write the profile directly.
 - `edit`: ask only for the changes, then show the revised proposal.
 - `use all 50`: create no profile. If a target profile already exists, ask before removing it.
 - `research gaps`: request distinct, explicit consent before any network research. Consent to research is not consent to install.
@@ -57,6 +57,10 @@ research: disabled
 ```
 
 Use `scope: global` only for a global target. Use `research: suggestions-only` only after explicit research consent. The body must contain `Mission`, `Rationale`, `Constraints`, `Gaps`, and `Candidate metadata` sections. Do not record secrets, credentials, private source text, or environment values.
+
+Every departmental skill must belong to one of the selected departments. `chief-of-staff` and `token-accountant` are executive skills and may be selected independently.
+
+Before the helper writes the final target, it validates the exact schema and 32768-byte limit, rejects NUL bytes, symbolic links and non-regular targets, checks that the direct parent is a real directory, writes a private temporary file in that directory, then replaces the target atomically. A regular existing profile requires a distinct replacement confirmation and an explicit `--replace` retry. Do not claim that the model itself performed these checks.
 
 ## Research policy and quality gate
 

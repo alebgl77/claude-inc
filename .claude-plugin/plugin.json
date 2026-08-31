@@ -1,6 +1,6 @@
 {
   "name": "claude-inc",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Hire a whole AI company in one command: 1 CEO, 8 departments, 50 employees, including Sales and CEO staff. For Claude Code & any AI CLI.",
   "author": {
     "name": "Alexandre Beguel",

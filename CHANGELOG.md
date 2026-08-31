@@ -4,6 +4,8 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-30
+
 ### Added
 - Optional three-question team onboarding through `company onboard`, `/onboard`,
   `install.sh --onboard` and `install.ps1 -Onboard`
@@ -11,6 +13,14 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
   all 50 skills remain installed as the available bench
 - Suggestions-only skill-gap research policy with explicit consent, candidate
   quality gates and no automatic download, installation or execution
+- Validated `profile-context` routing for both CLI and plugin company commands
+
+### Security
+- Centralized profile writes in a guarded CLI helper with bounded input, strict
+  schema validation, symlink and special-file rejection, private temporary files
+  and atomic replacement
+- Required separate confirmation before replacing a regular profile and blocked
+  global fallback when a project profile is present but invalid
 
 ### Fixed
 - `bin/company` ends quietly when a reader closes the pipe early

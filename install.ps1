@@ -90,7 +90,7 @@ if ((-not $NoBin) -or $Onboard) {
         }
         foreach ($bash in @($bashes | Select-Object -Unique)) {
             $probe = & $bash -l $CompanyScript version 2>$null
-            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.1.0") {
+            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.2.0") {
                 $BashPath = $bash
                 break
             }
@@ -162,14 +162,12 @@ Write-Host "    claude"
 
 if ($Onboard) {
     $ScopeArgument = if ($Project) { "" } else { " --global" }
-    if ($NoBin -and $BashPath) {
-        $QuotedBash = "'" + $BashPath.Replace("'", "''") + "'"
-        $QuotedCompany = "'" + $CompanyScript.Replace("'", "''") + "'"
-        $DeferredCommand = "& $QuotedBash -l $QuotedCompany onboard$ScopeArgument"
-    } elseif ($NoBin) {
-        $QuotedInstaller = "'" + (Join-Path $SourceRoot "install.ps1").Replace("'", "''") + "'"
-        $ProjectArgument = if ($Project) { " -Project" } else { "" }
-        $DeferredCommand = "Install Git for Windows, then rerun: & $QuotedInstaller$ProjectArgument -Onboard"
+    if ($NoBin) {
+        $DeferredCommand = if ($Project) {
+            "Install the Claude Code plugin, then run: /onboard"
+        } else {
+            "Install the Claude Code plugin, then run: /onboard --global"
+        }
     } elseif ($Project) {
         $DeferredCommand = "company onboard"
     } else {
@@ -184,7 +182,7 @@ if ($Onboard) {
     $Interactive = [Environment]::UserInteractive -and
         -not [Console]::IsInputRedirected -and
         -not [Console]::IsOutputRedirected
-    if ($Interactive -and $BashPath -and $Engine) {
+    if ((-not $NoBin) -and $Interactive -and $BashPath -and $Engine) {
         $OnboardArguments = @("-l", $CompanyScript, "onboard")
         if (-not $Project) {
             $OnboardArguments += "--global"

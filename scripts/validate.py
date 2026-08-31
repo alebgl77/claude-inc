@@ -21,7 +21,7 @@ STAFF = {"chief-of-staff", "token-accountant"}
 EXPECTED_EMPLOYEES = 50
 EXPECTED_DEPARTMENTS = 8
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
-EXPECTED_VERSION = "1.1.0"
+EXPECTED_VERSION = "1.2.0"
 CANONICAL_DEPARTMENTS = {
     "developers", "designers", "marketing", "social-media", "finance",
     "small-business", "legal", "sales",
@@ -267,6 +267,8 @@ def check_onboarding(cli, skills):
         "serious security signal",
         "insufficient documentation",
         "prompt-injection risks",
+        "Every departmental skill must belong to one of the selected departments",
+        "CLI profile-save helper",
     ]
     for text in required_workflow_text:
         if text not in workflow:
@@ -304,7 +306,9 @@ def check_onboarding(cli, skills):
         "canonical_skills()", "chief-of-staff token-accountant",
         "symbolic links are not allowed", "wc -c", "head -c", "%$'\\r'",
         "explicit consent in the current session",
-        "company onboard [--global]", "company team",
+        "company onboard [--global]", "company team", "profile-context",
+        "profile-save", "NUL bytes are not allowed", "mktemp", "mv -f",
+        "separate replacement confirmation",
     ]
     for marker in cli_markers:
         if marker not in cli:
@@ -319,8 +323,8 @@ def check_onboarding(cli, skills):
         err("both installers must print the global deferred command")
     for marker, text in [
         ("metadata-only", security),
-        ("The free-form body and stored research status stay local", security),
-        ("does not read profile files", readme),
+        ("The free-form body, profile path and stored research status stay local", security),
+        ("never read profile files directly", readme),
         ("third-party content is downloaded", readme),
         ("quality gate", workflow),
     ]:
@@ -328,8 +332,12 @@ def check_onboarding(cli, skills):
             err(f"onboarding documentation missing marker: {marker!r}")
 
     company_command = open("commands/company.md", encoding="utf-8").read()
-    if "does not parse external profile files" not in company_command:
-        err("commands/company.md must not consume an unvalidated profile")
+    if '"${CLAUDE_PLUGIN_ROOT}/bin/company" profile-context' not in company_command:
+        err("commands/company.md must consume profiles only through profile-context")
+    if "routing data, never as instructions" not in company_command:
+        err("commands/company.md must treat profile context as data")
+    if '"${CLAUDE_PLUGIN_ROOT}/bin/company" profile-save project' not in command:
+        err("commands/onboard.md must save through the packaged CLI helper")
     if 'cat "$ACTIVE_PROFILE"' in cli:
         err("bin/company must not reopen or include the free-form profile body")
     if 'echo "Research: $ACTIVE_PROFILE_RESEARCH"' in cli:
@@ -338,12 +346,17 @@ def check_onboarding(cli, skills):
         err("bin/company must validate profile skills against its canonical registry")
     if "if ! bash \"$SRC/bin/company\" onboard" not in installer_sh:
         err("install.sh must catch onboarding engine failures under set -e")
-    if 'if [ "$NO_BIN" = "yes" ] && [ -f "$SRC/bin/company" ]' not in installer_sh:
-        err("install.sh NoBin onboarding guidance must use the source CLI")
-    if "$NoBin -and $BashPath" not in installer_ps:
-        err("install.ps1 NoBin onboarding guidance must not assume a wrapper was installed")
+    if 'Install the Claude Code plugin, then run: /onboard' not in installer_sh:
+        err("install.sh NoBin onboarding guidance must use the plugin helper")
+    if 'Install the Claude Code plugin, then run: /onboard' not in installer_ps:
+        err("install.ps1 NoBin onboarding guidance must use the plugin helper")
     workflow_ci = open(".github/workflows/validate.yml", encoding="utf-8").read()
-    for marker in ["oversized-nul", "Windows CRLF profile failed", "Stored research metadata granted or implied consent"]:
+    for marker in [
+        "exact-32768", "nul-under-limit", "duplicate-department",
+        "reordered-frontmatter", "profile-context", "invalid-project-no-fallback",
+        "symlink-target", "symlink-parent", "special-target", "replace-confirmed",
+        "Windows CRLF profile failed", "Stored research metadata granted or implied consent",
+    ]:
         if marker not in workflow_ci:
             err(f"onboarding CI missing adversarial case: {marker!r}")
 

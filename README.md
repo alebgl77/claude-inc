@@ -77,6 +77,8 @@ On Windows PowerShell, run `./install.ps1 -Project` from the clone instead. Run
 `./install.ps1` without `-Project` for a global install. The `company` CLI
 requires Bash (Git for Windows includes it); use `./install.ps1 -NoBin` to
 install only the Claude Code files when Bash is unavailable.
+With `--no-bin` or `-NoBin`, opt-in onboarding is deferred to the plugin because
+the guarded profile-save CLI is intentionally not installed.
 
 Team onboarding is optional. Plugin users can run `/onboard`. Installer users
 can add `--onboard` to `install.sh` or `-Onboard` to `install.ps1`, or run it
@@ -95,11 +97,16 @@ activate, and keeps all 50 installed as the available bench. Project profiles
 override global profiles. Existing installs and commands remain noninteractive
 unless onboarding is explicitly requested.
 
-Only `company brief` uses an active profile. The CLI validates the fixed
-frontmatter schema and sends only the normalized scope, department list, skill
-list to the engine. The free-form body and stored research status remain local,
-never enter the prompt and never authorize network access. The `/company`
-plugin command does not read profile files.
+`company brief` and the `/company` plugin command can use an active profile.
+Both obtain only normalized scope, department and skill fields from the CLI
+validator. They never read profile files directly. The free-form body and
+stored research status remain local, never enter the prompt and never authorize
+network access. An invalid project profile blocks global fallback.
+
+Accepted profiles are saved only through the CLI helper. It refuses symbolic
+links and non-regular targets, validates the fixed schema and 32768-byte limit,
+uses a private temporary file in the profile directory, and replaces the target
+atomically. Replacing a regular profile requires separate confirmation.
 
 ## Your first day as founder
 

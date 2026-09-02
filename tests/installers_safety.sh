@@ -9,6 +9,7 @@ fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 assert_file_text() { [ "$(cat "$1")" = "$2" ] || fail "unexpected content in $1"; }
 pass_case() { printf 'ok: %s\n' "$1"; }
 hash_test_file() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | awk '{print $1}'; else shasum -a 256 "$1" | awk '{print $1}'; fi; }
+test_mode() { if stat -c '%a' "$1" >/dev/null 2>&1; then stat -c '%a' "$1"; else stat -f '%Lp' "$1"; fi; }
 
 make_fixture() {
   local fixture="$1"
@@ -60,6 +61,22 @@ run_global "$fixture" "$home"
 assert_file_text "$home/.claude/skills/alpha/data.txt" alpha-v2
 assert_file_text "$home/.claude/commands/company.md" command-v2
 pass_case "managed update"
+
+# File claims preserve modes that cannot be expressed through a 0666 create.
+case "$(uname -s)" in
+  MINGW*|MSYS*) pass_case "file claim mode checks skipped on Windows emulation" ;;
+  *)
+    fixture="$TEST_ROOT/file mode source"; home="$TEST_ROOT/file mode home"; make_fixture "$fixture"; mkdir -p "$home"
+    chmod 755 "$fixture/agents/head.md"; chmod 700 "$fixture/commands/company.md"
+    run_global "$fixture" "$home" --no-bin
+    assert_file_text "$home/.claude/agents/head.md" agent-v1
+    assert_file_text "$home/.claude/commands/company.md" command-v1
+    [ "$(test_mode "$home/.claude/agents/head.md")" = 755 ] || fail "agent claim lost executable mode"
+    [ "$(test_mode "$home/.claude/commands/company.md")" = 700 ] || fail "command claim lost staged mode"
+    run_global "$fixture" "$home" --no-bin
+    pass_case "agent and command file claim modes"
+    ;;
+esac
 
 # A modified managed file blocks the whole update and remains unchanged.
 printf 'user-agent\n' >"$home/.claude/agents/head.md"
@@ -211,6 +228,19 @@ recovery="$(find "$home/.claude" -maxdepth 1 -type d -name '.claude-inc-rollback
 assert_file_text "$recovery/skills/alpha/data.txt" alpha-v1
 rm -rf "$home/.claude/skills/alpha" "$recovery" "$home/.claude.claude-inc-install.lock"
 pass_case "post-backup no-clobber refusal"
+
+# The file claim also refuses a command created after its old copy was backed up.
+fixture="$TEST_ROOT/command post-backup source"; home="$TEST_ROOT/command post-backup home"; make_fixture "$fixture"; mkdir -p "$home"
+run_global "$fixture" "$home" --no-bin; printf 'command-v2\n' >"$fixture/commands/company.md"
+hook="$TEST_ROOT/command-post-backup-hook.sh"
+printf '#!/usr/bin/env bash\nif [ "$1" = after-backup ] && [ "$2" = command ]; then printf external > "$4"; fi\n' >"$hook"; chmod +x "$hook"
+expect_failure env CLAUDE_INC_TEST_HOOK="$hook" HOME="$home" bash "$fixture/install.sh" --no-bin
+assert_file_text "$home/.claude/commands/company.md" external
+recovery="$(find "$home/.claude" -maxdepth 1 -type d -name '.claude-inc-rollback.*' -print -quit)"
+[ -n "$recovery" ] || fail "command no-clobber race did not retain recovery directory"
+assert_file_text "$recovery/commands/company.md" command-v1
+rm -f "$home/.claude/commands/company.md"; rm -rf "$recovery" "$home/.claude.claude-inc-install.lock"
+pass_case "command post-backup no-clobber refusal"
 
 # Apply failure restores the old bytes and removes all temporary manifests.
 fixture="$TEST_ROOT/apply failure source"; home="$TEST_ROOT/apply failure home"; make_fixture "$fixture"; mkdir -p "$home"

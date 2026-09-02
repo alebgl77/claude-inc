@@ -541,11 +541,11 @@ if [ "$REMOTE_MODE" = "yes" ]; then
 fi
 
 claim_file_no_clobber() {
-  local staged="$1" destination="$2" kind="$3" name="$4" desired="$5" mode permissions mask mask_text
-  mode="$(file_mode "$staged")" || die "cannot read staged mode for $kind/$name"
-  case "$mode" in [0-7][0-7][0-7]) : ;; *) die "unsupported staged file mode for atomic claim: $mode ($staged)" ;; esac
-  permissions=$((0$mode)); mask=$((0777 ^ permissions)); mask_text="$(printf '%03o' "$mask")"
-  if ! (umask "$mask_text"; set -o noclobber; cat "$staged" >"$destination") 2>/dev/null; then
+  local staged="$1" destination="$2" kind="$3" name="$4" desired="$5"
+  # Stage and destination are created below TARGET, on the same filesystem.
+  # A hard link claims the destination name atomically and preserves the exact
+  # inode content and mode without exposing a partially copied file.
+  if [ -e "$destination" ] || [ -L "$destination" ] || ! ln "$staged" "$destination" 2>/dev/null; then
     die "destination appeared after backup; no overwrite performed: $destination"
   fi
   state_matches "$kind" "$destination" file "$desired" || die "claimed file failed verification; recovery data retained: $destination"

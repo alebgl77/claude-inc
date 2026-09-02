@@ -66,14 +66,14 @@ pass_case "managed update"
 case "$(uname -s)" in
   MINGW*|MSYS*) pass_case "file claim mode checks skipped on Windows emulation" ;;
   *)
-    fixture="$TEST_ROOT/file mode source"; home="$TEST_ROOT/file mode home"; make_fixture "$fixture"; mkdir -p "$home"
-    chmod 755 "$fixture/agents/head.md"; chmod 700 "$fixture/commands/company.md"
-    run_global "$fixture" "$home" --no-bin
-    assert_file_text "$home/.claude/agents/head.md" agent-v1
-    assert_file_text "$home/.claude/commands/company.md" command-v1
-    [ "$(test_mode "$home/.claude/agents/head.md")" = 755 ] || fail "agent claim lost executable mode"
-    [ "$(test_mode "$home/.claude/commands/company.md")" = 700 ] || fail "command claim lost staged mode"
-    run_global "$fixture" "$home" --no-bin
+    mode_fixture="$TEST_ROOT/file mode source"; mode_home="$TEST_ROOT/file mode home"; make_fixture "$mode_fixture"; mkdir -p "$mode_home"
+    chmod 755 "$mode_fixture/agents/head.md"; chmod 700 "$mode_fixture/commands/company.md"
+    run_global "$mode_fixture" "$mode_home" --no-bin
+    assert_file_text "$mode_home/.claude/agents/head.md" agent-v1
+    assert_file_text "$mode_home/.claude/commands/company.md" command-v1
+    [ "$(test_mode "$mode_home/.claude/agents/head.md")" = 755 ] || fail "agent claim lost executable mode"
+    [ "$(test_mode "$mode_home/.claude/commands/company.md")" = 700 ] || fail "command claim lost staged mode"
+    run_global "$mode_fixture" "$mode_home" --no-bin
     pass_case "agent and command file claim modes"
     ;;
 esac

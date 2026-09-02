@@ -349,7 +349,8 @@ cache="$TEST_ROOT/authentic legacy cache"; home="$TEST_ROOT/authentic legacy hom
 ln -s "$cache/bin/company" "$home/.local/bin/company"
 run_remote "$REPO_ROOT/install.sh" "$home" "$cache" "$fixture"
 grep -Fq $'cli\tcompany\tsymlink\t' "$home/.claude/.claude-inc-cli-manifest-v1" || fail "authentic legacy CLI ownership was not recorded"
-case "$(readlink "$home/.local/bin/company")" in "$cache.checkouts"/*/bin/company) : ;; *) fail "authentic legacy CLI did not move to immutable checkout" ;; esac
+canonical_cache="$(cd -P "$cache" >/dev/null 2>&1 && pwd)" || fail "authentic legacy cache could not be canonicalized"
+case "$(readlink "$home/.local/bin/company")" in "${canonical_cache}.checkouts"/*/bin/company) : ;; *) fail "authentic legacy CLI did not move to immutable checkout" ;; esac
 pass_case "authentic legacy CLI adoption"
 
 # A blocked remote upgrade leaves the active cache, CLI link, and destinations unchanged.

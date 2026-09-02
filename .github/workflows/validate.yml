@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: The plugin command passes strict validation (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          npm install --global @anthropic-ai/claude-code@2.1.252
+          claude plugin validate --strict .claude-plugin/plugin.json
+
       - name: Every employee has a valid job description (macOS and Linux)
         if: runner.os != 'Windows'
         run: python3 scripts/validate.py
@@ -481,7 +488,6 @@ jobs:
           project="$test_root/project with spaces"
           mkdir -p "$HOME" "$project"
           (cd "$project" && bash "$workspace/install.sh" --project)
-          [ -f "$project/CLAUDE.md" ]
           [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
           [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
 
@@ -516,7 +522,21 @@ jobs:
 
           ! grep -q 'QUESTION [123]/3' "$test_root/install.out"
           [ ! -e "$project/.claude/company-team.md" ]
-          [ "$(git -C "$test_root/cache" rev-parse HEAD)" = "$(git -C "$workspace" rev-parse HEAD)" ]
+          expected_commit="$(git -C "$workspace" rev-parse HEAD)"
+          checkout_count=0
+          promoted_checkout=""
+          for checkout in "$test_root/cache.checkouts"/*; do
+            [ -d "$checkout" ] || continue
+            checkout_count=$((checkout_count + 1))
+            promoted_checkout="$checkout"
+          done
+          [ "$checkout_count" -eq 1 ]
+          [ "${promoted_checkout##*/}" = "$expected_commit" ]
+          [ "$(git -C "$promoted_checkout" rev-parse HEAD)" = "$expected_commit" ]
+          [ -z "$(git -C "$promoted_checkout" status --porcelain --untracked-files=all)" ]
+          ! find "$test_root" -maxdepth 1 -name 'cache.candidate.*' -print -quit | grep -q .
+          [ -f "$project/.claude/commands/company.md" ]
+          cmp -s "$workspace/commands/company.md" "$project/.claude/commands/company.md"
           skill_count=0
           for skill in "$project/.claude/skills"/*/; do
             [ -d "$skill" ] || continue
@@ -529,7 +549,6 @@ jobs:
           done
           [ "$skill_count" -eq 50 ]
           [ "$agent_count" -eq 8 ]
-          [ -f "$project/CLAUDE.md" ]
 
       - name: Global, project and no-CLI installs work (Windows)
         if: runner.os == 'Windows'
@@ -565,7 +584,6 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:HOME, $project | Out-Null
           Push-Location $project
           try { & "$workspace/install.ps1" -Project } finally { Pop-Location }
-          if (-not (Test-Path -LiteralPath (Join-Path $project 'CLAUDE.md'))) { throw 'Project CLAUDE.md was not installed' }
           if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 50) { throw 'Project skill count is not 50' }
           if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 8) { throw 'Project agent count is not 8' }
 
@@ -584,3 +602,13 @@ jobs:
           if ($onboardOutput.Contains('Run: company onboard')) { throw 'NoBin advised an unavailable company command' }
           if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /onboard')) { throw 'NoBin deferred guidance is not actionable' }
           if (Test-Path -LiteralPath (Join-Path $onboardProject '.claude/company-team.md')) { throw 'Deferred onboarding created a profile' }
+
+      - name: Installer collisions fail without mutation (macOS and Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash tests/installers_safety.sh
+
+      - name: Installer collisions fail without mutation (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/installers_safety.ps1

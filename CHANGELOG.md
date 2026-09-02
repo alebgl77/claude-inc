@@ -4,6 +4,16 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
+### Fixed
+- Made `commands/company.md` the canonical, self-contained CEO manual used by
+  `/company` and `company brief`; direct installs now place it at
+  `.claude/commands/company.md`, and the unsupported plugin-root `CLAUDE.md` is
+  no longer shipped
+- Reworked both installers as locked, preflighted transactions with separate
+  content and global CLI manifests, commit-addressed immutable remote checkouts,
+  safe pruning and conservative rollback that retains recovery state when an
+  automatic restoration cannot complete
+
 ## [1.2.0] - 2026-08-30
 
 ### Added

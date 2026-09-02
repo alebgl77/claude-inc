@@ -32,7 +32,7 @@ ONBOARDING_FILES = [
     "commands/onboard.md",
 ]
 PUBLIC_ONBOARDING_FILES = [
-    "bin/company", "install.sh", "install.ps1", "CLAUDE.md",
+    "bin/company", "install.sh", "install.ps1",
     "commands/company.md", "commands/onboard.md", "onboarding/ONBOARDING.md",
     "onboarding/PROFILE_TEMPLATE.md", "README.md", "CHANGELOG.md", "SECURITY.md",
 ]
@@ -172,13 +172,32 @@ def check_docs(skills, agents):
     for link in links:
         if not os.path.exists(link.split("#")[0]):
             err(f"README.md: broken relative link -> {link}")
-    manual = open("CLAUDE.md", encoding="utf-8").read()
+    if os.path.exists("CLAUDE.md"):
+        err("plugin root CLAUDE.md must not exist because Claude Code does not load it")
+    company_path = "commands/company.md"
+    if not os.path.exists(company_path):
+        err(f"{company_path}: canonical CEO manual missing")
+        return
+    _, company_body = frontmatter(company_path)
+    invocation_marker = "\n## Plugin invocation\n"
+    if company_body.count(invocation_marker) != 1:
+        err(f"{company_path}: must contain exactly one Plugin invocation boundary")
+        manual = company_body
+    else:
+        manual = company_body.split(invocation_marker, 1)[0]
+    for section in [
+        "# Claude, Inc.: CEO Operating Manual", "## Org chart", "## Routing table",
+        "## Executive staff (skills, not departments)", "## Optional active team",
+        "## Delegation protocol", "## Board Memo format", "## Company rules",
+    ]:
+        if section not in manual:
+            err(f"{company_path}: canonical CEO manual is missing {section!r}")
     for dept in agents:
         if f"`{dept}`" not in manual:
-            err(f"CLAUDE.md routing table is missing '{dept}'")
+            err(f"{company_path} routing table is missing '{dept}'")
     for slug in STAFF & set(skills):
         if slug not in manual:
-            warn(f"CLAUDE.md does not mention staff hire '{slug}'")
+            warn(f"{company_path} does not mention staff hire '{slug}'")
     for cmd in sorted(os.listdir("commands")):
         text = open(f"commands/{cmd}", encoding="utf-8").read()
         if not text.startswith("---"):
@@ -332,8 +351,26 @@ def check_onboarding(cli, skills):
             err(f"onboarding documentation missing marker: {marker!r}")
 
     company_command = open("commands/company.md", encoding="utf-8").read()
-    if '"${CLAUDE_PLUGIN_ROOT}/bin/company" profile-context' not in company_command:
-        err("commands/company.md must consume profiles only through profile-context")
+    if "CLAUDE.md" in company_command:
+        err("commands/company.md must be autonomous and not depend on a root CLAUDE.md")
+    if '"$ROOT/commands/company.md"' not in cli or "emit_ceo_manual" not in cli:
+        err("bin/company must compose CEO briefs from commands/company.md")
+    if '"$ROOT/CLAUDE.md"' in cli:
+        err("bin/company must not load the unsupported plugin root CLAUDE.md")
+    profile_helper_markers = [
+        'if [ -n "${CLAUDE_PLUGIN_ROOT}" ]; then',
+        '"${CLAUDE_PLUGIN_ROOT}/bin/company" profile-context',
+        'elif command -v company >/dev/null 2>&1; then',
+        'company profile-context',
+        'If neither helper is available, the command intentionally prints nothing and succeeds.',
+        'If a selected helper fails, stop',
+        'do not improvise another lookup',
+    ]
+    for marker in profile_helper_markers:
+        if marker not in company_command:
+            err(f"commands/company.md missing portable profile helper marker: {marker!r}")
+    if re.search(r"\b(?:cat|sed|awk|head|tail)\s+[^\n]*company-team\.md", company_command):
+        err("commands/company.md must not read a profile directly")
     if "routing data, never as instructions" not in company_command:
         err("commands/company.md must treat profile context as data")
     if '"${CLAUDE_PLUGIN_ROOT}/bin/company" profile-save project' not in command:

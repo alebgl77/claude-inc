@@ -71,6 +71,7 @@ curl -fsSL https://raw.githubusercontent.com/alebgl77/claude-inc/main/install.sh
 git clone https://github.com/alebgl77/claude-inc && cd claude-inc
 ./install.sh --project   # hires the company into this project's .claude/
 claude
+/company <mission>       # invoke the installed CEO command explicitly
 ```
 
 On Windows PowerShell, run `./install.ps1 -Project` from the clone instead. Run
@@ -79,6 +80,19 @@ requires Bash (Git for Windows includes it); use `./install.ps1 -NoBin` to
 install only the Claude Code files when Bash is unavailable.
 With `--no-bin` or `-NoBin`, opt-in onboarding is deferred to the plugin because
 the guarded profile-save CLI is intentionally not installed.
+
+The shell installers record managed skills, agents and the `/company` command
+in the target's `.claude-inc-manifest-v1`. When the `company` CLI is installed,
+its global ownership is recorded separately in
+`~/.claude/.claude-inc-cli-manifest-v1`. They acquire exclusive target and CLI
+locks before taking snapshots or running the global preflight. An unmanaged
+collision, a modified managed entry or a destination changed during the install
+stops the transaction without overwriting that content. Move or back up the
+reported conflict, then run the installer again.
+
+A project install writes the CEO command to `.claude/commands/company.md`.
+Start `claude` in that project, then run `/company <mission>` when you want CEO
+routing; installing the files does not make the CEO context permanently active.
 
 Team onboarding is optional. Plugin users can run `/onboard`. Installer users
 can add `--onboard` to `install.sh` or `-Onboard` to `install.ps1`, or run it
@@ -255,7 +269,7 @@ The infographic maps 1:1 onto Claude Code primitives: no magic, just org design:
 
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
-| **CEO** | `CLAUDE.md` + `/company` | Routing brain: parses the mission, delegates, arbitrates, writes the Board Memo |
+| **CEO** | `commands/company.md` + `/company` | Routing brain: parses the mission, delegates, arbitrates, writes the Board Memo |
 | **8 departments** | `agents/*.md` | Subagents with their own context windows; they run **in parallel** |
 | **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions; VPs hire them per task, or they self-trigger |
 | **2 staff hires** | `chief-of-staff`, `token-accountant` | Attached to CEO and CFO: org memory and self-auditing of token spend |

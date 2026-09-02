@@ -455,9 +455,28 @@ compose_dept() { # $1=dept $2=task -> full self-contained prompt on stdout
   echo "Pick the right employee(s) above, execute their workflow, deliver files where appropriate, and report in your department memo format."
 }
 
+emit_ceo_manual() {
+  awk '
+    /^# Claude, Inc\.: CEO Operating Manual$/ { in_manual = 1 }
+    /^## Plugin invocation$/ {
+      if (in_manual) {
+        found_end = 1
+        exit
+      }
+    }
+    in_manual { print }
+    END {
+      if (!in_manual || !found_end) exit 1
+    }
+  ' "$ROOT/commands/company.md"
+}
+
 compose_brief() { # $1=mission
   local mission="$1"
-  cat "$ROOT/CLAUDE.md"
+  if ! emit_ceo_manual; then
+    echo "company: canonical CEO manual is missing or malformed" >&2
+    return 1
+  fi
   local s
   for s in chief-of-staff token-accountant; do
     if [ -f "$ROOT/skills/${s}/SKILL.md" ]; then

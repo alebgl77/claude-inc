@@ -25,6 +25,8 @@
 
 [Try Mission Studio](https://alebgl77.github.io/claude-inc/)
 
+[![Mission Studio preview: one brief, a crew, and a definition of done. Plan the team, handoffs, and review, then export the complete prompt.](studio/social-preview.png)](https://alebgl77.github.io/claude-inc/)
+
 Pick a mission, write your brief, and see who hands what to whom. **Mission
 Studio** turns a recipe into a plan and a self-contained prompt with the selected
 employees' actual manuals, named deliverables, and requested evidence checks.

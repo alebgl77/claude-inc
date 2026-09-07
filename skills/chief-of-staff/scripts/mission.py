@@ -2,9 +2,12 @@
 """Compile portable mission blueprints locally. Python 3.9+, standard library only."""
 
 import argparse
+import errno
 import json
+import os
 from pathlib import Path
 import re
+import stat
 import sys
 import unicodedata
 
@@ -249,6 +252,18 @@ def render_output(mission, output_format):
     raise MissionError(f"unknown output format: {output_format}")
 
 
+def is_closed_pipe_error(error):
+    # Windows' CRT can report a readerless pipe as EINVAL instead of EPIPE.
+    if isinstance(error, BrokenPipeError):
+        return True
+    if os.name != "nt" or error.errno != errno.EINVAL:
+        return False
+    try:
+        return stat.S_ISFIFO(os.fstat(sys.stdout.fileno()).st_mode)
+    except (OSError, ValueError):
+        return False
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     # A founder brief is one literal value, even when it starts with '--'.
@@ -271,15 +286,17 @@ def main(argv=None):
             output += "\n\nUse: company mission <id> [--brief TEXT] [--format markdown|json|prompt]\nWindows: python skills/chief-of-staff/scripts/mission.py show <id>\nOmitting --brief uses the recipe's sample brief.\n"
         else:
             output = render_output(compile_mission(company, args.id, args.brief), args.format)
-        sys.stdout.write(output)
-        sys.stdout.flush()
-        return 0
     except MissionError as exc:
         print(f"company mission: {exc}", file=sys.stderr)
         return 2
-    except BrokenPipeError:
+    try:
+        sys.stdout.write(output)
+        sys.stdout.flush()
+        return 0
+    except OSError as exc:
+        if not is_closed_pipe_error(exc):
+            raise
         # Match the existing Bash CLI's quiet, nonzero closed-reader behavior.
-        import os
         with open(os.devnull, "w") as sink:
             os.dup2(sink.fileno(), sys.stdout.fileno())
         return 141

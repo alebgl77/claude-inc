@@ -7,6 +7,8 @@ assistant of your choice.
 
 ## Open the Studio
 
+[Try Mission Studio](https://alebgl77.github.io/claude-inc/)
+
 1. Download and extract the repository ZIP, or clone the repository.
 2. Open `studio/index.html` directly in a browser. Keep the `studio` files together.
 3. Choose a recipe and edit its example brief.

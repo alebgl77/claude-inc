@@ -596,8 +596,9 @@ for a in "$@"; do
   esac
 done
 [ "$MISSION_BRIEF_VALUE" = "no" ] || ARGS+=("--brief")
+# Bash 3.2 treats an empty array as unset under nounset; guard before expansion.
+[ "${ARGS[0]+present}" = "present" ] || { usage; exit 1; }
 set -- "${ARGS[@]}"
-[ $# -ge 1 ] || { usage; exit 1; }
 
 CMD="$1"; shift || true
 

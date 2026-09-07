@@ -1,12 +1,14 @@
 """Portable acceptance tests for local mission compilation and browser parity."""
 
 import copy
+import errno
 import importlib.util
 import json
 import os
 from pathlib import Path
 import shlex
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -287,18 +289,44 @@ class OutputTests(unittest.TestCase):
             self.assertEqual(run_python(script, "--unknown", cwd=root).returncode, 2)
 
     def test_quiet_closed_pipe(self):
-        proc = subprocess.Popen([sys.executable, str(HELPER), "show", "launch", "--format", "prompt"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Remove every reader before starting the producer. Reading one byte and
+        # then closing races with a prompt that fits in the OS pipe buffer.
+        reader, writer = os.pipe()
+        os.close(reader)
+        with os.fdopen(writer, "wb") as output:
+            proc = subprocess.Popen([sys.executable, str(HELPER), "show", "launch", "--format", "prompt"], stdout=output, stderr=subprocess.PIPE)
         try:
-            proc.stdout.read(1)
-            proc.stdout.close()
             result = proc.wait(timeout=20)
-            self.assertEqual(result, 141)
-            self.assertEqual(proc.stderr.read(), b"")
+            stderr = proc.stderr.read()
+            self.assertEqual(result, 141, stderr)
+            self.assertEqual(stderr, b"")
         finally:
             proc.stderr.close()
             if proc.poll() is None:
                 proc.kill()
                 proc.wait()
+
+    def test_closed_pipe_classification_preserves_unrelated_errors(self):
+        self.assertTrue(mission.is_closed_pipe_error(BrokenPipeError(errno.EPIPE, "closed pipe")))
+        cases = (("nt", errno.EINVAL, stat.S_IFIFO, True),
+                 ("nt", errno.EINVAL, stat.S_IFREG, False),
+                 ("nt", errno.EACCES, stat.S_IFIFO, False),
+                 ("posix", errno.EINVAL, stat.S_IFIFO, False))
+        for platform, code, mode, expected in cases:
+            with self.subTest(platform=platform, errno=code, mode=mode):
+                with mock.patch.object(mission.os, "name", platform), mock.patch.object(mission.os, "fstat", return_value=mock.Mock(st_mode=mode)), mock.patch.object(mission.sys, "stdout"):
+                    self.assertEqual(mission.is_closed_pipe_error(OSError(code, "write failed")), expected)
+        for failure in (OSError(errno.EBADF, "bad descriptor"), ValueError("closed descriptor")):
+            with self.subTest(fstat_failure=type(failure).__name__):
+                with mock.patch.object(mission.os, "name", "nt"), mock.patch.object(mission.os, "fstat", side_effect=failure), mock.patch.object(mission.sys, "stdout"):
+                    self.assertFalse(mission.is_closed_pipe_error(OSError(errno.EINVAL, "write failed")))
+
+    def test_non_output_errors_are_never_classified_as_closed_pipes(self):
+        error = OSError(errno.EINVAL, "load failed")
+        with mock.patch.object(mission, "load_company", side_effect=error), mock.patch.object(mission.os, "name", "nt"), mock.patch.object(mission.os, "fstat", return_value=mock.Mock(st_mode=stat.S_IFIFO)), mock.patch.object(mission.sys, "stdout"):
+            with self.assertRaises(OSError) as caught:
+                mission.main(["show", "launch"])
+            self.assertIs(caught.exception, error)
 
 
 class BashTests(unittest.TestCase):
@@ -334,10 +362,19 @@ class BashTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(json.loads(result.stdout)["brief"], brief)
         self.assertEqual(self.run_company("missions", "--print").returncode, 0)
-        for args in (("mission",), ("mission", "missing"), ("mission", "launch", "--brief"), ("missions", "--bad"), ("--print",)):
-            result = self.run_company(*args)
-            self.assertNotEqual(result.returncode, 0)
-            self.assertNotIn(b"Traceback", result.stderr)
+        for args in (("mission",), ("mission", "missing"), ("mission", "launch", "--brief"), ("missions", "--bad"), ("--print",), ("--print", "")):
+            with self.subTest(args=args):
+                result = self.run_company(*args)
+                self.assertNotEqual(result.returncode, 0, f"stdout={result.stdout!r}; stderr={result.stderr!r}")
+                self.assertNotIn(b"Traceback", result.stderr)
+
+    def test_global_print_without_command_rejects_cleanly(self):
+        for args in (("--print",), ("-p",), ("--print", "-p"), ("--print", "--print")):
+            with self.subTest(args=args):
+                result = self.run_company(*args)
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertIn(b"USAGE", result.stdout)
+                self.assertEqual(result.stderr, b"")
 
     def test_engine_and_profile_sentinels_are_not_used(self):
         with tempfile.TemporaryDirectory() as directory:

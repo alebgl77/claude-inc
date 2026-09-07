@@ -1,0 +1,76 @@
+name: studio-pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'studio/**'
+      - 'skills/**'
+      - 'agents/**'
+      - 'bin/company'
+      - 'scripts/**'
+      - 'tests/test_missions.py'
+      - 'tests/test_studio.js'
+      - '.github/workflows/studio-pages.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: studio-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+          package-manager-cache: false
+
+      - name: Mission compiler tests
+        run: python -m unittest discover -s tests -p test_missions.py
+
+      - name: Studio tests
+        run: node --test tests/test_studio.js
+
+      - name: Studio dataset is current
+        run: python scripts/build_studio.py --check
+
+      - name: Stage only public Studio files
+        shell: bash
+        run: |
+          test ! -L studio
+          mkdir _site
+          for file in index.html studio.css studio.js missions.js; do
+            test -f "studio/$file"
+            test ! -L "studio/$file"
+            cp "studio/$file" "_site/$file"
+          done
+
+      - name: Upload Studio artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Studio
+        id: deployment
+        uses: actions/deploy-pages@v4

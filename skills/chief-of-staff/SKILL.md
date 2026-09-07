@@ -41,6 +41,24 @@ Done when: {verifiable criteria}
 Departments: {list} · Deadline: {date} · Constraints: {list}
 ```
 
+## Local mission blueprints
+
+`company missions` lists five curated workflows: `launch`, `validate`, `release`,
+`proposal`, and `content`. `company mission launch --brief "<founder brief>"`
+prints the staged plan; add `--format json` for structured data or `--format prompt`
+for a self-contained prompt with the selected employee manuals. Without `--brief`,
+the recipe's sample brief is used. Explicit briefs must contain non-whitespace text,
+fit within 8000 UTF-8 bytes, and contain no control characters except tab, CR, or LF.
+
+This optional feature requires Python 3.9+ and runs entirely locally. It never
+launches an AI engine, reads a team profile, or executes the mission. The selected
+crew is explicit, each stage has artifacts and acceptance checks, and the final
+review must report evidence as PASS, FAIL, or NOT RUN. Run the exported prompt
+through your chosen assistant; the compiler cannot enforce that assistant's work.
+On Windows, run `python skills/chief-of-staff/scripts/mission.py list` or
+`python skills/chief-of-staff/scripts/mission.py show launch --format prompt`.
+The packaged catalog is `references/missions.json`; the helper is `scripts/mission.py`.
+
 ## Quality bar
 
 - [ ] Ledger updated in the same turn — never "I'll note that"

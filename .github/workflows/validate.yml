@@ -46,7 +46,7 @@ jobs:
           [[ "$brief_output" == *'CEO Operating Manual'* ]]
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
-          [ "$(./bin/company version)" = "company v1.2.0" ]
+          [ "$(./bin/company version)" = "company v1.3.0" ]
 
       - name: A closed pipe ends the CLI quietly (macOS and Linux)
         if: runner.os != 'Windows'
@@ -339,7 +339,7 @@ jobs:
           & bash ./bin/company roster | Out-Null
           if ($LASTEXITCODE -ne 0) { throw 'CLI roster failed' }
           $version = & bash ./bin/company version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.2.0') { throw "Unexpected CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.3.0') { throw "Unexpected CLI version: $version" }
 
           $prompt = (& bash ./bin/company onboard --print) -join "`n"
           foreach ($marker in @('QUESTION 1/3', 'QUESTION 2/3', 'QUESTION 3/3', 'PROPOSAL')) {
@@ -482,7 +482,7 @@ jobs:
           [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
           [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
           [ -L "$HOME/.local/bin/company" ]
-          [ "$("$HOME/.local/bin/company" version)" = "company v1.2.0" ]
+          [ "$("$HOME/.local/bin/company" version)" = "company v1.3.0" ]
 
           export HOME="$test_root/project home"
           project="$test_root/project with spaces"
@@ -566,7 +566,7 @@ jobs:
           $wrapper = Join-Path $env:HOME '.local/bin/company.cmd'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.2.0') { throw "Unexpected installed CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.3.0') { throw "Unexpected installed CLI version: $version" }
 
           $wrapperProject = Join-Path $testRoot 'wrapper profile project with spaces'
           $wrapperProfileDir = Join-Path $wrapperProject '.claude'

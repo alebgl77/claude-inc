@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "missions": [
+    {
+      "id": "launch",
+      "title": "Launch a landing page",
+      "summary": "Turn an offer into factual copy, a working page, and a reviewed launch checklist.",
+      "outcome": "A blueprint for a launch package with claim sources, page files, test evidence, and a readiness decision.",
+      "sampleBrief": "Prepare a landing page for my appointment-booking tool for independent tutors. The first release supports booking links and email reminders. Use those facts only; do not invent customer quotes, pricing, or results. Keep signup as the single action and leave publication to me.",
+      "stages": [
+        {"id":"position","title":"Ground the offer and write the copy","department":"marketing","skills":["customer-research","copywriting"],"needs":[],"deliverables":["launch/claim-ledger.md","launch/landing-copy.md"],"checks":["Every factual claim and quotation maps to supplied or authorized source material; unsupported claims are removed or marked as assumptions.","Copy names one reader, one offer, and one CTA; missing audience evidence is stated rather than invented."],"review":false},
+        {"id":"build","title":"Build the page around the approved facts","department":"designers","skills":["frontend-design"],"needs":["position"],"deliverables":["launch/page/","launch/design-notes.md"],"checks":["Page files implement the copy and one working CTA, with semantic structure, labeled controls, and visible keyboard focus.","Record the actual mobile and desktop layouts inspected, including any inaccessible environment or unfinished interaction."],"review":false},
+        {"id":"test","title":"Exercise the visitor's critical path","department":"developers","skills":["webapp-testing"],"needs":["build"],"deliverables":["launch/qa-report.md","launch/test-results/"],"checks":["Exercise page load and the CTA plus at least two relevant edge cases; report exact commands, observed outcomes, and evidence paths.","Name test mode and limitations; a curl fallback does not count as a browser, visual, or keyboard test."],"review":false},
+        {"id":"review","title":"Review the launch evidence","department":"marketing","skills":["cro"],"needs":["position","build","test"],"deliverables":["launch/readiness-review.md"],"checks":["A reviewer distinct from the producing assignments reconciles the claim ledger, final page, CTA, and QA evidence; each required check has a cited result.","List blocking defects and unverified checks with owners. Recommend ready for founder review only if required checks PASS; do not publish or claim founder approval."],"review":true}
+      ]
+    },
+    {
+      "id": "validate",
+      "title": "Test an idea before building",
+      "summary": "Separate customer evidence from assumptions and design the smallest useful experiment.",
+      "outcome": "A blueprint for an evidence ledger, a falsifiable research plan, and a reasoned proceed, revise, or pause decision.",
+      "sampleBrief": "I am considering a weekly meal-planning service for parents with limited cooking time. I have no interviews or sales yet. Design a small validation experiment, show what evidence is missing, and define a decision rule before any research runs. Do not invent market size, quotes, or demand.",
+      "stages": [
+        {"id":"evidence","title":"Separate observations from assumptions","department":"marketing","skills":["customer-research"],"needs":[],"deliverables":["validation/evidence-ledger.md","validation/research-questions.md"],"checks":["Every observation has a source and sampling context; verbatims and counts come only from material actually inspected.","An empty corpus stays empty. List unknown pains, alternatives, willingness to pay, and the evidence needed to resolve them."],"review":false},
+        {"id":"experiment","title":"Design a falsifiable experiment","department":"marketing","skills":["cro"],"needs":["evidence"],"deliverables":["validation/experiment-plan.md","validation/decision-rule.md"],"checks":["Name one hypothesis, recruitment criteria, exact interview or test procedure, one primary metric, and one guardrail.","State the proceed, revise, and pause rules before collecting results; distinguish chosen thresholds from observed data and explain sample limitations."],"review":false},
+        {"id":"review","title":"Challenge the evidence and decision","department":"marketing","skills":["customer-research"],"needs":["evidence","experiment"],"deliverables":["validation/decision-review.md"],"checks":["A distinct reviewer assignment checks sources, leading questions, sampling bias, contradictory observations, and whether the experiment could disprove the hypothesis.","Apply the decision rule only to observed results. If research has not run, mark its checks NOT RUN and recommend the next evidence-gathering step without asserting market validation."],"review":true}
+      ]
+    },
+    {
+      "id": "release",
+      "title": "Prepare a release with evidence",
+      "summary": "Reproduce failures, verify the candidate, and make a release decision that can be audited.",
+      "outcome": "A blueprint for a reproducible failure record, focused regression evidence, and a release checklist with rollback steps.",
+      "sampleBrief": "Prepare the current web app for a release. Start from the failing test or bug report I provide, document the reproduction, make the smallest justified fix, and verify the critical path. Produce release notes and rollback instructions. Do not deploy, tag, or push a release.",
+      "stages": [
+        {"id":"reproduce","title":"Establish the failure and release scope","department":"developers","skills":["superpowers"],"needs":[],"deliverables":["release/reproduction.md","release/scope.md"],"checks":["Record the candidate revision, environment, exact reproduction command or steps, expected result, and observed result.","Define invariants and release acceptance before changing code. If the failure cannot be reproduced, record that limitation and do not invent a root cause."],"review":false},
+        {"id":"verify","title":"Fix narrowly and exercise regressions","department":"developers","skills":["superpowers","webapp-testing"],"needs":["reproduce"],"deliverables":["release/change-summary.md","release/regression-report.md","release/test-results/"],"checks":["A regression test demonstrates the failure before the fix and passes after it, or the missing demonstration is explicitly NOT RUN with its blocker.","Run the relevant project checks and critical browser path with at least two edge cases; preserve commands, exit results, and failure artifacts."],"review":false},
+        {"id":"review","title":"Review readiness and rollback","department":"developers","skills":["superpowers","webapp-testing"],"needs":["reproduce","verify"],"deliverables":["release/readiness-review.md","release/release-notes.md","release/rollback.md"],"checks":["A reviewer distinct from the fix assignment inspects the final diff and evidence against every invariant and release check; unresolved FAIL or NOT RUN items block a complete verdict.","Release notes match the actual diff, rollback steps identify the previous working state, and the checklist clearly separates verified work from deployment that has not run. Do not deploy, tag, or push."],"review":true}
+      ]
+    },
+    {
+      "id": "proposal",
+      "title": "Build a proposal you can stand behind",
+      "summary": "Connect confirmed client needs to scoped options, responsibilities, and reviewed terms.",
+      "outcome": "A blueprint for a sourced client brief, a proposal draft, and a terms review for the founder's decision.",
+      "sampleBrief": "Turn my discovery notes for a reporting-dashboard project into a client proposal. Use only confirmed needs, budget figures, and dates from the notes. Make deliverables, exclusions, client responsibilities, and acceptance explicit. Flag missing commercial inputs and prepare terms for review; do not send or sign anything.",
+      "stages": [
+        {"id":"context","title":"Ground the client brief","department":"sales","skills":["account-research"],"needs":[],"deliverables":["proposal/client-brief.md","proposal/assumptions.md"],"checks":["Each client fact, pain, and budget signal cites supplied notes or an authorized source with a date where available; hypotheses are labeled.","Missing client-confirmed pain, decision process, or scope is listed as a blocker; no invented company signals or client quotations."],"review":false},
+        {"id":"draft","title":"Define options and delivery boundaries","department":"sales","skills":["proposal-builder"],"needs":["context"],"deliverables":["proposal/proposal-draft.md","proposal/acceptance-matrix.md"],"checks":["Each option names deliverables, exclusions, acceptance, milestones, and responsibilities; scope traces to the client brief.","Use only supplied commercial figures for pricing or value math, show calculations and assumptions, and mark missing figures unresolved. No unsupported savings, guarantees, or agreement."],"review":false},
+        {"id":"review","title":"Review commitments and terms","department":"legal","skills":["review-contract"],"needs":["context","draft"],"deliverables":["proposal/terms-review.md","proposal/readiness-review.md"],"checks":["The independent legal reviewer inventories applicable clauses, identifies missing terms, quotes flagged language, and provides concrete revisions with stated reasoning and jurisdiction limits.","Reconcile the draft with scope and evidence; list unresolved commitments for the founder and counsel. No signature, sending, binding legal approval, or claimed client acceptance."],"review":true}
+      ]
+    },
+    {
+      "id": "content",
+      "title": "Create a coherent content campaign",
+      "summary": "Keep the founder's voice, one useful idea, and substantiated claims consistent across drafts.",
+      "outcome": "A blueprint for a voice guide, source-backed anchor copy, channel drafts, and an editorial review.",
+      "sampleBrief": "Create a one-week content campaign explaining a lesson from my product-building notes. I will provide writing samples and the underlying facts. Draft one anchor email and three LinkedIn posts with one consistent idea and CTA. Do not invent performance numbers, personal stories, or quotes, and do not schedule or publish.",
+      "stages": [
+        {"id":"voice","title":"Capture the voice and source limits","department":"social-media","skills":["voice-builder"],"needs":[],"deliverables":["content/voice-guide.md","content/source-ledger.md"],"checks":["Voice rules cite the founder's supplied writing; fewer than five usable samples is labeled low confidence rather than filled with invented examples.","The source ledger separates usable facts, attributed quotes, personal experience, and missing evidence; no invented personal story or result."],"review":false},
+        {"id":"anchor","title":"Write the anchor argument","department":"marketing","skills":["copywriting"],"needs":["voice"],"deliverables":["content/anchor-email.md","content/claim-map.md"],"checks":["The anchor has one useful idea, one reader, and one CTA, applying the voice guide with explicit assumptions when samples are limited.","Every factual or numeric claim maps to an inspected source; remove or qualify claims that cannot be supported."],"review":false},
+        {"id":"adapt","title":"Adapt the idea to channel drafts","department":"social-media","skills":["post-writer"],"needs":["voice","anchor"],"deliverables":["content/channel-drafts.md","content/editorial-calendar.md"],"checks":["Three complete post drafts add distinct angles while preserving the anchor's facts, voice, and CTA; record actual character counts.","Calendar entries are proposed drafts with explicit channel and purpose. Do not imply they were posted, scheduled, or achieved any reach."],"review":false},
+        {"id":"review","title":"Review claims and editorial coherence","department":"marketing","skills":["copywriting"],"needs":["voice","anchor","adapt"],"deliverables":["content/editorial-review.md"],"checks":["A distinct editor assignment verifies every draft against the source ledger, voice guide, platform constraints, and one consistent CTA; cite concrete corrections.","Record remaining evidence gaps and founder decisions. A complete verdict requires every required check PASS; nothing is automatically scheduled or published."],"review":true}
+      ]
+    }
+  ]
+}

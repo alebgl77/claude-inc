@@ -30,7 +30,7 @@ function New-Fixture([string]$Path) {
     Write-Utf8 (Join-Path $Path "commands/company.md") "command-v1`n"
     Write-Utf8 (Join-Path $Path "onboarding/ONBOARDING.md") "# Onboarding`n"
     Write-Utf8 (Join-Path $Path ".claude-plugin/plugin.json") '{"name":"fixture"}'
-    Write-Utf8 (Join-Path $Path "bin/company") "#!/usr/bin/env bash`nif [ `"`${1:-}`" = version ]; then echo `"company v1.2.0`"; else echo company; fi`n"
+    Write-Utf8 (Join-Path $Path "bin/company") "#!/usr/bin/env bash`nif [ `"`${1:-}`" = version ]; then echo `"company v1.3.0`"; else echo company; fi`n"
 }
 
 function Invoke-Global([string]$Fixture, [string]$HomePath, [switch]$NoBin) {
@@ -313,7 +313,7 @@ if ($Point -eq "before-cleanup-stage") { throw "simulated cleanup failure" }
     $fixture = Join-Path $TestRoot "percent %NAME% source"; $TestHome = Join-Path $TestRoot "percent home"; New-Fixture $fixture; $null = New-Item -ItemType Directory -Force -Path $TestHome
     $oldName = $env:NAME; $env:NAME = "EXPANDED"
     try { Invoke-Global $fixture $TestHome; $version = & (Join-Path $TestHome ".local/bin/company.cmd") version } finally { $env:NAME = $oldName }
-    if ($LASTEXITCODE -ne 0 -or $version -ne "company v1.2.0") { Fail "percent-safe wrapper did not launch the intended source" }
+    if ($LASTEXITCODE -ne 0 -or $version -ne "company v1.3.0") { Fail "percent-safe wrapper did not launch the intended source" }
 
     # A blocked remote upgrade never pulls or mutates the active legacy cache or wrapper.
     $origin = Join-Path $TestRoot "remote origin"; $activeCache = Join-Path $TestRoot "active cache"; $TestHome = Join-Path $TestRoot "remote home"

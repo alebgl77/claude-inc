@@ -2,7 +2,17 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
-## [Unreleased]
+## [1.3.0] - 2026-09-08
+
+### Added
+- Mission Studio: a browser workspace that opens locally, shows selected manuals
+  and ordered handoffs, and exports prompts, plans, and template-only mission cards
+- Five mission recipes: `launch`, `validate`, `release`, `proposal`, and `content`,
+  with named deliverables, evidence checks, and a separate final reviewer assignment
+- Local `company missions` and `company mission` commands with Markdown, JSON,
+  and prompt output; Python 3.9+ is required only for the new mission commands
+- Independent Mission Studio CI on Linux, macOS, and Windows, including compiler
+  tests, frontend tests, and generated dataset freshness checks
 
 ### Fixed
 - Made `commands/company.md` the canonical, self-contained CEO manual used by

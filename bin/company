@@ -3,7 +3,7 @@
 # https://github.com/alebgl77/claude-inc
 set -euo pipefail
 
-VERSION="1.2.0"
+VERSION="1.3.0"
 
 # ---------------------------------------------------------------- resolve root
 SOURCE="${BASH_SOURCE[0]}"
@@ -497,6 +497,18 @@ compose_brief() { # $1=mission
 # --------------------------------------------------------------------- runner
 ENGINE="${CLAUDE_INC_ENGINE:-claude}"
 
+run_mission() { # local compiler only; Python is optional for all other commands
+  local interpreter
+  for interpreter in python3 python; do
+    if command -v "$interpreter" >/dev/null 2>&1 &&
+       "$interpreter" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      exec "$interpreter" "$ROOT/skills/chief-of-staff/scripts/mission.py" "$@"
+    fi
+  done
+  echo "company mission: Python 3.9 or newer is required (install python3 or python). Other company commands do not require Python." >&2
+  return 1
+}
+
 run_prompt() { # $1=prompt $2=print_only
   local prompt="$1" print_only="$2"
   if [ "$print_only" = "yes" ]; then
@@ -533,6 +545,8 @@ USAGE
   company brief "<mission>"          Brief the CEO; routes to relevant departments
   company <dept> "<task>"            Task one department directly
   company roster                     Show the org chart
+  company missions                   List five local mission blueprints
+  company mission <id> [options]      Print a staged blueprint; never calls an AI engine
   company team                       Show the active team profile
   company onboard [--global]         Configure an optional active team profile
   company hire [--project]           Install skills+agents (~/.claude or ./.claude)
@@ -544,6 +558,13 @@ DEPARTMENTS (aliases)
 OPTIONS
   -p, --print                        Print the composed prompt instead of running it
                                      (pipe it into ANY AI CLI: gemini, codex, llm, ...)
+
+MISSION OPTIONS (Python 3.9+; always stdout, no team profile access)
+  --brief TEXT                       Founder brief (max 8000 UTF-8 bytes)
+                                     Omit to use the recipe's sample brief
+  --format markdown|json|prompt      Default: markdown; prompt includes selected manuals
+  Windows: python skills/chief-of-staff/scripts/mission.py list
+           python skills/chief-of-staff/scripts/mission.py show launch --format prompt
 
 ENGINE
   Uses '\$CLAUDE_INC_ENGINE' (default: claude). Examples:
@@ -558,17 +579,31 @@ EOF
 
 PRINT_ONLY="no"
 ARGS=()
+MISSION_BRIEF_VALUE="no"
 for a in "$@"; do
+  if [ "$MISSION_BRIEF_VALUE" = "yes" ]; then
+    ARGS+=("--brief=$a")
+    MISSION_BRIEF_VALUE="no"
+    continue
+  fi
+  if [ "${ARGS[0]:-}" = "mission" ] && [ "$a" = "--brief" ]; then
+    MISSION_BRIEF_VALUE="yes"
+    continue
+  fi
   case "$a" in
     -p|--print) PRINT_ONLY="yes" ;;
     *) ARGS+=("$a") ;;
   esac
 done
+[ "$MISSION_BRIEF_VALUE" = "no" ] || ARGS+=("--brief")
 set -- "${ARGS[@]}"
+[ $# -ge 1 ] || { usage; exit 1; }
 
 CMD="$1"; shift || true
 
 case "$CMD" in
+  missions)       run_mission list "$@" ;;
+  mission)        run_mission show "$@" ;;
   roster|org)     roster ;;
   team)           show_team ;;
   profile-context) profile_context ;;

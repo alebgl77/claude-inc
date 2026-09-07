@@ -21,7 +21,7 @@ STAFF = {"chief-of-staff", "token-accountant"}
 EXPECTED_EMPLOYEES = 50
 EXPECTED_DEPARTMENTS = 8
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
-EXPECTED_VERSION = "1.2.0"
+EXPECTED_VERSION = "1.3.0"
 CANONICAL_DEPARTMENTS = {
     "developers", "designers", "marketing", "social-media", "finance",
     "small-business", "legal", "sales",

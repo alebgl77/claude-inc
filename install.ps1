@@ -161,7 +161,7 @@ if ((-not $NoBin) -or $Onboard) {
         if ($git) { $gitBash = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $git.Source) "..\bin\bash.exe")); if (Test-Path -LiteralPath $gitBash -PathType Leaf) { $bashes += $gitBash } }
         foreach ($bash in @($bashes | Select-Object -Unique)) {
             $probe = & $bash -l $CompanyScriptProbe version 2>$null
-            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.2.0") { $BashPath = $bash; break }
+            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.3.0") { $BashPath = $bash; break }
         }
     }
     if ((-not $NoBin) -and -not $BashPath) { throw "The company CLI requires a working Bash. Install Git for Windows, or rerun with -NoBin." }

@@ -21,6 +21,43 @@
 
 ---
 
+## Try Mission Studio
+
+Pick a mission, write your brief, and see who hands what to whom. **Mission
+Studio** turns a recipe into a plan and a self-contained prompt with the selected
+employees' actual manuals, named deliverables, and requested evidence checks.
+
+**Open it locally:** [download the repository ZIP](https://github.com/alebgl77/claude-inc/archive/refs/heads/main.zip)
+and extract it, or clone this repo. Open `studio/index.html` in your browser.
+No install, build, API key, or local server is needed.
+
+| Mission | What the plan covers |
+|---|---|
+| `launch` | Landing-page copy, page files, QA, and a readiness review |
+| `validate` | Customer evidence, a falsifiable experiment, and a decision rule |
+| `release` | Reproduction, regression checks, release notes, and rollback |
+| `proposal` | Client facts, scope and acceptance, pricing assumptions, and terms review |
+| `content` | A voice guide, anchor email, channel drafts, and editorial review |
+
+The Studio shows the unique manuals selected and their byte size against all 50
+manuals. Copy the full prompt into your chosen assistant, download the prompt or
+plan, or export a mission card. The card and preset link omit your private brief.
+
+Prefer a terminal? With the `company` CLI installed and Python 3.9+ available:
+
+```bash
+company missions
+company mission launch --brief "Launch my invoicing app for freelancers"
+company mission launch --brief "Launch my invoicing app for freelancers" --format prompt
+```
+
+These commands print locally; they never start an assistant, even if one is
+installed. You choose where to run the prompt. The plan asks for `PASS`, `FAIL`,
+or `NOT RUN` with evidence; generating it does not perform or verify the work.
+
+[Mission Studio guide](docs/mission-studio.md) covers Windows without Bash,
+output formats, privacy, and recipe authoring.
+
 ## Why
 
 Everyone screenshots the org-chart infographics. Nobody ships them.

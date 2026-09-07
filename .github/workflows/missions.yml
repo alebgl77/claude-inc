@@ -1,0 +1,40 @@
+name: missions
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  mission-studio:
+    name: Mission compiler and Studio (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+          package-manager-cache: false
+
+      - name: Mission compiler tests
+        run: python -m unittest discover -s tests -p test_missions.py
+
+      - name: Studio tests
+        run: node --test tests/test_studio.js
+
+      - name: Studio dataset is current
+        run: python scripts/build_studio.py --check
+
+      - name: Repository validation
+        run: python scripts/validate.py

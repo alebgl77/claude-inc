@@ -22,7 +22,7 @@ make_fixture() {
   printf 'command-v1\n' >"$fixture/commands/company.md"
   printf '# Onboarding\n' >"$fixture/onboarding/ONBOARDING.md"
   printf '{"name":"fixture"}\n' >"$fixture/.claude-plugin/plugin.json"
-  printf '#!/usr/bin/env bash\nif [ "${1:-}" = version ]; then echo "company v1.4.0"; else echo company; fi\n' >"$fixture/bin/company"
+  printf '#!/usr/bin/env bash\nif [ "${1:-}" = version ]; then echo "company v1.4.1"; else echo company; fi\n' >"$fixture/bin/company"
   chmod +x "$fixture/bin/company"
 }
 

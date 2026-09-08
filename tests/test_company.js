@@ -104,13 +104,20 @@ test('download errors are visible and release any allocated URL',()=>{
   assert.match(h.get('action-status').textContent,/could not start/);assert.equal(h.window.revoked,'blob:test');
 });
 test('clipboard absence or rejection has a visible exact manual-copy fallback',async()=>{
-  for(const clipboard of [undefined,{writeText:()=>Promise.reject(new Error('Denied'))}]){
-    const h=harness({clipboard});h.edit();await h.get('copy-ceo').click();assert.equal(h.get('copy-fallback').hidden,false);assert.equal(h.get('manual-copy').value,'/company\n\n'+app.composeBrief(data,fields,[]));assert.equal(h.get('manual-copy').selected,true);assert.match(h.get('action-status').textContent,/unavailable/);
+  for(const [kind,command] of [['plugin','/claude-inc:company'],['direct','/company']])for(const clipboard of [undefined,{writeText:()=>Promise.reject(new Error('Denied'))}]){
+    const h=harness({clipboard});assert.equal(h.get('installation-kind').value,'plugin');h.get('installation-kind').value=kind;h.get('installation-kind').listeners.change();h.edit();await h.get('copy-ceo').click();assert.equal(h.get('copy-fallback').hidden,false);assert.equal(h.get('manual-copy').value,command+'\n\n'+app.composeBrief(data,fields,[]));assert.equal(h.get('manual-copy').selected,true);assert.match(h.get('action-status').textContent,/unavailable/);
   }
+});
+
+test('copy selects the explicit installation namespace and never changes downloaded brief content',async()=>{
+  const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8');assert.match(html,/<label for="installation-kind">Claude Code installation<\/label>/);assert.match(html,/<option value="plugin" selected>Plugin<\/option>/);assert.match(html,/<option value="direct">Direct installation<\/option>/);
+  let copied;const h=harness({clipboard:{writeText:async value=>{copied=value;}}});h.edit();await h.get('copy-ceo').click();assert.equal(copied,'/claude-inc:company\n\n'+app.composeBrief(data,fields,[]));
+  h.get('installation-kind').value='direct';h.get('installation-kind').listeners.change();await h.get('copy-ceo').click();assert.equal(copied,'/company\n\n'+app.composeBrief(data,fields,[]));h.get('download-brief').click();assert.equal(await h.window.blob.text(),app.composeBrief(data,fields,[]));
+  h.get('installation-kind').value='plugin; malicious';await h.get('copy-ceo').click();assert.match(h.get('action-status').textContent,/Choose Plugin or Direct/);assert.equal(h.get('copy-fallback').hidden,true);
 });
 test('clipboard completion is honest and stale completions cannot restore private data',async()=>{
   let resolve;const h=harness({clipboard:{writeText:()=>new Promise(done=>{resolve=done;})}});h.edit();const pending=h.get('copy-ceo').click();assert.equal(h.get('action-status').textContent,'');resolve();await pending;assert.match(h.get('action-status').textContent,/copied/);
-  for(const action of ['edit','download']){let reject;const g=harness({clipboard:{writeText:()=>new Promise((_,fail)=>{reject=fail;})}});g.edit();const old=g.get('copy-ceo').click();if(action==='edit')g.edit({...fields,brief:'New draft'});else g.get('download-brief').click();reject(new Error('Denied'));await old;assert.equal(g.get('copy-fallback').hidden,true);assert.equal(g.get('manual-copy').value,'');}
+  for(const action of ['edit','download','installation']){let reject;const g=harness({clipboard:{writeText:()=>new Promise((_,fail)=>{reject=fail;})}});g.edit();const old=g.get('copy-ceo').click();if(action==='edit')g.edit({...fields,brief:'New draft'});else if(action==='installation'){g.get('installation-kind').value='direct';g.get('installation-kind').listeners.change();}else g.get('download-brief').click();reject(new Error('Denied'));await old;assert.equal(g.get('copy-fallback').hidden,true);assert.equal(g.get('manual-copy').value,'');}
 });
 test('realistic multi-department state validates every lifecycle status and displays actual tasks',async()=>{
   const s=project();assert.deepEqual(app.parseProject(JSON.stringify(s),data),s);const h=harness();await h.load(s);
@@ -128,10 +135,18 @@ test('contradictory task states, dependencies, reviews and histories fail valida
   for(const mutate of cases){const s=project();mutate(s);assert.throws(()=>app.validateProject(s,data),mutate.toString());}
 });
 test('artifact names must stay portable and relative; hashes and sizes are only recorded metadata',()=>{
-  for(const value of ['/private/file','../secret','a/../b','C:/private','x:y','a\\b','a//b','a/.','a/CON.txt','.claude/company/project.json','a.','a ']){
+  for(const value of ['/private/file','../secret','a/../b','C:/private','x:y','a\\b','a//b','a/.','.claude/company/project.json']){
     const s=project();s.tasks[3].artifacts[0].path=value;assert.throws(()=>app.validateProject(s,data),value);
   }
   for(const [key,value] of [['size',-1],['size',2**30],['sha256','bad']]){const s=project();s.tasks[3].artifacts[0][key]=value;assert.throws(()=>app.validateProject(s,data));}
+  for(const value of ['résultats/rapport été.md','資料/結果 🚀.md','COM10.txt','normal¹.md']){const s=project();s.tasks[3].artifacts[0].path=value;assert.deepEqual(app.validateProject(s,data),s);}
+});
+
+test('legacy POSIX artifact names stay readable and receive an inert portability warning',async()=>{
+  for(const value of ['report?.md','report|final.md','report*.md','report<final>.md','report"final.md','COM¹.txt','LPT².txt','COM³.txt','NUL .txt','CONIN$','conout$.log','folder/COM1 .md','a.','a ']){
+    const s=project();s.tasks[3].artifacts[0].path=value;assert.deepEqual(app.validateProject(s,data),s);const h=harness();await h.load(s);assert.ok(allText(h.get('snapshot-context')).includes(value));assert.match(allText(h.get('snapshot-context')),/not portable across operating systems/);assert.ok(allText(h.get('snapshot-tasks')).includes(value));
+  }
+  const h=harness();await h.load(project());assert.doesNotMatch(allText(h.get('snapshot-context')),/not portable/);
 });
 test('imported text is inert, never leaks to exports, and reset clears displayed private state',async()=>{
   const h=harness();h.edit();const s=project();s.name='</h3><script>attack()</script>';s.brief='<img src=x onerror=attack()> PRIVATE IMPORT';

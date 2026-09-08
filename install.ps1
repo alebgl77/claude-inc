@@ -76,7 +76,7 @@ function Assert-CanonicalManagedName([string]$Kind, [string]$Name) {
         "skill" { $Name -cmatch $slugPattern }
         "agent" { $Name -cmatch '^[a-z0-9]+(?:-[a-z0-9]+)*\.md$' }
         "command" { $Name -ceq "company.md" }
-        "cli" { $Name -ceq "company.cmd" }
+        "cli" { $Name -ceq "company.exe" -or $Name -ceq "company.cmd" }
         default { $false }
     }
     if (-not $valid) { throw "Non-canonical managed name for ${Kind}: $Name" }
@@ -121,8 +121,65 @@ function Invoke-TestHook([string]$Point, [string]$Kind, [string]$Name, [string]$
     if ($LASTEXITCODE -ne 0) { throw "Test hook failed at $Point for $Kind/$Name" }
 }
 
+function ConvertTo-NativeArgument([string]$Value) {
+    $builder = New-Object Text.StringBuilder
+    [void]$builder.Append([char]34); $slashes = 0
+    foreach ($character in $Value.ToCharArray()) {
+        if ($character -eq [char]92) { $slashes++; continue }
+        if ($character -eq [char]34) { [void]$builder.Append([char]92, (2 * $slashes + 1)); [void]$builder.Append([char]34) }
+        else { [void]$builder.Append([char]92, $slashes); [void]$builder.Append($character) }
+        $slashes = 0
+    }
+    [void]$builder.Append([char]92, (2 * $slashes)); [void]$builder.Append([char]34)
+    $builder.ToString()
+}
+
+function Get-LauncherBuildParent([string]$TemporaryPath) {
+    $full = [IO.Path]::GetFullPath($TemporaryPath)
+    if ($full -cne [IO.Path]::GetPathRoot($full)) {
+        $full = $full.TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+    }
+    $full
+}
+
+function New-NativeLauncher([string]$Template, [string]$Bash, [string]$Company, [string]$BuildRoot) {
+    $windowsDirectory = [Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
+    $compiler = $null
+    foreach ($relative in @("Microsoft.NET/Framework64/v4.0.30319/csc.exe", "Microsoft.NET/Framework/v4.0.30319/csc.exe")) {
+        $candidate = Join-Path $windowsDirectory $relative
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) { $null = Get-FileFingerprint $candidate; $compiler = $candidate; break }
+    }
+    if (-not $compiler) { throw "The local .NET Framework compiler is required for the safe company.exe launcher. Enable .NET Framework or use -NoBin; no batch launcher will be installed." }
+    $templateHash = Get-FileFingerprint $Template
+    $source = [IO.File]::ReadAllText($Template, $Utf8NoBom)
+    foreach ($marker in @("__BASH_PATH_BASE64__", "__COMPANY_PATH_BASE64__")) {
+        if (($source.Split(@($marker), [StringSplitOptions]::None).Count - 1) -ne 1) { throw "Invalid native launcher source template" }
+    }
+    $source = $source.Replace("__BASH_PATH_BASE64__", [Convert]::ToBase64String($Utf8NoBom.GetBytes($Bash)))
+    $source = $source.Replace("__COMPANY_PATH_BASE64__", [Convert]::ToBase64String($Utf8NoBom.GetBytes($Company)))
+    $null = New-Item -ItemType Directory -Path $BuildRoot
+    $sourcePath = Join-Path $BuildRoot "company-launcher.cs"; $outputPath = Join-Path $BuildRoot "company.exe"
+    [IO.File]::WriteAllText($sourcePath, $source, $Utf8NoBom)
+    $arguments = @("/nologo", "/target:exe", "/platform:anycpu", "/optimize+", "/debug-", "/out:$outputPath", $sourcePath)
+    $start = New-Object Diagnostics.ProcessStartInfo
+    $start.FileName = $compiler; $start.Arguments = (($arguments | ForEach-Object { ConvertTo-NativeArgument $_ }) -join " ")
+    $start.UseShellExecute = $false; $start.CreateNoWindow = $true
+    $start.RedirectStandardOutput = $true; $start.RedirectStandardError = $true
+    $process = [Diagnostics.Process]::Start($start)
+    try {
+        $stdout = $process.StandardOutput.ReadToEndAsync(); $stderr = $process.StandardError.ReadToEndAsync()
+        $process.WaitForExit(); $null = $stdout.GetAwaiter().GetResult(); $null = $stderr.GetAwaiter().GetResult()
+        if ($process.ExitCode -ne 0) { throw "Native company.exe compilation failed. Restore the packaged launcher source or use -NoBin; no CLI files were published." }
+    } finally { $process.Dispose() }
+    if ((Get-FileFingerprint $Template) -cne $templateHash) { throw "Native launcher source changed during compilation" }
+    $null = Get-FileFingerprint $outputPath
+    $outputPath
+}
+
 # Resolve a local checkout or clone a remote candidate without pulling the active cache.
 $RemoteMode = $false; $RemoteCandidate = $null; $RemoteFinal = $null; $RemoteFinalWasNew = $false; $LegacyCompanyScript = $null
+$LauncherBuildRoot = $null; $LauncherCandidate = $null
+$LauncherBuildParent = Get-LauncherBuildParent ([IO.Path]::GetTempPath())
 $CacheLock = "$CloneDir.claude-inc-cache.lock"; $CacheLockHeld = $false
 $PrimaryFailure = $null; $CleanupFailures = New-Object 'Collections.Generic.List[string]'; $Committed = $false; $RecoverySucceeded = $true
 try {
@@ -161,19 +218,24 @@ if ((-not $NoBin) -or $Onboard) {
         if ($git) { $gitBash = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $git.Source) "..\bin\bash.exe")); if (Test-Path -LiteralPath $gitBash -PathType Leaf) { $bashes += $gitBash } }
         foreach ($bash in @($bashes | Select-Object -Unique)) {
             $probe = & $bash -l $CompanyScriptProbe version 2>$null
-            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.4.0") { $BashPath = $bash; break }
+            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.4.1") { $BashPath = $bash; break }
         }
     }
     if ((-not $NoBin) -and -not $BashPath) { throw "The company CLI requires a working Bash. Install Git for Windows, or rerun with -NoBin." }
 }
 
 $CompanyScriptFinal = if ($RemoteMode) { Join-Path $RemoteFinal "bin/company" } else { $CompanyScriptProbe }
+if (-not $NoBin) {
+    $launcherTemplate = Join-Path $SourceRoot "skills/chief-of-staff/scripts/windows_launcher.cs"
+    $LauncherBuildRoot = Join-Path $LauncherBuildParent ("claude-inc-launcher-" + [Guid]::NewGuid().ToString("N"))
+    $LauncherCandidate = New-NativeLauncher $launcherTemplate $BashPath $CompanyScriptFinal $LauncherBuildRoot
+}
 if ($Project) {
     $ProjectRoot = (Get-Location).ProviderPath; if (-not $ProjectRoot) { throw "-Project requires a filesystem working directory." }
     $Target = Join-Path $ProjectRoot ".claude"
 } else { $Target = Join-Path $UserHome ".claude" }
 $TargetSkills = Join-Path $Target "skills"; $TargetAgents = Join-Path $Target "agents"; $TargetCommands = Join-Path $Target "commands"
-$BinDir = Join-Path $UserHome ".local/bin"; $WrapperPath = Join-Path $BinDir "company.cmd"
+$BinDir = Join-Path $UserHome ".local/bin"; $WrapperPath = Join-Path $BinDir "company.exe"
 $ManifestPath = Join-Path $Target $ManifestName; $CliManifestPath = Join-Path (Join-Path $UserHome ".claude") $CliManifestName
 $TargetLock = "$Target.claude-inc-install.lock"; $CliLock = Join-Path $UserHome ".claude-inc-cli-install.lock"
 $TargetLockHeld = $false; $CliLockHeld = $false
@@ -188,7 +250,7 @@ function Get-Destination([string]$Kind, [string]$Name) {
         "skill" { Join-Path $TargetSkills $Name }
         "agent" { Join-Path $TargetAgents $Name }
         "command" { Join-Path $TargetCommands $Name }
-        "cli" { $WrapperPath }
+        "cli" { Join-Path $BinDir $Name }
         "meta-main" { $ManifestPath }
         "meta-cli" { $CliManifestPath }
         default { throw "Unknown managed kind: $Kind" }
@@ -344,16 +406,16 @@ try {
     Add-PlanEntry "command" "company.md" "file" (Get-FileFingerprint $commandSource) $commandSource $null $null
 
     if (-not $NoBin) {
-        $escapedBash = $BashPath.Replace("%", "%%"); $escapedCompany = $CompanyScriptFinal.Replace("%", "%%")
-        $wrapperContent = "@echo off`r`n`"$escapedBash`" -l `"$escapedCompany`" %*`r`n"
-        $wrapperHash = Get-BytesSha256 $Utf8NoBom.GetBytes($wrapperContent)
-        $legacyHash = $null
-        if ($LegacyCompanyScript) {
-            $legacyEscaped = $LegacyCompanyScript.Replace("%", "%%")
-            $legacyWrapper = "@echo off`r`n`"$escapedBash`" -l `"$legacyEscaped`" %*`r`n"
-            $legacyHash = Get-BytesSha256 $Utf8NoBom.GetBytes($legacyWrapper)
+        $oldKey = "cli`tcompany.cmd"; $oldPath = Get-Destination "cli" "company.cmd"; $oldState = Get-State "cli" $oldPath
+        if ($CliRecords.ContainsKey($oldKey)) {
+            $old = $CliRecords[$oldKey]
+            if ($oldState.Type -cne $old.Type -or $oldState.Value -cne $old.Value) { throw "Managed legacy company.cmd was modified or is missing; no files were changed: $oldPath" }
+            $Plan.Add([pscustomobject]@{ Kind="cli"; Name="company.cmd"; DesiredType="absent"; DesiredValue="-"; SourcePath=$null; Content=$null; Destination=$oldPath; PriorType=$oldState.Type; PriorValue=$oldState.Value; StagePath=$null })
+            $CliRecords.Remove($oldKey)
+        } elseif ($oldState.Type -ne "absent") {
+            throw "Unmanaged collision for legacy company.cmd; remove or back it up explicitly before installing the safe native launcher: $oldPath"
         }
-        Add-PlanEntry "cli" "company.cmd" "file" $wrapperHash $null $wrapperContent $legacyHash
+        Add-PlanEntry "cli" "company.exe" "file" (Get-FileFingerprint $LauncherCandidate) $LauncherCandidate $null $null
     }
 
     # Upstream removals are safe only while the old managed bytes remain untouched.
@@ -379,7 +441,7 @@ try {
             Assert-SafeContainer $BinDir "CLI directory"
             $stagePath = Join-Path $BinDir (".claude-inc-company-stage-" + [Guid]::NewGuid().ToString("N") + ".tmp")
             $CliStageTemp = $stagePath
-            $bytes = $Utf8NoBom.GetBytes($entry.Content)
+            $bytes = [IO.File]::ReadAllBytes($entry.SourcePath)
             $stream = [IO.File]::Open($stagePath, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
             try { $stream.Write($bytes, 0, $bytes.Length); $stream.Flush($true) } finally { $stream.Dispose() }
             if ((Get-FileFingerprint $stagePath) -cne $entry.DesiredValue) { throw "Staged CLI verification failed" }
@@ -455,7 +517,7 @@ if (-not $NoBin) { Write-Host "    company roster"; Write-Host '    company brie
 Write-Host "    claude"
 
 if ($Onboard) {
-    if ($NoBin) { $DeferredCommand = if ($Project) { "Install the Claude Code plugin, then run: /onboard" } else { "Install the Claude Code plugin, then run: /onboard --global" } }
+    if ($NoBin) { $DeferredCommand = if ($Project) { "Install the Claude Code plugin, then run: /claude-inc:onboard" } else { "Install the Claude Code plugin, then run: /claude-inc:onboard --global" } }
     elseif ($Project) { $DeferredCommand = "company onboard" } else { $DeferredCommand = "company onboard --global" }
     $EngineName = if ([string]::IsNullOrWhiteSpace($env:CLAUDE_INC_ENGINE)) { "claude" } else { $env:CLAUDE_INC_ENGINE }
     $Engine = Get-Application $EngineName
@@ -470,6 +532,12 @@ if ($Onboard) {
     if ($null -eq $PrimaryFailure) { $PrimaryFailure = $_ }
     throw
 } finally {
+    try {
+        if ($LauncherBuildRoot -and (Test-Path -LiteralPath $LauncherBuildRoot)) {
+            if ([IO.Path]::GetDirectoryName([IO.Path]::GetFullPath($LauncherBuildRoot)) -cne $LauncherBuildParent) { throw "Native launcher cleanup target escaped its temporary parent" }
+            Remove-KnownPath $LauncherBuildRoot
+        }
+    } catch { $CleanupFailures.Add("native launcher candidate cleanup: $($_.Exception.Message)") }
     try { if ($RemoteCandidate -and (Test-Path -LiteralPath $RemoteCandidate)) { Remove-KnownPath $RemoteCandidate; $RemoteCandidate = $null } } catch { $CleanupFailures.Add("outer remote candidate cleanup: $($_.Exception.Message)") }
     try { if ($CacheLockHeld -and ($Committed -or $RecoverySucceeded) -and (Test-Path -LiteralPath $CacheLock)) { Remove-KnownPath $CacheLock; $CacheLockHeld = $false } } catch { $CleanupFailures.Add("outer cache lock cleanup: $($_.Exception.Message)") }
     if ($CleanupFailures.Count -gt 0 -and $null -ne $PrimaryFailure) {

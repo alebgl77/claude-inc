@@ -3,7 +3,7 @@
 # https://github.com/alebgl77/claude-inc
 set -euo pipefail
 
-VERSION="1.4.0"
+VERSION="1.4.1"
 
 # ---------------------------------------------------------------- resolve root
 SOURCE="${BASH_SOURCE[0]}"

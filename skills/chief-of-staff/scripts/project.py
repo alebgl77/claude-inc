@@ -133,15 +133,17 @@ def read_regular(path, limit):
     return data
 
 
-def relative_artifact(value):
+def relative_artifact(value, portable=True):
     text_value(value, "artifact path", 1024)
     # Use one portable representation. Reject Windows drive-relative paths and ADS.
     if ("\\" in value or ":" in value or value.startswith("/") or PureWindowsPath(value).drive
             or any(c in value for c in "\r\n\t") or any(p in {"", ".", ".."} for p in value.split("/"))):
         raise ProjectError("artifact must be a project-relative path without traversal")
     for part in value.split("/"):
-        if part.endswith((".", " ")) or part.split(".")[0].upper() in {"CON", "PRN", "AUX", "NUL", *["COM" + str(i) for i in range(10)], *["LPT" + str(i) for i in range(10)]}:
-            raise ProjectError("artifact path is not portable")
+        device = part.partition(".")[0].rstrip(" ").upper()
+        reserved = {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$", *["COM" + i for i in "0123456789¹²³"], *["LPT" + i for i in "0123456789¹²³"]}
+        if portable and (any(character in part for character in '<>"|?*') or part.endswith((".", " ")) or device in reserved):
+            raise ProjectError("artifact path " + json.dumps(value, ensure_ascii=True) + " is not portable; rename it before submitting. For an existing review, revise the task, rename the file, and resubmit")
     if tuple(p.lower() for p in PurePosixPath(value).parts[:2]) == (".claude", "company"):
         raise ProjectError("workspace state cannot be used as an artifact")
     return value
@@ -158,7 +160,9 @@ def artifact_records(records):
     seen = set()
     for item in records:
         exact_keys(item, "path size sha256", "artifact")
-        relative_artifact(item["path"])
+        # Historical POSIX names remain readable. Only new submissions and
+        # acceptance touch files, and those paths must pass strict portability.
+        relative_artifact(item["path"], portable=False)
         if item["path"] in seen:
             raise ProjectError("duplicate artifact")
         seen.add(item["path"])

@@ -71,6 +71,10 @@ plain text alone does not supply a native execution adapter. The browser's
 company introduction also prepares a project brief, but does not start work
 or write to your project folder from the browser.
 
+The browser's **Claude Code installation** selector defaults to **Plugin** and
+copies `/claude-inc:company` with your brief. Choose **Direct installation** for
+`/company`. Downloading the brief produces the same plain-text file either way.
+
 ## Tasks and review
 
 Each task belongs to a canonical department and has a title, an acceptance
@@ -110,6 +114,14 @@ artifact is an existing file inside the project, identified by relative path
 and SHA-256. Acceptance rereads the files and refuses changed artifacts. The
 reviewer must be another department or `ceo`, different from the producing
 department. Choose one of the following review paths for a submitted task.
+
+New artifact submissions require portable relative filenames: Windows-reserved
+names, characters such as `?`, `*`, and `|`, and trailing dots or spaces are
+rejected with the offending filename. French and other Unicode names are
+supported. Safe historical paths remain readable in status, prompts, and the
+browser even if they are not portable. The browser displays a warning; it does
+not rewrite the snapshot. To accept an old nonportable submission, first revise
+the task, rename the actual file, and resubmit it under its portable name.
 
 **Request changes:** a `revise` decision returns the task to `active`. The CEO
 can then record a blocker if further work needs input:
@@ -191,6 +203,20 @@ are limited to 8,000 UTF-8 bytes, with smaller limits for names and titles.
 Reaching a limit produces an error instead of dropping old records.
 
 ## Windows without Bash
+
+The default Windows installer builds `company.exe` locally with the system
+.NET Framework compiler and uses it to launch Git Bash directly. No downloaded
+binary or batch forwarding stub is involved. An unchanged, manifest-owned old
+`company.cmd` is removed in the same transaction; an unowned or modified launcher
+blocks the upgrade. If the compiler is unavailable, installation stops before
+publishing files. `-NoBin` skips compilation and all launcher changes, so it
+does not repair or migrate an existing batch launcher.
+
+PowerShell 7 preserves the tested literal native arguments. Windows PowerShell
+5.1 can remove embedded quotes before `company.exe` receives them; the launcher
+cannot recover text already changed by its caller. Use `--brief-file` on 5.1
+for exact project text, including quotes and shell punctuation. Neither
+installation nor the launcher changes PowerShell execution policy or profiles.
 
 The direct Python helper avoids the Bash wrapper. From your actual project
 folder, use the path to your clone (replace the example path):

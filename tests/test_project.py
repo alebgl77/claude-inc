@@ -166,6 +166,43 @@ class ProjectTests(unittest.TestCase):
         with mock.patch.object(project, "ARTIFACT_MAX_BYTES", 2):
             self.unchanged_failure(lambda: self.workspace.mutate("task.submit", "offer", artifacts=["ok.md"], summary="evidence"))
 
+    def test_new_artifact_names_are_portable_without_rejecting_valid_unicode(self):
+        invalid = ['report?.md', 'report|final.md', 'report*.md', 'report<final>.md', 'report"final.md',
+                   'COM¹.txt', 'LPT².txt', 'COM³.txt', 'NUL .txt', 'CONIN$', 'conout$.log', 'folder/COM1 .md']
+        self.add()
+        self.workspace.mutate("task.start", "offer")
+        for name in invalid:
+            with self.subTest(name=name):
+                with self.assertRaises(project.ProjectError) as raised:
+                    self.workspace.mutate("task.submit", "offer", artifacts=[name], summary="Observed result")
+                self.assertIn(json.dumps(name, ensure_ascii=True), str(raised.exception))
+                self.assertIn("rename", str(raised.exception))
+        for name in ['résultats/rapport été.md', '資料/結果 🚀.md', 'COM10.txt', 'normal¹.md']:
+            self.assertEqual(project.relative_artifact(name), name)
+        self.submit(path="résultat été.md")
+        self.accept()
+
+    def test_legacy_posix_names_remain_readable_but_acceptance_requires_resubmission(self):
+        self.add()
+        self.workspace.mutate("task.start", "offer")
+        self.submit()
+        legacy = self.state()
+        legacy["tasks"][0]["artifacts"][0]["path"] = "report?.md"
+        self.workspace.path.write_text(json.dumps(legacy, ensure_ascii=False), encoding="utf-8")
+        self.assertEqual(self.state(), legacy)
+        output = run_cli(self.directory, "status", "--format", "json")
+        self.assertEqual(output.returncode, 0, output.stderr)
+        self.assertEqual(output.stderr, b"")
+        self.assertEqual(json.loads(output.stdout), legacy)
+        self.assertEqual(run_cli(self.directory, "prompt").returncode, 0)
+        before = self.workspace.path.read_bytes()
+        with self.assertRaisesRegex(project.ProjectError, "revise the task"):
+            self.accept()
+        self.assertEqual(self.workspace.path.read_bytes(), before)
+        self.workspace.mutate("task.revise", "offer", reviewer="ceo", note="Rename legacy file and resubmit")
+        self.submit(path="rapport été.md")
+        self.accept()
+
     def symlink(self, target, path, directory=False):
         try:
             path.symlink_to(target, target_is_directory=directory)

@@ -52,7 +52,7 @@
   }
 
   function validateDataset(data) {
-    const fail = message => ({ valid: false, message: 'The mission catalog could not be loaded. ' + message + ' Reopen studio/index.html from a complete checkout, or regenerate studio/missions.js with scripts/build_studio.py.' });
+    const fail = message => ({ valid: false, message: 'The mission catalog could not be loaded. ' + message + ' Reopen studio/missions.html from a complete checkout, or regenerate studio/missions.js with scripts/build_studio.py.' });
     const text = value => typeof value === 'string' && value.trim().length > 0;
     const texts = value => Array.isArray(value) && value.length > 0 && value.every(text);
     const unique = value => new Set(value).size === value.length;

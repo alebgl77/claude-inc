@@ -3,7 +3,7 @@
 # https://github.com/alebgl77/claude-inc
 set -euo pipefail
 
-VERSION="1.3.0"
+VERSION="1.4.0"
 
 # ---------------------------------------------------------------- resolve root
 SOURCE="${BASH_SOURCE[0]}"
@@ -487,7 +487,10 @@ compose_brief() { # $1=mission
   done
   echo
   echo "----- NOTE -----"
-  echo "If your environment has no subagent/Task tool, simulate the departments sequentially yourself: for each relevant department, adopt its charter and skills (in agents/ and skills/), do the work, then produce the final Board Memo."
+  echo "The packaged company source root is the following literal absolute path:"
+  printf '%s\n' "$ROOT"
+  echo "Resolve every agents/<department>.md and skills/<skill>/SKILL.md reference against that source root, never the founder's current working directory. Read only relevant charters and manuals."
+  echo "If your environment has no subagent/Task tool, simulate the departments sequentially yourself using these packaged sources, then produce the final Board Memo and disclose the serial execution."
   append_active_profile || return $?
   echo
   echo "----- MISSION FROM THE FOUNDER -----"
@@ -496,6 +499,18 @@ compose_brief() { # $1=mission
 
 # --------------------------------------------------------------------- runner
 ENGINE="${CLAUDE_INC_ENGINE:-claude}"
+
+run_project() { # all project options retain their original argument boundaries
+  local interpreter
+  for interpreter in python3 python; do
+    if command -v "$interpreter" >/dev/null 2>&1 &&
+       "$interpreter" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      exec "$interpreter" "$ROOT/skills/chief-of-staff/scripts/project.py" "$@"
+    fi
+  done
+  echo "company project: Python 3.9 or newer is required (install python3 or python)." >&2
+  return 1
+}
 
 run_mission() { # local compiler only; Python is optional for all other commands
   local interpreter
@@ -545,6 +560,11 @@ USAGE
   company brief "<mission>"          Brief the CEO; routes to relevant departments
   company <dept> "<task>"            Task one department directly
   company roster                     Show the org chart
+  company project init [options]     Create a private persistent company project
+  company project status             Inspect the saved project and task board
+  company project start              Resume this project in native Claude Code
+  company project prompt             Print the validated CEO project handoff
+  company project --help             Project initialization and lifecycle commands
   company missions                   List five local mission blueprints
   company mission <id> [options]      Print a staged blueprint; never calls an AI engine
   company team                       Show the active team profile
@@ -576,6 +596,12 @@ EOF
 
 # ----------------------------------------------------------------------- main
 [ $# -ge 1 ] || { usage; exit 1; }
+
+# Forward before the legacy global --print parser can consume project text.
+if [ "$1" = "project" ]; then
+  shift
+  run_project "$@"
+fi
 
 PRINT_ONLY="no"
 ARGS=()

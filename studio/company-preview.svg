@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+<title id="title">Claude, Inc. — Your project. An entire company.</title>
+<desc id="desc">A founder and CEO coordinate eight departments and fifty specialist skills around one project in Claude Code.</desc>
+<rect x="0" y="0" width="1200" height="630" fill="#f6f3eb"/>
+<rect x="52" y="36" width="34" height="34" fill="#b9462c"/>
+<text x="59" y="62" fill="#f6f3eb" font-family="Georgia, serif" font-size="29">c.</text>
+<text x="100" y="62" fill="#25271f" font-family="Georgia, serif" font-size="31">claude, inc.</text>
+<text x="810" y="57" fill="#626458" font-family="Consolas, monospace" font-size="11">YOUR PROJECT&#x27;S WORKING ORGANIZATION</text>
+<path d="M52 91H1148" stroke="#25271f"/>
+<text x="56" y="145" fill="#626458" font-family="Consolas, monospace" font-size="11">THE COMPANY YOU BRING TO YOUR PROJECT</text>
+<text x="52" y="239" fill="#25271f" font-family="Georgia, serif" font-size="74">Your project.</text>
+<text x="52" y="324" fill="#b9462c" font-family="Georgia, serif" font-size="80" font-style="italic">An entire</text>
+<text x="52" y="409" fill="#b9462c" font-family="Georgia, serif" font-size="80" font-style="italic">company.</text>
+<text x="56" y="468" fill="#626458" font-family="Trebuchet MS, sans-serif" font-size="17">Eight business departments, coordinated</text>
+<text x="56" y="497" fill="#626458" font-family="Trebuchet MS, sans-serif" font-size="17">by a CEO in Claude Code.</text>
+<rect x="644" y="126" width="504" height="399" fill="#ede9df" stroke="#d4d0c3"/>
+<text x="680" y="158" fill="#626458" font-family="Consolas, monospace" font-size="10">THE ORGANIZATION</text>
+<text x="985" y="158" fill="#626458" font-family="Consolas, monospace" font-size="10">ONE PROJECT</text>
+<text x="849" y="195" fill="#626458" font-family="Consolas, monospace" font-size="11">YOU / FOUNDER</text>
+<path d="M896 205L896 223" stroke="#626458"/>
+<rect x="755" y="223" width="282" height="67" fill="#25271f"/>
+<text x="776" y="247" fill="#f6f3eb" font-family="Consolas, monospace" font-size="10">CLAUDE / CEO</text>
+<text x="776" y="276" fill="#f6f3eb" font-family="Georgia, serif" font-size="24">The coordination.</text>
+<path d="M896 290L896 314" stroke="#626458"/>
+<path d="M682 314H1110" stroke="#626458"/>
+<text x="682" y="348" fill="#b9462c" font-family="Consolas, monospace" font-size="10">01</text>
+<text x="709" y="348" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Developers</text>
+<path d="M682 361H885" stroke="#d4d0c3"/>
+<text x="907" y="348" fill="#b9462c" font-family="Consolas, monospace" font-size="10">02</text>
+<text x="934" y="348" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Designers</text>
+<path d="M907 361H1110" stroke="#d4d0c3"/>
+<text x="682" y="388" fill="#b9462c" font-family="Consolas, monospace" font-size="10">03</text>
+<text x="709" y="388" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Marketing</text>
+<path d="M682 401H885" stroke="#d4d0c3"/>
+<text x="907" y="388" fill="#b9462c" font-family="Consolas, monospace" font-size="10">04</text>
+<text x="934" y="388" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Social Media</text>
+<path d="M907 401H1110" stroke="#d4d0c3"/>
+<text x="682" y="428" fill="#b9462c" font-family="Consolas, monospace" font-size="10">05</text>
+<text x="709" y="428" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Finance</text>
+<path d="M682 441H885" stroke="#d4d0c3"/>
+<text x="907" y="428" fill="#b9462c" font-family="Consolas, monospace" font-size="10">06</text>
+<text x="934" y="428" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Small Business</text>
+<path d="M907 441H1110" stroke="#d4d0c3"/>
+<text x="682" y="468" fill="#b9462c" font-family="Consolas, monospace" font-size="10">07</text>
+<text x="709" y="468" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Legal</text>
+<path d="M682 481H885" stroke="#d4d0c3"/>
+<text x="907" y="468" fill="#b9462c" font-family="Consolas, monospace" font-size="10">08</text>
+<text x="934" y="468" fill="#25271f" font-family="Trebuchet MS, sans-serif" font-size="13">Sales</text>
+<path d="M907 481H1110" stroke="#d4d0c3"/>
+<path d="M52 559H1148" stroke="#25271f"/>
+<text x="56" y="595" fill="#626458" font-family="Consolas, monospace" font-size="11">1 CEO · 8 DEPARTMENTS · 48 EMPLOYEE SKILLS + 2 COMPANY STAFF</text>
+<text x="884" y="595" fill="#626458" font-family="Consolas, monospace" font-size="10">LOCAL PROJECT. OPEN SOURCE.</text>
+</svg>

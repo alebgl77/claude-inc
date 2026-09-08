@@ -2,6 +2,26 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [1.4.0] - 2026-09-08
+
+### Added
+- Local project workspaces for arbitrary founder briefs, goals, constraints,
+  department preferences, tasks, dependencies, review records, and decisions
+- `company project` commands to initialize, inspect, start, and resume work in
+  native Claude Code, with validated context and normal host permissions
+- Task submission with real artifact SHA-256 values, unchanged-artifact review
+  checks, explicit blockers, and gated state transitions
+- A company-first browser introduction, project workspace guide, architecture
+  decision, and project/frontend checks across Linux, macOS, and Windows
+
+### Changed
+- The canonical CEO and chief of staff use validated structured project state;
+  Markdown ledgers become derived reports when a workspace exists
+- The website leads with the complete company; five optional mission recipes
+  move to `missions.html`
+- Public Pages artifacts use an exact static-file allowlist; confidential local
+  project state is excluded
+
 ## [1.3.0] - 2026-09-08
 
 ### Added

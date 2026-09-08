@@ -1,4 +1,8 @@
-# Mission Studio
+# Optional mission recipes
+
+Mission Studio is an optional recipe desk inside Claude, Inc. Start an arbitrary
+founder project through the [company workspace](project-workspace.md); use a
+recipe when it fits a particular piece of that work.
 
 Mission Studio compiles a brief into an ordered plan and a prompt containing the
 selected employees' full manuals. Each recipe names the handoffs, deliverables,
@@ -7,10 +11,10 @@ assistant of your choice.
 
 ## Open the Studio
 
-[Try Mission Studio](https://alebgl77.github.io/claude-inc/)
+[Try Mission Studio](https://alebgl77.github.io/claude-inc/missions.html)
 
 1. Download and extract the repository ZIP, or clone the repository.
-2. Open `studio/index.html` directly in a browser. Keep the `studio` files together.
+2. Open `studio/missions.html` directly in a browser. Keep the `studio` files together.
 3. Choose a recipe and edit its example brief.
 4. Inspect the handoffs and selected manuals, then copy or download the prompt.
 
@@ -84,7 +88,7 @@ compiler does not save it or access stored team profiles.
   assistant sends the content to that assistant under its own data policy.
 - A preset URL selects a built-in recipe. It does not include your edited brief.
   On a hosted copy of the Studio, that URL can be shared with other people.
-  Opened through `file://`, the Studio explains that the file is local and copies
+  Opened through `file://` or a localhost preview, the Studio explains that it is local and copies
   the recipe name instead; recipients need their own copy.
 - The exported SVG card describes the recipe template. It omits your brief and
   does not claim that the mission's work or checks have been completed.

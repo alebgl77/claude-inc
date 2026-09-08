@@ -12,6 +12,8 @@
 
 </div>
 
+[![Claude, Inc. company overview](studio/company-team.png)](https://alebgl77.github.io/claude-inc/)
+
 Claude, Inc. organizes a virtual company around your project. The CEO turns your
 brief into workstreams, delegates to useful departments, collects files and
 review evidence, and resumes from a local project workspace next session. Your
@@ -22,8 +24,6 @@ The 54 employees are **skill manuals**, not 54 processes running in the
 background. Claude Code supplies the active assistant session, native agent
 tools, configured model, and permissions. The company supplies its roles,
 operating instructions, and a local task-and-decision record.
-
-[![Claude, Inc. company overview](studio/company-team.png)](https://alebgl77.github.io/claude-inc/)
 
 [Explore the company](https://alebgl77.github.io/claude-inc/) ·
 [Project workspace guide](docs/project-workspace.md) ·
@@ -388,6 +388,10 @@ The company combines native host roles with a small local state helper:
 ```
 you → project brief → CEO → department assignments → files + review → project state + Board Memo
 ```
+
+[![The full organization map: peer CEO and CTO, eight departments, and 54 skill manuals](assets/org-chart.svg)](assets/org-chart.svg)
+
+The roles and manuals available to your project. [Open the full organization map](assets/org-chart.svg).
 
 Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 54 manageable and PRs reviewable.
 

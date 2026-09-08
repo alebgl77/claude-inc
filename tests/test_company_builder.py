@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import unittest
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("company_builder", ROOT / "scripts/build_company.py")
@@ -12,6 +13,24 @@ spec.loader.exec_module(builder)
 
 
 class CompanyBuilderTests(unittest.TestCase):
+    def test_organization_map_names_every_canonical_manual_once(self):
+        generated = builder.generate().decode("ascii")
+        data = json.loads(generated.split("window.CLAUDE_INC_COMPANY = ", 1)[1].removesuffix(";\n"))
+        expected = [skill["id"] for department in data["departments"] for skill in department["skills"]]
+        expected += [skill["id"] for skill in data["staff"]]
+        self.assertEqual((ROOT / "studio/org-chart.svg").read_bytes(), (ROOT / "assets/org-chart.svg").read_bytes())
+        diagram = ET.parse(ROOT / "assets/org-chart.svg").getroot()
+        namespace = {"svg": "http://www.w3.org/2000/svg"}
+        self.assertEqual(diagram.tag, "{http://www.w3.org/2000/svg}svg")
+        self.assertTrue(diagram.findtext("svg:title", namespaces=namespace))
+        self.assertTrue(diagram.findtext("svg:desc", namespaces=namespace))
+        labels = diagram.findall(".//svg:text", namespace)
+        skills = [label.text for label in labels if "skill" in label.get("class", "").split()]
+        self.assertEqual(len(expected), 54)
+        self.assertCountEqual(skills, expected)
+        for executive in ("CEO", "CTO"):
+            self.assertEqual(sum(label.text == executive for label in labels), 1)
+
     def test_internal_headings_and_closing_fences_are_preserved(self):
         for opening, closing in [("```markdown", "```"), ("````markdown", "`````"), ("~~~text", "~~~~")]:
             with self.subTest(opening=opening):

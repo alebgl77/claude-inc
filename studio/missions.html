@@ -11,16 +11,16 @@
   <meta property="og:title" content="Mission Studio — Claude, Inc.">
   <meta property="og:description" content="Plan a mission with selected Claude, Inc. manuals, ordered handoffs, and requested review checks. Export a complete prompt. Works offline; no agents run here.">
   <meta property="og:url" content="https://alebgl77.github.io/claude-inc/missions.html">
-  <meta property="og:image" content="https://alebgl77.github.io/claude-inc/social-preview.png">
+  <meta property="og:image" content="https://alebgl77.github.io/claude-inc/company-team.png">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Claude, Inc. Your project. An entire company. A founder and CEO above eight departments, with fifty specialist skills.">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="Claude, Inc. robot teams with the CEO and CTO above eight business departments.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Mission Studio — Claude, Inc.">
   <meta name="twitter:description" content="Plan a mission with selected Claude, Inc. manuals, ordered handoffs, and requested review checks. Export a complete prompt. Works offline; no agents run here.">
-  <meta name="twitter:image" content="https://alebgl77.github.io/claude-inc/social-preview.png">
-  <meta name="twitter:image:alt" content="Claude, Inc. Your project. An entire company. A founder and CEO above eight departments, with fifty specialist skills.">
+  <meta name="twitter:image" content="https://alebgl77.github.io/claude-inc/company-team.png">
+  <meta name="twitter:image:alt" content="Claude, Inc. robot teams with the CEO and CTO above eight business departments.">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="studio.css">
   <script src="missions.js" defer></script>
@@ -39,7 +39,7 @@
       <div class="index-top"><p class="eyebrow">A FOCUSED JOB WITHIN YOUR COMPANY</p><p class="index-title">Good work starts<br>with a clear mission.</p><p class="index-intro">Choose the job. Shape the brief.<br>Give your assistant a plan.</p></div>
       <nav id="mission-nav" aria-label="Choose a mission"></nav>
       <div class="index-note"><span class="index-symbol" aria-hidden="true">↗</span><p>A focused crew.<br>A visible hand-off.<br>A definition of done.</p></div>
-      <div class="index-footer"><span>50 EMPLOYEES</span><span>8 DEPARTMENTS</span><a href="https://github.com/alebgl77/claude-inc#hire-everyone-in-60-seconds">Install the company <span aria-hidden="true">↗</span></a></div>
+      <div class="index-footer"><span id="company-count">54 EMPLOYEES</span><span>8 DEPARTMENTS</span><a href="https://github.com/alebgl77/claude-inc#hire-everyone-in-60-seconds">Install the company <span aria-hidden="true">↗</span></a></div>
     </aside>
 
     <main id="workspace" tabindex="-1">
@@ -52,7 +52,7 @@
         </section>
 
         <section class="mission-facts" aria-label="Mission scope">
-          <div class="fact"><span class="fact-value"><span id="crew-count"></span><span class="fact-denominator"> / 50</span></span><span class="fact-label">employees in this crew</span></div>
+          <div class="fact"><span class="fact-value"><span id="crew-count"></span><span id="crew-total" class="fact-denominator"> / 54</span></span><span class="fact-label">employees in this crew</span></div>
           <div class="fact"><span class="fact-value" id="stage-count"></span><span class="fact-label">stages with hand-offs</span></div>
           <div class="fact reading-fact"><span class="fact-value" id="reading-reduction"></span><span class="fact-label">smaller skill reading set <a href="#reading-manifest" aria-label="See how the skill reading set is calculated">↘</a></span></div>
           <p class="fact-note">The right people for the job.<br>Everyone else stays on the bench.</p>
@@ -62,7 +62,7 @@
           <section class="workflow" aria-labelledby="workflow-title">
             <div class="section-heading"><div><p class="eyebrow">01 / THE RUN OF SHOW</p><h2 id="workflow-title">A team. A sequence.<br>A way through.</h2></div><span class="section-caption">Open a stage<br>for the details <span aria-hidden="true">↙</span></span></div>
             <ol id="stage-list" class="stage-list"></ol>
-            <details id="reading-manifest" class="reading-manifest"><summary>The crew &amp; its reading set <span aria-hidden="true">+</span></summary><div class="manifest-body"><p id="reading-explanation"></p><ul id="crew-list"></ul><p class="fine-print">Measured from the UTF-8 bytes of the selected skill manuals versus all 50 unique manuals. This is a source-size comparison, not a token, cost, speed, or runtime estimate.</p></div></details>
+            <details id="reading-manifest" class="reading-manifest"><summary>The crew &amp; its reading set <span aria-hidden="true">+</span></summary><div class="manifest-body"><p id="reading-explanation"></p><ul id="crew-list"></ul><p class="fine-print">Measured from the UTF-8 bytes of the selected skill manuals versus all <span id="manual-count">54</span> unique manuals. This is a source-size comparison, not a token, cost, speed, or runtime estimate.</p></div></details>
           </section>
 
           <section class="composer" aria-labelledby="composer-title">

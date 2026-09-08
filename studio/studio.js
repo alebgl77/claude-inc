@@ -190,6 +190,9 @@
     const catalog = root.CLAUDE_INC_MISSIONS;
     const datasetCheck = validateDataset(catalog);
     if (!datasetCheck.valid) { byId('load-error').textContent = datasetCheck.message; byId('load-error').hidden = false; return; }
+    byId('company-count').textContent = NUMBER.format(catalog.skillCount) + ' EMPLOYEES';
+    byId('crew-total').textContent = ' / ' + NUMBER.format(catalog.skillCount);
+    byId('manual-count').textContent = NUMBER.format(catalog.skillCount);
     const missions = MISSION_IDS.map(id => catalog.missions.find(mission => mission.id === id));
     const drafts = new Map(missions.map(mission => [mission.id, mission.sampleBrief]));
     let current;

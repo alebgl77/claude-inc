@@ -56,6 +56,7 @@ function validateDraft(data,fields,preferred) {
   catch(error){return {valid:false,bytes:0,message:error.message};}
 }
 function composeBrief(data,fields,preferred){const r=validateDraft(data,fields,preferred);if(!r.valid)throw new Error(r.message);return r.output;}
+function invalidArtifactPart(part){const device=part.split('.')[0].replace(/ +$/,'').toUpperCase();return !part||part==='.'||part==='..'||/[<>"|?*]/.test(part)||/[. ]$/.test(part)||/^(?:CON|PRN|AUX|NUL|CONIN\$|CONOUT\$|COM[0-9¹²³]|LPT[0-9¹²³])$/.test(device);}
 function parseProject(text,data) {
   if(typeof text!=='string'||bytes(text)>MAX_STATE_BYTES)throw new Error('The project file exceeds the 2 MiB limit.');
   // Reject duplicate JSON keys before parsing so fields cannot silently override.
@@ -83,7 +84,7 @@ function validateProject(state,data) {
     if(!list(task.artifacts,16)||!list(task.reviews,2048))fail('Invalid artifact or review collection.');
     const paths=[];
     for(const a of task.artifacts){
-      if(!exact(a,'path size sha256')||!validText(a.path,1024)||/[\\:\r\n\t]/.test(a.path)||a.path.split('/').some(p=>!p||p==='.'||p==='..'||/[. ]$/.test(p)||/^(?:CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\.|$)/i.test(p))||/^\.claude\/company(?:\/|$)/i.test(a.path))fail('Artifacts must be portable project-relative paths.');
+      if(!exact(a,'path size sha256')||!validText(a.path,1024)||/[\\:\r\n\t]/.test(a.path)||a.path.split('/').some(p=>!p||p==='.'||p==='..')||/^\.claude\/company(?:\/|$)/i.test(a.path))fail('Artifacts must be safe project-relative paths.');
       if(!Number.isSafeInteger(a.size)||a.size<0||a.size>32*1024*1024||typeof a.sha256!=='string'||!/^[0-9a-f]{64}$/.test(a.sha256))fail('Invalid artifact metadata.');
       paths.push(a.path);
     }
@@ -164,6 +165,8 @@ function boot(window) {
     get('project-brief').setAttribute('aria-invalid',String(!r.valid&&showError));get('download-brief').disabled=!r.valid;get('copy-ceo').disabled=!r.valid;
   }
   ['project-brief','project-goal','project-constraints'].forEach(id=>get(id).addEventListener('input',()=>refreshDraft(true)));
+  get('installation-kind').value='plugin';
+  get('installation-kind').addEventListener('change',clearExport);
   get('company-form').addEventListener('submit',event=>event.preventDefault());
   get('download-brief').addEventListener('click',()=>{
     clearExport();let url,anchor;
@@ -175,7 +178,7 @@ function boot(window) {
   });
   get('copy-ceo').addEventListener('click',async()=>{
     const epoch=clearExport();let output;
-    try{output='/company\n\n'+composeBrief(data,fields(),preferred());}catch(error){status(error.message);return;}
+    try{const commands={plugin:'/claude-inc:company',direct:'/company'},kind=get('installation-kind').value;if(!Object.prototype.hasOwnProperty.call(commands,kind))throw new Error('Choose Plugin or Direct installation before copying.');output=commands[kind]+'\n\n'+composeBrief(data,fields(),preferred());}catch(error){status(error.message);return;}
     try{if(!window.navigator.clipboard||typeof window.navigator.clipboard.writeText!=='function')throw new Error('Unavailable');await window.navigator.clipboard.writeText(output);if(epoch===exportEpoch)status('CEO brief copied. Paste it into Claude Code in your installed company project.');}
     catch(_){if(epoch!==exportEpoch)return;status('Clipboard access is unavailable. Copy the CEO brief manually below.');get('manual-copy').value=output;get('copy-fallback').hidden=false;get('manual-copy').focus();get('manual-copy').select();}
   });
@@ -185,6 +188,8 @@ function boot(window) {
     const context=node('details');context.append(node('summary','Project brief, goals & constraints'),node('pre',state.brief));
     for(const [title,values] of [['Goals',state.goals],['Constraints',state.constraints]])if(values.length){context.append(node('h4',title));const items=node('ul');items.append(...values.map(v=>node('li',v)));context.append(items);}
     get('snapshot-context').replaceChildren(context);
+    const nonportable=[...new Set(state.tasks.flatMap(task=>task.artifacts.map(artifact=>artifact.path)).filter(path=>path.split('/').some(invalidArtifactPart)))];
+    if(nonportable.length)get('snapshot-context').append(node('p','Some recorded artifact names are not portable across operating systems: '+nonportable.join(', ')+'. This snapshot remains readable. Before accepting an affected review, revise the task, rename the file, and resubmit through the CLI.','field-error'));
     get('snapshot-departments').replaceChildren(...data.departments.map(d=>{const n=state.tasks.filter(t=>t.department===d.id).length,label=node('p',d.name);label.append(node('span',n+' recorded task'+(n===1?'':'s')+' · '+(state.activeDepartments.includes(d.id)?'in project scope':'available')));return label;}));
     get('snapshot-tasks').replaceChildren(...STATUSES.map(statusName=>{
       const column=node('section',undefined,'task-column'),tasks=state.tasks.filter(t=>t.status===statusName);column.append(node('h4',statusName+' / '+tasks.length));

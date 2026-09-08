@@ -20,3 +20,4 @@
 
 .paste-snapshot{border-bottom:1px solid var(--line);padding:10px 0 16px;margin-bottom:16px}.paste-snapshot>summary{font-size:11px}.paste-snapshot>p{font-size:11px;color:var(--muted);margin:12px 0;max-width:650px}.paste-snapshot>label{font-size:11px;font-weight:bold;display:block;margin:12px 0 8px}.paste-snapshot textarea{font:11px/1.7 var(--mono);max-width:820px}.paste-snapshot>.button{font-size:11px;margin-top:12px;padding:10px 13px}
 .department-preferences label{min-height:26px}.department-preferences label>span{font-size:10px;color:var(--ink)}
+.installation-select{display:block;width:100%;min-height:42px;padding:9px 12px;border:1px solid var(--line);border-radius:0;background:var(--paper);color:var(--ink);font:inherit}.installation-select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}

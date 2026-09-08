@@ -59,14 +59,23 @@ cd claude-inc
 ./install.sh
 ```
 
-On Windows, run `./install.ps1` from the clone. The `company` wrapper requires
-Bash, such as Git for Windows. Python 3.9+ is required for project and mission
-commands; the direct Python entry points also work without Bash. See the
+On Windows, run `./install.ps1` from the clone. The installer compiles
+`company.exe` locally with the Windows .NET Framework compiler; it requires
+Bash, such as Git for Windows. No launcher binary is downloaded. Python 3.9+
+is required for project and mission commands; direct Python entry points also
+work without Bash. See the
 [Windows instructions](docs/project-workspace.md#windows-without-bash).
+
+Use `--brief-file founder-brief.txt` for literal text on Windows PowerShell 5.1:
+that shell can alter embedded quotes before a native command receives them.
+PowerShell 7 preserves the tested literal arguments. The native launcher
+replaces an unchanged, manifest-owned `company.cmd` transactionally; modified
+or unowned launchers stop installation for inspection.
 
 Use `./install.sh --project` or `./install.ps1 -Project` to install into the
 current project's `.claude/` directory. `--no-bin` / `-NoBin` installs only the
-Claude Code files. Installers retain their collision checks and managed-file
+Claude Code files. `-NoBin` neither compiles nor migrates the Windows launcher;
+it does not repair an existing `company.cmd`. Installers retain their collision checks and managed-file
 transactions; they stop before replacing unmanaged or modified content.
 A project install includes `.claude/commands/company.md`; invoke `/company`
 explicitly when you want CEO coordination.

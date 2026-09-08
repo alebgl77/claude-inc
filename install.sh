@@ -619,7 +619,7 @@ echo "    claude                               # skills + agents + /company are 
 echo "  ${B}Claude Code plugin route (alternative):${R}"; echo "    /plugin marketplace add alebgl77/claude-inc"; echo "    /plugin install claude-inc@claude-inc"
 
 defer_install_onboarding() {
-  if [ "$NO_BIN" = "yes" ]; then if [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Install the Claude Code plugin, then run: /onboard"; else echo "Onboarding deferred. Install the Claude Code plugin, then run: /onboard --global"; fi
+  if [ "$NO_BIN" = "yes" ]; then if [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard"; else echo "Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard --global"; fi
   elif [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Run: company onboard"; else echo "Onboarding deferred. Run: company onboard --global"; fi
 }
 if [ "$ONBOARD" = "yes" ]; then

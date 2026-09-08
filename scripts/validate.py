@@ -21,7 +21,7 @@ STAFF = {"chief-of-staff", "token-accountant"}
 EXPECTED_EMPLOYEES = 50
 EXPECTED_DEPARTMENTS = 8
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
-EXPECTED_VERSION = "1.4.0"
+EXPECTED_VERSION = "1.4.1"
 CANONICAL_DEPARTMENTS = {
     "developers", "designers", "marketing", "social-media", "finance",
     "small-business", "legal", "sales",
@@ -383,9 +383,9 @@ def check_onboarding(cli, skills):
         err("bin/company must validate profile skills against its canonical registry")
     if "if ! bash \"$SRC/bin/company\" onboard" not in installer_sh:
         err("install.sh must catch onboarding engine failures under set -e")
-    if 'Install the Claude Code plugin, then run: /onboard' not in installer_sh:
+    if 'Install the Claude Code plugin, then run: /claude-inc:onboard' not in installer_sh:
         err("install.sh NoBin onboarding guidance must use the plugin helper")
-    if 'Install the Claude Code plugin, then run: /onboard' not in installer_ps:
+    if 'Install the Claude Code plugin, then run: /claude-inc:onboard' not in installer_ps:
         err("install.ps1 NoBin onboarding guidance must use the plugin helper")
     workflow_ci = open(".github/workflows/validate.yml", encoding="utf-8").read()
     for marker in [

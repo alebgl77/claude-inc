@@ -49,7 +49,7 @@ jobs:
           [[ "$brief_output" == *'CEO Operating Manual'* ]]
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
-          [ "$(./bin/company version)" = "company v1.4.0" ]
+          [ "$(./bin/company version)" = "company v1.4.1" ]
 
       - name: A closed pipe ends the CLI quietly (macOS and Linux)
         if: runner.os != 'Windows'
@@ -342,7 +342,7 @@ jobs:
           & bash ./bin/company roster | Out-Null
           if ($LASTEXITCODE -ne 0) { throw 'CLI roster failed' }
           $version = & bash ./bin/company version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.0') { throw "Unexpected CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.1') { throw "Unexpected CLI version: $version" }
 
           $prompt = (& bash ./bin/company onboard --print) -join "`n"
           foreach ($marker in @('QUESTION 1/3', 'QUESTION 2/3', 'QUESTION 3/3', 'PROPOSAL')) {
@@ -485,7 +485,7 @@ jobs:
           [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
           [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
           [ -L "$HOME/.local/bin/company" ]
-          [ "$("$HOME/.local/bin/company" version)" = "company v1.4.0" ]
+          [ "$("$HOME/.local/bin/company" version)" = "company v1.4.1" ]
 
           export HOME="$test_root/project home"
           project="$test_root/project with spaces"
@@ -503,7 +503,7 @@ jobs:
           onboard_project="$test_root/onboard project"
           mkdir -p "$HOME" "$onboard_project"
           onboard_output="$(cd "$onboard_project" && CLAUDE_INC_ENGINE=missing-company-engine bash "$workspace/install.sh" --project --no-bin --onboard)"
-          grep -q '^Onboarding deferred. Install the Claude Code plugin, then run: /onboard$' <<< "$onboard_output"
+          grep -q '^Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard$' <<< "$onboard_output"
           ! grep -q 'Run: company onboard' <<< "$onboard_output"
           [ ! -e "$onboard_project/.claude/company-team.md" ]
 
@@ -566,10 +566,10 @@ jobs:
           & "$workspace/install.ps1"
           if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 50) { throw 'Global skill count is not 50' }
           if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 8) { throw 'Global agent count is not 8' }
-          $wrapper = Join-Path $env:HOME '.local/bin/company.cmd'
+          $wrapper = Join-Path $env:HOME '.local/bin/company.exe'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.0') { throw "Unexpected installed CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.1') { throw "Unexpected installed CLI version: $version" }
 
           $wrapperProject = Join-Path $testRoot 'wrapper profile project with spaces'
           $wrapperProfileDir = Join-Path $wrapperProject '.claude'
@@ -593,7 +593,7 @@ jobs:
           $env:HOME = Join-Path $testRoot 'no cli home'
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
           & "$workspace/install.ps1" -NoBin
-          if (Test-Path -LiteralPath "$env:HOME/.local/bin/company.cmd") { throw 'NoBin installed a CLI wrapper' }
+          if (Test-Path -LiteralPath "$env:HOME/.local/bin/company.exe") { throw 'NoBin installed a CLI wrapper' }
 
           $env:HOME = Join-Path $testRoot 'onboard home'
           $env:CLAUDE_INC_ENGINE = 'missing-company-engine'
@@ -603,8 +603,23 @@ jobs:
           try { $onboardOutput = & "$workspace/install.ps1" -Project -NoBin -Onboard | Out-String } finally { Pop-Location }
           if (-not $onboardOutput.Contains('Onboarding deferred.')) { throw 'Project onboarding did not defer safely' }
           if ($onboardOutput.Contains('Run: company onboard')) { throw 'NoBin advised an unavailable company command' }
-          if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /onboard')) { throw 'NoBin deferred guidance is not actionable' }
+          if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /claude-inc:onboard')) { throw 'NoBin deferred guidance is not actionable' }
           if (Test-Path -LiteralPath (Join-Path $onboardProject '.claude/company-team.md')) { throw 'Deferred onboarding created a profile' }
+
+      - name: Real installed company project lifecycle (macOS and Linux)
+        if: runner.os != 'Windows'
+        run: python3 tests/project_install_smoke.py
+
+      - name: Real installed company.exe project lifecycle (Windows)
+        if: runner.os == 'Windows'
+        run: python tests/project_install_smoke.py --quote-probe
+
+      - name: Native launcher literal arguments and process contract (Windows)
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s tests -p test_windows_launcher.py
+
+      - name: Canonical company examples preserve fenced Markdown
+        run: python -m unittest discover -s tests -p test_company_builder.py
 
       - name: Installer collisions fail without mutation (macOS and Linux)
         if: runner.os != 'Windows'

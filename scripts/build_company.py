@@ -12,10 +12,42 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def section(markdown, title):
-    match = re.search(r"^## " + re.escape(title) + r"\s*\n(.*?)(?=^## |\Z)", markdown, re.M | re.S)
-    if not match:
+    """Extract a level-two section without treating fenced examples as headings."""
+    body = []
+    found = False
+    fence = None
+    for line in markdown.splitlines(keepends=True):
+        content = line.rstrip("\r\n")
+        if fence:
+            if found:
+                body.append(line)
+            if re.fullmatch(r" {0,3}" + re.escape(fence[0]) + "{" + str(fence[1]) + r",}[ \t]*", content):
+                fence = None
+            continue
+        opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", content)
+        if opening and not (opening.group(1)[0] == "`" and "`" in opening.group(2)):
+            fence = (opening.group(1)[0], len(opening.group(1)))
+            if found:
+                body.append(line)
+            continue
+        heading_match = re.fullmatch(r" {0,3}(#{1,2})[ \t]+(.+?)[ \t]*", content)
+        if heading_match:
+            heading_title = re.sub(r"[ \t]+#+[ \t]*$", "", heading_match.group(2))
+            if found:
+                break
+            if heading_match.group(1) == "##" and heading_title == title:
+                found = True
+            continue
+        if found:
+            body.append(line)
+    if not found:
         raise ValueError(f"canonical manual is missing {title!r}")
-    return match.group(1).strip()
+    if fence:
+        raise ValueError(f"canonical section {title!r} has an unclosed code fence")
+    result = "".join(body).strip("\r\n")
+    if not result.strip() or len(result.encode("utf-8")) > 50000:
+        raise ValueError(f"canonical section {title!r} is empty or exceeds 50000 UTF-8 bytes")
+    return result
 
 
 def heading(markdown):

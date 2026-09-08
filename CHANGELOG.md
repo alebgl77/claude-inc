@@ -2,6 +2,27 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [1.4.1] - 2026-09-08
+
+### Fixed
+- Replaced the Windows batch launcher with a locally compiled `company.exe`
+  that transports literal arguments directly to Bash. Owned legacy launchers
+  migrate transactionally; collisions and modifications fail before publication.
+  `-NoBin` leaves existing launchers untouched and is not a migration.
+- Preserved fenced Markdown sections in generated employee output examples,
+  including internal headings previously truncating 18 of the 50 examples.
+- Made browser copy actions distinguish plugin commands (`/claude-inc:company`)
+  from direct installation (`/company`), and corrected plugin onboarding guidance.
+- Rejected nonportable artifact filenames on new submissions while preserving
+  read access to safe legacy project records. Accepting such an old submission
+  requires revision, renaming, and resubmission; state is never silently renamed.
+
+### Tests and compatibility
+- Added real installed project lifecycle checks, a recording host, Windows
+  literal-argument regression checks, and launcher migration/rollback coverage.
+- Documented Windows PowerShell 5.1's caller-side quote loss: use `--brief-file`
+  for exact text. PowerShell 7's native argument path is covered by the regression.
+
 ## [1.4.0] - 2026-09-08
 
 ### Added

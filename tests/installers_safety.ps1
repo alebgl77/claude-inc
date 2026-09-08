@@ -26,11 +26,15 @@ function New-Fixture([string]$Path) {
     Write-Utf8 (Join-Path $Path "skills/alpha/data.txt") "alpha-v1`n"
     Write-Utf8 (Join-Path $Path "skills/alpha/SKILL.md") "# Alpha`n"
     Write-Utf8 (Join-Path $Path "skills/beta/SKILL.md") "# Beta`n"
+    $launcherDirectory = Join-Path $Path "skills/chief-of-staff/scripts"
+    $null = New-Item -ItemType Directory -Force -Path $launcherDirectory
+    Write-Utf8 (Join-Path $Path "skills/chief-of-staff/SKILL.md") "# Chief of Staff`n"
+    Copy-Item -LiteralPath (Join-Path $RepoRoot "skills/chief-of-staff/scripts/windows_launcher.cs") -Destination (Join-Path $launcherDirectory "windows_launcher.cs")
     Write-Utf8 (Join-Path $Path "agents/head.md") "agent-v1`n"
     Write-Utf8 (Join-Path $Path "commands/company.md") "command-v1`n"
     Write-Utf8 (Join-Path $Path "onboarding/ONBOARDING.md") "# Onboarding`n"
     Write-Utf8 (Join-Path $Path ".claude-plugin/plugin.json") '{"name":"fixture"}'
-    Write-Utf8 (Join-Path $Path "bin/company") "#!/usr/bin/env bash`nif [ `"`${1:-}`" = version ]; then echo `"company v1.4.0`"; else echo company; fi`n"
+    Write-Utf8 (Join-Path $Path "bin/company") "#!/usr/bin/env bash`nif [ `"`${1:-}`" = version ]; then echo `"company v1.4.1`"; else echo company; fi`n"
 }
 
 function Invoke-Global([string]$Fixture, [string]$HomePath, [switch]$NoBin) {
@@ -50,10 +54,18 @@ function Expect-Failure([scriptblock]$Action) {
         Fail "command unexpectedly succeeded"
     } catch {
         if ($_.Exception.Message -like "FAIL:*") { throw }
-        if ($_.Exception.Message -notmatch 'collision|modified|reparse|special|unsafe|lock|hook|executable|changed|simulated|recovery|invalid|canonical|incomplete|appeared|cleanup') {
+        if ($_.Exception.Message -notmatch 'collision|modified|reparse|special|unsafe|lock|hook|executable|changed|simulated|recovery|invalid|canonical|incomplete|appeared|cleanup|compiler|compilation') {
             Fail "failure was not actionable: $($_.Exception.Message)"
         }
     }
+}
+
+function Add-OwnedLegacyLauncher([string]$HomePath) {
+    $null = New-Item -ItemType Directory -Force -Path (Join-Path $HomePath ".local/bin"), (Join-Path $HomePath ".claude")
+    $legacy = Join-Path $HomePath ".local/bin/company.cmd"
+    Write-Utf8 $legacy "@echo off`r`necho synthetic legacy launcher`r`n"
+    $hash = Get-TestFileFingerprint $legacy
+    Write-Utf8 (Join-Path $HomePath ".claude/.claude-inc-cli-manifest-v1") "claude-inc-manifest-v1`ncli`tcompany.cmd`tfile`t$hash`n"
 }
 
 try {
@@ -66,11 +78,16 @@ try {
     Assert-Text (Join-Path $TestHome ".claude/skills/alpha/data.txt") "alpha-v1"
     Assert-Text (Join-Path $TestHome ".claude/agents/head.md") "agent-v1"
     Assert-Text (Join-Path $TestHome ".claude/commands/company.md") "command-v1"
-    $wrapper = Join-Path $TestHome ".local/bin/company.cmd"
+    $wrapper = Join-Path $TestHome ".local/bin/company.exe"
     if (-not (Test-Path -LiteralPath $wrapper -PathType Leaf)) { Fail "CLI wrapper missing" }
     $manifest = Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1"
-    if (-not ([IO.File]::ReadAllText($manifest).Contains("cli`tcompany.cmd`tfile`t"))) { Fail "CLI type and fingerprint missing from global CLI manifest" }
+    if (-not ([IO.File]::ReadAllText($manifest).Contains("cli`tcompany.exe`tfile`t"))) { Fail "CLI type and fingerprint missing from global CLI manifest" }
     Invoke-Global $fixture $TestHome
+
+    # A managed executable can be reinstalled, but changing its bytes blocks updates.
+    $exeManifest = [IO.File]::ReadAllText($manifest)
+    if (-not $exeManifest.Contains((Get-TestFileFingerprint $wrapper))) { Fail "reinstalled exe hash differs from manifest" }
+    if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.cmd")) { Fail "clean install retained a batch alias" }
 
     # Intact managed update.
     Write-Utf8 (Join-Path $fixture "skills/alpha/data.txt") "alpha-v2`n"
@@ -114,10 +131,82 @@ try {
     # Late CLI collision prevents all earlier planned copies.
     $fixture = Join-Path $TestRoot "cli source"; $TestHome = Join-Path $TestRoot "cli home"
     New-Fixture $fixture; $null = New-Item -ItemType Directory -Force -Path (Join-Path $TestHome ".local/bin")
-    Write-Utf8 (Join-Path $TestHome ".local/bin/company.cmd") "user-cli`n"
+    Write-Utf8 (Join-Path $TestHome ".local/bin/company.exe") "user-cli`n"
     Expect-Failure { Invoke-Global $fixture $TestHome }
-    Assert-Text (Join-Path $TestHome ".local/bin/company.cmd") "user-cli"
+    Assert-Text (Join-Path $TestHome ".local/bin/company.exe") "user-cli"
     if (Test-Path -LiteralPath (Join-Path $TestHome ".claude")) { Fail "target mutated before late CLI collision" }
+
+    # Unowned legacy batch launchers also block publication, even alongside no exe.
+    $fixture = Join-Path $TestRoot "foreign cmd source"; $TestHome = Join-Path $TestRoot "foreign cmd home"
+    New-Fixture $fixture; $null = New-Item -ItemType Directory -Force -Path (Join-Path $TestHome ".local/bin")
+    Write-Utf8 (Join-Path $TestHome ".local/bin/company.cmd") "foreign-cmd"
+    Expect-Failure { Invoke-Global $fixture $TestHome }
+    Assert-Text (Join-Path $TestHome ".local/bin/company.cmd") "foreign-cmd"
+    if (Test-Path -LiteralPath (Join-Path $TestHome ".claude")) { Fail "foreign batch collision mutated target" }
+
+    # Only exact manifest ownership permits the old batch launcher to be retired.
+    $fixture = Join-Path $TestRoot "legacy source"; $TestHome = Join-Path $TestRoot "legacy home"
+    New-Fixture $fixture; Add-OwnedLegacyLauncher $TestHome
+    Invoke-Global $fixture $TestHome
+    if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.cmd")) { Fail "owned batch launcher was not retired" }
+    $native = Join-Path $TestHome ".local/bin/company.exe"
+    $legacyManifest = Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1"
+    $expectedManifest = "claude-inc-manifest-v1`ncli`tcompany.exe`tfile`t$(Get-TestFileFingerprint $native)"
+    Assert-Text $legacyManifest $expectedManifest
+    [IO.File]::AppendAllText($native, "modified")
+    $modifiedHash = Get-TestFileFingerprint $native
+    Expect-Failure { Invoke-Global $fixture $TestHome }
+    if ((Get-TestFileFingerprint $native) -cne $modifiedHash) { Fail "modified native launcher was replaced" }
+    Assert-Text $legacyManifest $expectedManifest
+
+    $fixture = Join-Path $TestRoot "modified cmd source"; $TestHome = Join-Path $TestRoot "modified cmd home"
+    New-Fixture $fixture; Add-OwnedLegacyLauncher $TestHome
+    Write-Utf8 (Join-Path $TestHome ".local/bin/company.cmd") "modified-cmd"
+    Expect-Failure { Invoke-Global $fixture $TestHome }
+    Assert-Text (Join-Path $TestHome ".local/bin/company.cmd") "modified-cmd"
+    if (Test-Path -LiteralPath (Join-Path $TestHome ".claude/skills")) { Fail "modified batch collision installed skills" }
+
+    # Failures after retiring the cmd, publishing the exe, or publishing ownership
+    # restore the original bytes and both manifests through the ordinary journal.
+    foreach ($failureName in @("company.cmd", "company.exe", "meta-cli")) {
+        $fixture = Join-Path $TestRoot "rollback $failureName source"; $TestHome = Join-Path $TestRoot "rollback $failureName home"
+        New-Fixture $fixture; Add-OwnedLegacyLauncher $TestHome; Invoke-Global $fixture $TestHome -NoBin
+        $oldMain = Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-manifest-v1")
+        $oldCli = Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1")
+        $oldCmd = Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.cmd")
+        Write-Utf8 (Join-Path $fixture "skills/alpha/data.txt") "alpha-v2`n"
+        $hook = Join-Path $TestRoot "native-rollback-hook.ps1"
+        Write-Utf8 $hook @'
+param($Point, $Kind, $Name, $Destination, $Backup)
+if ($Point -eq "after-entry" -and ($Name -eq $env:CLAUDE_INC_TEST_FAIL_NATIVE_NAME -or $Kind -eq $env:CLAUDE_INC_TEST_FAIL_NATIVE_NAME)) { throw "simulated native migration failure" }
+'@
+        $env:CLAUDE_INC_TEST_HOOK = $hook; $env:CLAUDE_INC_TEST_FAIL_NATIVE_NAME = $failureName
+        try { Expect-Failure { Invoke-Global $fixture $TestHome } } finally { Remove-Item Env:CLAUDE_INC_TEST_HOOK, Env:CLAUDE_INC_TEST_FAIL_NATIVE_NAME -ErrorAction SilentlyContinue }
+        Assert-Text (Join-Path $TestHome ".claude/skills/alpha/data.txt") "alpha-v1"
+        if ((Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.cmd")) -cne $oldCmd) { Fail "rollback changed old cmd bytes" }
+        if ((Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1")) -cne $oldCli) { Fail "rollback changed CLI ownership" }
+        if ((Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-manifest-v1")) -cne $oldMain) { Fail "rollback changed main ownership" }
+        if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.exe")) { Fail "rollback retained the new exe" }
+    }
+
+    # Compiler absence/failure is simulated only in isolated source copies.
+    # It must fail before publication; -NoBin skips compilation and CLI migration.
+    foreach ($compilerCase in @("absent", "invalid-source")) {
+        $fixture = Join-Path $TestRoot "compiler $compilerCase source"; $TestHome = Join-Path $TestRoot "compiler $compilerCase home"
+        New-Fixture $fixture; Add-OwnedLegacyLauncher $TestHome
+        if ($compilerCase -eq "absent") {
+            $installerPath = Join-Path $fixture "install.ps1"
+            Write-Utf8 $installerPath ([IO.File]::ReadAllText($installerPath).Replace("v4.0.30319/csc.exe", "claude-inc-test-missing/csc.exe"))
+        } else { [IO.File]::AppendAllText((Join-Path $fixture "skills/chief-of-staff/scripts/windows_launcher.cs"), "`nthis is not C#;`n") }
+        $oldCli = Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1")
+        $oldCmd = Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.cmd")
+        Expect-Failure { Invoke-Global $fixture $TestHome }
+        if (Test-Path -LiteralPath (Join-Path $TestHome ".claude/skills")) { Fail "compiler failure published skills" }
+        Invoke-Global $fixture $TestHome -NoBin
+        if ((Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.cmd")) -cne $oldCmd) { Fail "NoBin changed legacy launcher" }
+        if ((Get-TestFileFingerprint (Join-Path $TestHome ".claude/.claude-inc-cli-manifest-v1")) -cne $oldCli) { Fail "NoBin changed CLI ownership" }
+        if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.exe")) { Fail "NoBin compiled or published an exe" }
+    }
 
     # Exact pre-manifest layout is adopted.
     $fixture = Join-Path $TestRoot "adopt source"; $TestHome = Join-Path $TestRoot "adopt home"
@@ -147,7 +236,7 @@ try {
     try { & (Join-Path $fixture "install.ps1") -Project -NoBin | Out-Null } finally { Pop-Location; $env:HOME = $oldHome }
     Assert-Text (Join-Path $project ".claude/skills/alpha/data.txt") "alpha-v1"
     Assert-Text (Join-Path $project ".claude/commands/company.md") "command-v1"
-    if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.cmd")) { Fail "-NoBin installed a CLI" }
+    if (Test-Path -LiteralPath (Join-Path $TestHome ".local/bin/company.exe")) { Fail "-NoBin installed a CLI" }
     if (Test-Path -LiteralPath (Join-Path $project "CLAUDE.md")) { Fail "installer unexpectedly copied root CLAUDE.md" }
 
     $fixture = Join-Path $TestRoot "project cli source"; $TestHome = Join-Path $TestRoot "project cli home"; $project = Join-Path $TestRoot "project cli workspace"
@@ -309,11 +398,11 @@ if ($Point -eq "before-cleanup-stage") { throw "simulated cleanup failure" }
     if (Test-Path -LiteralPath (Join-Path $TestHome ".claude.claude-inc-install.lock")) { Fail "cleanup error left target lock after commit" }
     Get-ChildItem -LiteralPath (Join-Path $TestHome ".claude") -Directory -Filter ".claude-inc-stage-*" | Remove-Item -Recurse -Force
 
-    # Percent signs are escaped in the Windows wrapper and cannot expand as variables.
+    # Percent signs in the embedded source path cannot expand as batch variables.
     $fixture = Join-Path $TestRoot "percent %NAME% source"; $TestHome = Join-Path $TestRoot "percent home"; New-Fixture $fixture; $null = New-Item -ItemType Directory -Force -Path $TestHome
     $oldName = $env:NAME; $env:NAME = "EXPANDED"
-    try { Invoke-Global $fixture $TestHome; $version = & (Join-Path $TestHome ".local/bin/company.cmd") version } finally { $env:NAME = $oldName }
-    if ($LASTEXITCODE -ne 0 -or $version -ne "company v1.4.0") { Fail "percent-safe wrapper did not launch the intended source" }
+    try { Invoke-Global $fixture $TestHome; $version = & (Join-Path $TestHome ".local/bin/company.exe") version } finally { $env:NAME = $oldName }
+    if ($LASTEXITCODE -ne 0 -or $version -ne "company v1.4.1") { Fail "percent-safe wrapper did not launch the intended source" }
 
     # A blocked remote upgrade never pulls or mutates the active legacy cache or wrapper.
     $origin = Join-Path $TestRoot "remote origin"; $activeCache = Join-Path $TestRoot "active cache"; $TestHome = Join-Path $TestRoot "remote home"
@@ -349,14 +438,14 @@ if ($Point -eq "before-cleanup-stage") { throw "simulated cleanup failure" }
     $null = New-Item -ItemType Directory -Force -Path $TestHome
     Invoke-Global $activeCache $TestHome
     $activeBefore = Get-TestFileFingerprint (Join-Path $activeCache "skills/alpha/data.txt")
-    $wrapperBefore = [IO.File]::ReadAllText((Join-Path $TestHome ".local/bin/company.cmd"))
+    $wrapperBefore = Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.exe")
     Write-Utf8 (Join-Path $origin "skills/alpha/data.txt") "alpha-v2`n"; & git -C $origin add -f .; & git -C $origin commit -m "v2" | Out-Null
     Write-Utf8 (Join-Path $TestHome ".claude/commands/company.md") "user-command`n"
     $oldHome = $env:HOME; $oldRepo = $env:CLAUDE_INC_REPO_URL; $oldCache = $env:CLAUDE_INC_HOME
     $env:HOME = $TestHome; $env:CLAUDE_INC_REPO_URL = $origin; $env:CLAUDE_INC_HOME = $activeCache
     try { Expect-Failure { & $remoteScript } } finally { $env:HOME = $oldHome; $env:CLAUDE_INC_REPO_URL = $oldRepo; $env:CLAUDE_INC_HOME = $oldCache }
     if ((Get-TestFileFingerprint (Join-Path $activeCache "skills/alpha/data.txt")) -cne $activeBefore) { Fail "blocked remote upgrade changed active cache" }
-    if ([IO.File]::ReadAllText((Join-Path $TestHome ".local/bin/company.cmd")) -cne $wrapperBefore) { Fail "blocked remote upgrade changed CLI wrapper" }
+    if ((Get-TestFileFingerprint (Join-Path $TestHome ".local/bin/company.exe")) -cne $wrapperBefore) { Fail "blocked remote upgrade changed CLI wrapper" }
     Assert-Text (Join-Path $TestHome ".claude/skills/alpha/data.txt") "alpha-v1"
     Assert-Text (Join-Path $TestHome ".claude/commands/company.md") "user-command"
     if (Test-Path -LiteralPath "$activeCache.checkouts") { Fail "blocked remote upgrade promoted an immutable checkout" }

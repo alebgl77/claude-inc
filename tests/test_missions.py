@@ -88,13 +88,13 @@ class CompilerTests(unittest.TestCase):
 
     def test_bytes_count_only_actual_unique_skill_files(self):
         all_bytes = sum((ROOT / "skills" / skill / "SKILL.md").stat().st_size for skill in self.company["manuals"])
-        self.assertEqual(len(self.company["manuals"]), 50)
+        self.assertEqual(len(self.company["manuals"]), 54)
         for recipe in self.company["catalog"]["missions"]:
             compiled = mission.compile_mission(self.company, recipe["id"])
             selected = [skill["id"] for skill in compiled["skills"]]
             selected_bytes = sum((ROOT / "skills" / skill / "SKILL.md").stat().st_size for skill in selected)
             self.assertEqual(compiled["metrics"], {"selectedSkillBytes": selected_bytes, "allSkillBytes": all_bytes,
-                                                 "selectedSkills": len(set(selected)), "totalSkills": 50})
+                                                 "selectedSkills": len(set(selected)), "totalSkills": 54})
             self.assertLess(selected_bytes, all_bytes)
 
     def test_first_use_order_and_determinism(self):
@@ -199,7 +199,7 @@ class CompilerTests(unittest.TestCase):
 
     def test_roster_parsed_without_execution_and_rejects_duplicates(self):
         cli = (ROOT / "bin/company").read_text(encoding="utf-8")
-        for invalid in (cli.replace("DEPTS=(", "MISSING=(", 1), cli.replace("superpowers context7", "superpowers superpowers", 1), cli.replace('echo "chief-of-staff token-accountant"', 'echo "chief-of-staff chief-of-staff"', 1)):
+        for invalid in (cli.replace("DEPTS=(", "MISSING=(", 1), cli.replace("superpowers context7", "superpowers superpowers", 1), cli.replace('STAFF=(chief-of-staff token-accountant', 'STAFF=(chief-of-staff chief-of-staff', 1)):
             with self.assertRaises(mission.MissionError):
                 mission.parse_roster(invalid)
         self.assertEqual(mission.parse_roster(cli)[0], self.company["roster"])
@@ -214,7 +214,7 @@ class CompilerTests(unittest.TestCase):
         with mock.patch.object(Path, "read_bytes", track), mock.patch.dict(os.environ, {"CLAUDE_INC_GLOBAL_PROFILE": "DO_NOT_READ/company-team.md"}):
             company = mission.load_company()
             mission.compile_mission(company, "launch")
-        self.assertEqual(len(touched), 61)  # registry + catalog + 50 manuals + 8 charters + CEO
+        self.assertEqual(len(touched), 65)  # registry + catalog + 54 manuals + 8 charters + CEO
 
 
 class OutputTests(unittest.TestCase):
@@ -248,7 +248,7 @@ class OutputTests(unittest.TestCase):
         self.assertNotIn(b"\r\n", first)
         data = json.loads(first.decode("ascii").split("window.CLAUDE_INC_MISSIONS = ", 1)[1][:-2])
         self.assertEqual(data["schemaVersion"], 1)
-        self.assertEqual(data["skillCount"], 50)
+        self.assertEqual(data["skillCount"], 54)
         for item in data["missions"]:
             brief = " \tUser's actual café brief\r\n<script>literal</script> "
             self.assertNotIn("brief", item)

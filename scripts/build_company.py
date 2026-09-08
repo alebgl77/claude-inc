@@ -99,12 +99,20 @@ def generate(root=ROOT):
         if slug in assigned:
             continue
         name, role = heading(manual)
-        reporting = re.search(r"^\*Staff position (.+)\*$", manual, re.M)
+        reporting = re.search(r"^\*Staff (?:position|skill) (.+)\*$", manual, re.M)
         scope = section(manual, "When to use").splitlines()[0].removeprefix("- ")
         staff.append({"id": slug, "name": name, "role": role, "scope": scope,
                       "reporting": reporting.group(1).strip() if reporting else "Company staff",
                       "output": section(manual, "Output format")})
-    dataset = {"schemaVersion": 1, "source": "alebgl77/claude-inc", "departments": departments, "staff": staff,
+    cto = (root / "agents/cto.md").read_text(encoding="utf-8").replace("\r\n", "\n")
+    cto_name, cto_role = heading(cto)
+    cto_scope = re.search(r"^You (.*?)(?:\n\n|\Z)", cto, re.M | re.S)
+    cto_skills = re.findall(r"^\| `([a-z0-9-]+)` \|", section(cto, "Your team"), re.M)
+    if not cto_scope or len(cto_skills) != 4 or len(set(cto_skills)) != 4 or not set(cto_skills) <= {item["id"] for item in staff}:
+        raise ValueError("CTO charter must describe four registered staff manuals")
+    executive = {"id": "cto", "name": cto_name, "role": cto_role,
+                 "scope": " ".join(("You " + cto_scope.group(1)).split()), "skills": cto_skills}
+    dataset = {"schemaVersion": 1, "source": "alebgl77/claude-inc", "departments": departments, "staff": staff, "executive": executive,
                "missionIds": [item["id"] for item in company["catalog"]["missions"]]}
     data = json.dumps(dataset, ensure_ascii=True, separators=(",", ":"))
     data = data.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")

@@ -1,0 +1,1284 @@
+{
+  "version": 1,
+  "hashes": [
+    {
+      "name": "unicode-policy",
+      "domain": "policy",
+      "payload": {
+        "task": {
+          "id": "prototype",
+          "department": "developers",
+          "title": "Prototype caf\u00e9 \ud83e\udded",
+          "acceptance": "French labels remain readable and submitted evidence identifies the observed behavior.",
+          "dependsOn": []
+        },
+        "stage": "build",
+        "effort": "balanced",
+        "skills": [
+          "superpowers"
+        ],
+        "gates": [
+          {
+            "id": "contract",
+            "criterion": "French labels remain readable and submitted evidence identifies the observed behavior.",
+            "source": "contract",
+            "required": true
+          },
+          {
+            "id": "business-behavior-and-regressions",
+            "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests.",
+            "source": "profile",
+            "required": true
+          },
+          {
+            "id": "business-integration-and-safety",
+            "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks.",
+            "source": "profile",
+            "required": true
+          },
+          {
+            "id": "project-1",
+            "criterion": "Record the Unicode labels \u00e9, \ue000 and \ud83e\udded as literal text.",
+            "source": "project",
+            "required": true
+          }
+        ]
+      },
+      "canonical": "{\"effort\":\"balanced\",\"gates\":[{\"criterion\":\"French labels remain readable and submitted evidence identifies the observed behavior.\",\"id\":\"contract\",\"required\":true,\"source\":\"contract\"},{\"criterion\":\"Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests.\",\"id\":\"business-behavior-and-regressions\",\"required\":true,\"source\":\"profile\"},{\"criterion\":\"Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks.\",\"id\":\"business-integration-and-safety\",\"required\":true,\"source\":\"profile\"},{\"criterion\":\"Record the Unicode labels \\u00e9, \\ue000 and \\ud83e\\udded as literal text.\",\"id\":\"project-1\",\"required\":true,\"source\":\"project\"}],\"skills\":[\"superpowers\"],\"stage\":\"build\",\"task\":{\"acceptance\":\"French labels remain readable and submitted evidence identifies the observed behavior.\",\"department\":\"developers\",\"dependsOn\":[],\"id\":\"prototype\",\"title\":\"Prototype caf\\u00e9 \\ud83e\\udded\"}}",
+      "sha256": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00"
+    },
+    {
+      "name": "unicode-artifacts",
+      "domain": "artifacts",
+      "payload": [
+        {
+          "path": "\u00e9vidence.md",
+          "size": 32,
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+        },
+        {
+          "path": "\ue000-note.md",
+          "size": 32,
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+        },
+        {
+          "path": "\ud83e\udded-r\u00e9sultat.md",
+          "size": 32,
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+        }
+      ],
+      "canonical": "[{\"path\":\"\\u00e9vidence.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32},{\"path\":\"\\ue000-note.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32},{\"path\":\"\\ud83e\\udded-r\\u00e9sultat.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32}]",
+      "sha256": "84760fc30da8004d8b0056c72e5e0b5b9e2d0080d489e610de16b1b34ea231c4"
+    },
+    {
+      "name": "unicode-artifacts-reordered",
+      "domain": "artifacts",
+      "payload": [
+        {
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2",
+          "size": 32,
+          "path": "\ud83e\udded-r\u00e9sultat.md"
+        },
+        {
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2",
+          "size": 32,
+          "path": "\ue000-note.md"
+        },
+        {
+          "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2",
+          "size": 32,
+          "path": "\u00e9vidence.md"
+        }
+      ],
+      "canonical": "[{\"path\":\"\\u00e9vidence.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32},{\"path\":\"\\ue000-note.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32},{\"path\":\"\\ud83e\\udded-r\\u00e9sultat.md\",\"sha256\":\"5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2\",\"size\":32}]",
+      "sha256": "84760fc30da8004d8b0056c72e5e0b5b9e2d0080d489e610de16b1b34ea231c4"
+    }
+  ],
+  "states": [
+    {
+      "name": "ready",
+      "state": {
+        "schemaVersion": 2,
+        "name": "Atelier caf\u00e9 \ud83e\udded",
+        "brief": "Prepare a synthetic booking prototype and a grounded sales handoff.",
+        "goals": [
+          "A complete evidence-backed review"
+        ],
+        "constraints": [
+          "No external actions"
+        ],
+        "activeDepartments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "departments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "tasks": [
+          {
+            "id": "prototype",
+            "department": "developers",
+            "title": "Prototype caf\u00e9 \ud83e\udded",
+            "acceptance": "French labels remain readable and submitted evidence identifies the observed behavior.",
+            "dependsOn": [],
+            "status": "planned",
+            "artifacts": [],
+            "summary": null,
+            "blockedReason": null,
+            "reviews": []
+          },
+          {
+            "id": "offer",
+            "department": "sales",
+            "title": "Explain the reviewed offer",
+            "acceptance": "Commercial claims match accepted prototype evidence.",
+            "dependsOn": [
+              "prototype"
+            ],
+            "status": "planned",
+            "artifacts": [],
+            "summary": null,
+            "blockedReason": null,
+            "reviews": []
+          }
+        ],
+        "decisions": [],
+        "events": [
+          {
+            "revision": 1,
+            "type": "init",
+            "taskId": null,
+            "note": "Project initialized"
+          },
+          {
+            "revision": 2,
+            "type": "task.add",
+            "taskId": "prototype",
+            "note": "Prototype caf\u00e9 \ud83e\udded"
+          },
+          {
+            "revision": 3,
+            "type": "task.add",
+            "taskId": "offer",
+            "note": "Explain the reviewed offer"
+          },
+          {
+            "revision": 4,
+            "type": "harness.generate",
+            "taskId": null,
+            "note": "Business harness enabled"
+          }
+        ],
+        "revision": 4,
+        "harness": {
+          "version": 1,
+          "enabledRevision": 4,
+          "defaults": {
+            "stage": "build",
+            "effort": "balanced",
+            "maxIterations": 3
+          },
+          "profiles": {
+            "developers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests."
+                },
+                {
+                  "id": "integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks."
+                }
+              ]
+            },
+            "designers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "interaction-and-accessibility",
+                  "criterion": "Inspect the intended user journey, keyboard access and relevant empty or error states; cite a concrete design or interaction review artifact."
+                },
+                {
+                  "id": "visual-and-handoff",
+                  "criterion": "Check hierarchy, legibility and consistency at the intended sizes; provide implementation-ready states or specifications and disclose untested views."
+                }
+              ]
+            },
+            "marketing": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "audience-and-claims",
+                  "criterion": "Connect the message to a documented audience need and offer; trace material claims to supplied or researched evidence and mark assumptions."
+                },
+                {
+                  "id": "conversion-and-measurement",
+                  "criterion": "Inspect the next action, channel fit and measurement plan; separate observed results from forecast performance and identify remaining approval needs."
+                }
+              ]
+            },
+            "social-media": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "voice-and-platform",
+                  "criterion": "Check the draft against the intended audience, brand voice and platform format, including readability and accessible captions or descriptions where relevant."
+                },
+                {
+                  "id": "claims-and-publication",
+                  "criterion": "Verify factual claims, source or media permissions and the proposed call to action; label the publication state accurately and retain required owner approval."
+                }
+              ]
+            },
+            "finance": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "reconciliation-and-inputs",
+                  "criterion": "Reconcile material figures to identified source records with periods, units and calculation evidence; distinguish estimates and missing inputs."
+                },
+                {
+                  "id": "assumptions-and-controls",
+                  "criterion": "Review accounting or financial assumptions, exceptions and relevant controls; document sensitivity or unresolved differences without implying professional approval."
+                }
+              ]
+            },
+            "small-business": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "cash-and-capacity",
+                  "criterion": "Check the operational proposal against documented cash timing, capacity and obligations; show calculations or records for material constraints."
+                },
+                {
+                  "id": "owner-and-follow-through",
+                  "criterion": "Name the owner, next operational action and exception handling; distinguish prepared materials from actions actually authorized or completed."
+                }
+              ]
+            },
+            "legal": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "authority-and-scope",
+                  "criterion": "Identify the document scope, relevant jurisdiction or governing terms and supporting authority; separate known facts, assumptions and missing legal inputs."
+                },
+                {
+                  "id": "risk-and-escalation",
+                  "criterion": "Trace material risks and proposed changes to cited clauses or evidence; flag unresolved issues for appropriate counsel and avoid implying execution or legal clearance."
+                }
+              ]
+            },
+            "sales": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments."
+                },
+                {
+                  "id": "commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized."
+                }
+              ]
+            }
+          },
+          "policies": {
+            "prototype": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [
+                "superpowers"
+              ],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "French labels remain readable and submitted evidence identifies the observed behavior.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "project-1",
+                  "criterion": "Record the Unicode labels \u00e9, \ue000 and \ud83e\udded as literal text.",
+                  "source": "project",
+                  "required": true
+                }
+              ],
+              "fingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00"
+            },
+            "offer": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "Commercial claims match accepted prototype evidence.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized.",
+                  "source": "profile",
+                  "required": true
+                }
+              ],
+              "fingerprint": "94e19a42a19f51382f1ee83a8bb47f4b1a383b73b2b111bc7b432ad09f79cebe"
+            }
+          },
+          "rounds": [],
+          "assessments": [],
+          "extensions": []
+        }
+      },
+      "next": {
+        "sourceRevision": 4,
+        "action": "start",
+        "taskId": "prototype",
+        "phase": "execution",
+        "reason": "Dependencies are accepted; inspect their current artifacts before starting this task.",
+        "used": 0,
+        "limit": 3,
+        "dependencyBlockers": [],
+        "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+        "readyIndependentIds": [
+          "prototype"
+        ],
+        "reviewTemplate": null
+      }
+    },
+    {
+      "name": "review",
+      "state": {
+        "schemaVersion": 2,
+        "name": "Atelier caf\u00e9 \ud83e\udded",
+        "brief": "Prepare a synthetic booking prototype and a grounded sales handoff.",
+        "goals": [
+          "A complete evidence-backed review"
+        ],
+        "constraints": [
+          "No external actions"
+        ],
+        "activeDepartments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "departments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "tasks": [
+          {
+            "id": "prototype",
+            "department": "developers",
+            "title": "Prototype caf\u00e9 \ud83e\udded",
+            "acceptance": "French labels remain readable and submitted evidence identifies the observed behavior.",
+            "dependsOn": [],
+            "status": "review",
+            "artifacts": [
+              {
+                "path": "\ud83e\udded-r\u00e9sultat.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              },
+              {
+                "path": "\ue000-note.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              },
+              {
+                "path": "\u00e9vidence.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              }
+            ],
+            "summary": "Fixture artifacts written; this is not a model quality claim.",
+            "blockedReason": null,
+            "reviews": []
+          },
+          {
+            "id": "offer",
+            "department": "sales",
+            "title": "Explain the reviewed offer",
+            "acceptance": "Commercial claims match accepted prototype evidence.",
+            "dependsOn": [
+              "prototype"
+            ],
+            "status": "planned",
+            "artifacts": [],
+            "summary": null,
+            "blockedReason": null,
+            "reviews": []
+          }
+        ],
+        "decisions": [],
+        "events": [
+          {
+            "revision": 1,
+            "type": "init",
+            "taskId": null,
+            "note": "Project initialized"
+          },
+          {
+            "revision": 2,
+            "type": "task.add",
+            "taskId": "prototype",
+            "note": "Prototype caf\u00e9 \ud83e\udded"
+          },
+          {
+            "revision": 3,
+            "type": "task.add",
+            "taskId": "offer",
+            "note": "Explain the reviewed offer"
+          },
+          {
+            "revision": 4,
+            "type": "harness.generate",
+            "taskId": null,
+            "note": "Business harness enabled"
+          },
+          {
+            "revision": 5,
+            "type": "task.start",
+            "taskId": "prototype",
+            "note": "Task updated"
+          },
+          {
+            "revision": 6,
+            "type": "task.submit",
+            "taskId": "prototype",
+            "note": "Fixture artifacts written; this is not a model quality claim."
+          }
+        ],
+        "revision": 6,
+        "harness": {
+          "version": 1,
+          "enabledRevision": 4,
+          "defaults": {
+            "stage": "build",
+            "effort": "balanced",
+            "maxIterations": 3
+          },
+          "profiles": {
+            "developers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests."
+                },
+                {
+                  "id": "integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks."
+                }
+              ]
+            },
+            "designers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "interaction-and-accessibility",
+                  "criterion": "Inspect the intended user journey, keyboard access and relevant empty or error states; cite a concrete design or interaction review artifact."
+                },
+                {
+                  "id": "visual-and-handoff",
+                  "criterion": "Check hierarchy, legibility and consistency at the intended sizes; provide implementation-ready states or specifications and disclose untested views."
+                }
+              ]
+            },
+            "marketing": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "audience-and-claims",
+                  "criterion": "Connect the message to a documented audience need and offer; trace material claims to supplied or researched evidence and mark assumptions."
+                },
+                {
+                  "id": "conversion-and-measurement",
+                  "criterion": "Inspect the next action, channel fit and measurement plan; separate observed results from forecast performance and identify remaining approval needs."
+                }
+              ]
+            },
+            "social-media": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "voice-and-platform",
+                  "criterion": "Check the draft against the intended audience, brand voice and platform format, including readability and accessible captions or descriptions where relevant."
+                },
+                {
+                  "id": "claims-and-publication",
+                  "criterion": "Verify factual claims, source or media permissions and the proposed call to action; label the publication state accurately and retain required owner approval."
+                }
+              ]
+            },
+            "finance": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "reconciliation-and-inputs",
+                  "criterion": "Reconcile material figures to identified source records with periods, units and calculation evidence; distinguish estimates and missing inputs."
+                },
+                {
+                  "id": "assumptions-and-controls",
+                  "criterion": "Review accounting or financial assumptions, exceptions and relevant controls; document sensitivity or unresolved differences without implying professional approval."
+                }
+              ]
+            },
+            "small-business": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "cash-and-capacity",
+                  "criterion": "Check the operational proposal against documented cash timing, capacity and obligations; show calculations or records for material constraints."
+                },
+                {
+                  "id": "owner-and-follow-through",
+                  "criterion": "Name the owner, next operational action and exception handling; distinguish prepared materials from actions actually authorized or completed."
+                }
+              ]
+            },
+            "legal": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "authority-and-scope",
+                  "criterion": "Identify the document scope, relevant jurisdiction or governing terms and supporting authority; separate known facts, assumptions and missing legal inputs."
+                },
+                {
+                  "id": "risk-and-escalation",
+                  "criterion": "Trace material risks and proposed changes to cited clauses or evidence; flag unresolved issues for appropriate counsel and avoid implying execution or legal clearance."
+                }
+              ]
+            },
+            "sales": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments."
+                },
+                {
+                  "id": "commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized."
+                }
+              ]
+            }
+          },
+          "policies": {
+            "prototype": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [
+                "superpowers"
+              ],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "French labels remain readable and submitted evidence identifies the observed behavior.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "project-1",
+                  "criterion": "Record the Unicode labels \u00e9, \ue000 and \ud83e\udded as literal text.",
+                  "source": "project",
+                  "required": true
+                }
+              ],
+              "fingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00"
+            },
+            "offer": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "Commercial claims match accepted prototype evidence.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized.",
+                  "source": "profile",
+                  "required": true
+                }
+              ],
+              "fingerprint": "94e19a42a19f51382f1ee83a8bb47f4b1a383b73b2b111bc7b432ad09f79cebe"
+            }
+          },
+          "rounds": [
+            {
+              "taskId": "prototype",
+              "submitRevision": 6,
+              "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+              "artifacts": [
+                {
+                  "path": "\ud83e\udded-r\u00e9sultat.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                },
+                {
+                  "path": "\ue000-note.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                },
+                {
+                  "path": "\u00e9vidence.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                }
+              ]
+            }
+          ],
+          "assessments": [],
+          "extensions": []
+        }
+      },
+      "next": {
+        "sourceRevision": 6,
+        "action": "evaluate",
+        "taskId": "prototype",
+        "phase": "review",
+        "reason": "Inspect the submitted artifacts and every required criterion, then record an evidence-backed review.",
+        "used": 1,
+        "limit": 3,
+        "dependencyBlockers": [],
+        "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+        "readyIndependentIds": [],
+        "reviewTemplate": {
+          "version": 1,
+          "taskId": "prototype",
+          "submitRevision": 6,
+          "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+          "artifactFingerprint": "84760fc30da8004d8b0056c72e5e0b5b9e2d0080d489e610de16b1b34ea231c4",
+          "results": [
+            {
+              "gateId": "contract",
+              "status": "unknown",
+              "evidence": [],
+              "observation": ""
+            },
+            {
+              "gateId": "business-behavior-and-regressions",
+              "status": "unknown",
+              "evidence": [],
+              "observation": ""
+            },
+            {
+              "gateId": "business-integration-and-safety",
+              "status": "unknown",
+              "evidence": [],
+              "observation": ""
+            },
+            {
+              "gateId": "project-1",
+              "status": "unknown",
+              "evidence": [],
+              "observation": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "dependency-ready",
+      "state": {
+        "schemaVersion": 2,
+        "name": "Atelier caf\u00e9 \ud83e\udded",
+        "brief": "Prepare a synthetic booking prototype and a grounded sales handoff.",
+        "goals": [
+          "A complete evidence-backed review"
+        ],
+        "constraints": [
+          "No external actions"
+        ],
+        "activeDepartments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "departments": [
+          "developers",
+          "designers",
+          "marketing",
+          "social-media",
+          "finance",
+          "small-business",
+          "legal",
+          "sales"
+        ],
+        "tasks": [
+          {
+            "id": "prototype",
+            "department": "developers",
+            "title": "Prototype caf\u00e9 \ud83e\udded",
+            "acceptance": "French labels remain readable and submitted evidence identifies the observed behavior.",
+            "dependsOn": [],
+            "status": "done",
+            "artifacts": [
+              {
+                "path": "\ud83e\udded-r\u00e9sultat.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              },
+              {
+                "path": "\ue000-note.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              },
+              {
+                "path": "\u00e9vidence.md",
+                "size": 32,
+                "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+              }
+            ],
+            "summary": "Fixture artifacts written; this is not a model quality claim.",
+            "blockedReason": null,
+            "reviews": [
+              {
+                "decision": "accept",
+                "reviewer": "cto",
+                "note": "Recorded fixture review only.",
+                "revision": 7
+              }
+            ]
+          },
+          {
+            "id": "offer",
+            "department": "sales",
+            "title": "Explain the reviewed offer",
+            "acceptance": "Commercial claims match accepted prototype evidence.",
+            "dependsOn": [
+              "prototype"
+            ],
+            "status": "planned",
+            "artifacts": [],
+            "summary": null,
+            "blockedReason": null,
+            "reviews": []
+          }
+        ],
+        "decisions": [],
+        "events": [
+          {
+            "revision": 1,
+            "type": "init",
+            "taskId": null,
+            "note": "Project initialized"
+          },
+          {
+            "revision": 2,
+            "type": "task.add",
+            "taskId": "prototype",
+            "note": "Prototype caf\u00e9 \ud83e\udded"
+          },
+          {
+            "revision": 3,
+            "type": "task.add",
+            "taskId": "offer",
+            "note": "Explain the reviewed offer"
+          },
+          {
+            "revision": 4,
+            "type": "harness.generate",
+            "taskId": null,
+            "note": "Business harness enabled"
+          },
+          {
+            "revision": 5,
+            "type": "task.start",
+            "taskId": "prototype",
+            "note": "Task updated"
+          },
+          {
+            "revision": 6,
+            "type": "task.submit",
+            "taskId": "prototype",
+            "note": "Fixture artifacts written; this is not a model quality claim."
+          },
+          {
+            "revision": 7,
+            "type": "task.accept",
+            "taskId": "prototype",
+            "note": "Recorded fixture review only."
+          }
+        ],
+        "revision": 7,
+        "harness": {
+          "version": 1,
+          "enabledRevision": 4,
+          "defaults": {
+            "stage": "build",
+            "effort": "balanced",
+            "maxIterations": 3
+          },
+          "profiles": {
+            "developers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests."
+                },
+                {
+                  "id": "integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks."
+                }
+              ]
+            },
+            "designers": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "interaction-and-accessibility",
+                  "criterion": "Inspect the intended user journey, keyboard access and relevant empty or error states; cite a concrete design or interaction review artifact."
+                },
+                {
+                  "id": "visual-and-handoff",
+                  "criterion": "Check hierarchy, legibility and consistency at the intended sizes; provide implementation-ready states or specifications and disclose untested views."
+                }
+              ]
+            },
+            "marketing": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "audience-and-claims",
+                  "criterion": "Connect the message to a documented audience need and offer; trace material claims to supplied or researched evidence and mark assumptions."
+                },
+                {
+                  "id": "conversion-and-measurement",
+                  "criterion": "Inspect the next action, channel fit and measurement plan; separate observed results from forecast performance and identify remaining approval needs."
+                }
+              ]
+            },
+            "social-media": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "voice-and-platform",
+                  "criterion": "Check the draft against the intended audience, brand voice and platform format, including readability and accessible captions or descriptions where relevant."
+                },
+                {
+                  "id": "claims-and-publication",
+                  "criterion": "Verify factual claims, source or media permissions and the proposed call to action; label the publication state accurately and retain required owner approval."
+                }
+              ]
+            },
+            "finance": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "reconciliation-and-inputs",
+                  "criterion": "Reconcile material figures to identified source records with periods, units and calculation evidence; distinguish estimates and missing inputs."
+                },
+                {
+                  "id": "assumptions-and-controls",
+                  "criterion": "Review accounting or financial assumptions, exceptions and relevant controls; document sensitivity or unresolved differences without implying professional approval."
+                }
+              ]
+            },
+            "small-business": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "cash-and-capacity",
+                  "criterion": "Check the operational proposal against documented cash timing, capacity and obligations; show calculations or records for material constraints."
+                },
+                {
+                  "id": "owner-and-follow-through",
+                  "criterion": "Name the owner, next operational action and exception handling; distinguish prepared materials from actions actually authorized or completed."
+                }
+              ]
+            },
+            "legal": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "authority-and-scope",
+                  "criterion": "Identify the document scope, relevant jurisdiction or governing terms and supporting authority; separate known facts, assumptions and missing legal inputs."
+                },
+                {
+                  "id": "risk-and-escalation",
+                  "criterion": "Trace material risks and proposed changes to cited clauses or evidence; flag unresolved issues for appropriate counsel and avoid implying execution or legal clearance."
+                }
+              ]
+            },
+            "sales": {
+              "source": {
+                "path": "skills/chief-of-staff/references/harness-profiles.json",
+                "sha256": "5ffd72fd2fdced83dec784050ac41995b115492fb3be4b1d307d509669cb4e54"
+              },
+              "checks": [
+                {
+                  "id": "account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments."
+                },
+                {
+                  "id": "commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized."
+                }
+              ]
+            }
+          },
+          "policies": {
+            "prototype": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [
+                "superpowers"
+              ],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "French labels remain readable and submitted evidence identifies the observed behavior.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-behavior-and-regressions",
+                  "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-integration-and-safety",
+                  "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "project-1",
+                  "criterion": "Record the Unicode labels \u00e9, \ue000 and \ud83e\udded as literal text.",
+                  "source": "project",
+                  "required": true
+                }
+              ],
+              "fingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00"
+            },
+            "offer": {
+              "createdRevision": 4,
+              "stage": "build",
+              "effort": "balanced",
+              "skills": [],
+              "gates": [
+                {
+                  "id": "contract",
+                  "criterion": "Commercial claims match accepted prototype evidence.",
+                  "source": "contract",
+                  "required": true
+                },
+                {
+                  "id": "business-account-and-offer-fit",
+                  "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments.",
+                  "source": "profile",
+                  "required": true
+                },
+                {
+                  "id": "business-commercial-next-step",
+                  "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized.",
+                  "source": "profile",
+                  "required": true
+                }
+              ],
+              "fingerprint": "94e19a42a19f51382f1ee83a8bb47f4b1a383b73b2b111bc7b432ad09f79cebe"
+            }
+          },
+          "rounds": [
+            {
+              "taskId": "prototype",
+              "submitRevision": 6,
+              "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+              "artifacts": [
+                {
+                  "path": "\ud83e\udded-r\u00e9sultat.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                },
+                {
+                  "path": "\ue000-note.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                },
+                {
+                  "path": "\u00e9vidence.md",
+                  "size": 32,
+                  "sha256": "5369b6b96d9820ea3c634643ec90f963a4644006f7a23a07be97e7cbd97b6ce2"
+                }
+              ]
+            }
+          ],
+          "assessments": [
+            {
+              "taskId": "prototype",
+              "reviewRevision": 7,
+              "submitRevision": 6,
+              "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+              "artifactFingerprint": "84760fc30da8004d8b0056c72e5e0b5b9e2d0080d489e610de16b1b34ea231c4",
+              "results": [
+                {
+                  "gateId": "contract",
+                  "status": "pass",
+                  "evidence": [
+                    {
+                      "path": "\u00e9vidence.md",
+                      "locator": "Line 1: synthetic fixture content"
+                    }
+                  ],
+                  "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+                },
+                {
+                  "gateId": "business-behavior-and-regressions",
+                  "status": "pass",
+                  "evidence": [
+                    {
+                      "path": "\u00e9vidence.md",
+                      "locator": "Line 1: synthetic fixture content"
+                    }
+                  ],
+                  "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+                },
+                {
+                  "gateId": "business-integration-and-safety",
+                  "status": "pass",
+                  "evidence": [
+                    {
+                      "path": "\u00e9vidence.md",
+                      "locator": "Line 1: synthetic fixture content"
+                    }
+                  ],
+                  "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+                },
+                {
+                  "gateId": "project-1",
+                  "status": "pass",
+                  "evidence": [
+                    {
+                      "path": "\u00e9vidence.md",
+                      "locator": "Line 1: synthetic fixture content"
+                    }
+                  ],
+                  "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+                }
+              ]
+            }
+          ],
+          "extensions": []
+        }
+      },
+      "next": {
+        "sourceRevision": 7,
+        "action": "start",
+        "taskId": "offer",
+        "phase": "execution",
+        "reason": "Dependencies are accepted; inspect their current artifacts before starting this task.",
+        "used": 0,
+        "limit": 3,
+        "dependencyBlockers": [],
+        "policyFingerprint": "94e19a42a19f51382f1ee83a8bb47f4b1a383b73b2b111bc7b432ad09f79cebe",
+        "readyIndependentIds": [
+          "offer"
+        ],
+        "reviewTemplate": null
+      }
+    }
+  ],
+  "gateFile": {
+    "version": 1,
+    "taskId": "prototype",
+    "submitRevision": 6,
+    "policyFingerprint": "cbe7d6681c88c7afedfd952f4ff55cb5c47cf2d5bfdb8da6ae220e4d17634c00",
+    "artifactFingerprint": "84760fc30da8004d8b0056c72e5e0b5b9e2d0080d489e610de16b1b34ea231c4",
+    "results": [
+      {
+        "gateId": "contract",
+        "status": "pass",
+        "evidence": [
+          {
+            "path": "\u00e9vidence.md",
+            "locator": "Line 1: synthetic fixture content"
+          }
+        ],
+        "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+      },
+      {
+        "gateId": "business-behavior-and-regressions",
+        "status": "pass",
+        "evidence": [
+          {
+            "path": "\u00e9vidence.md",
+            "locator": "Line 1: synthetic fixture content"
+          }
+        ],
+        "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+      },
+      {
+        "gateId": "business-integration-and-safety",
+        "status": "pass",
+        "evidence": [
+          {
+            "path": "\u00e9vidence.md",
+            "locator": "Line 1: synthetic fixture content"
+          }
+        ],
+        "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+      },
+      {
+        "gateId": "project-1",
+        "status": "pass",
+        "evidence": [
+          {
+            "path": "\u00e9vidence.md",
+            "locator": "Line 1: synthetic fixture content"
+          }
+        ],
+        "observation": "Read the synthetic fixture artifact. No live model execution is claimed."
+      }
+    ]
+  }
+}

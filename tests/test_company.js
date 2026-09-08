@@ -31,7 +31,9 @@ function harness({catalog=data,clipboard,search='',hash=''}={}){
   const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8'),elements=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(m=>[m[1],new Element()]));
   const document={readyState:'complete',body:new Element('body'),createElement:tag=>new Element(tag),getElementById(id){assert.ok(elements.has(id),'Missing real HTML id: '+id);return elements.get(id);}};
   const window={document,CLAUDE_INC_COMPANY:catalog,location:{search,hash,replace(value){window.redirect=value;}},navigator:{clipboard},setTimeout(fn){fn();},URL:{createObjectURL(blob){window.blob=blob;return 'blob:test';},revokeObjectURL(url){window.revoked=url;}}};
-  vm.runInNewContext(source,{window,TextEncoder,TextDecoder,Blob});
+  const runtime={window,TextEncoder,TextDecoder,Blob};
+  vm.runInNewContext(fs.readFileSync(path.join(root,'studio/harness.js'),'utf8'),runtime);
+  vm.runInNewContext(source,runtime);
   const get=id=>document.getElementById(id);
   function edit(values=fields){for(const [key,id] of [['brief','project-brief'],['goal','project-goal'],['constraints','project-constraints']]){get(id).value=values[key];get(id).listeners.input();}}
   async function load(value){const raw=typeof value==='string'?value:JSON.stringify(value),buffer=new TextEncoder().encode(raw);get('project-file').files=[{size:buffer.byteLength,arrayBuffer:async()=>buffer.buffer}];await get('project-file').listeners.change();}
@@ -39,11 +41,11 @@ function harness({catalog=data,clipboard,search='',hash=''}={}){
 }
 function allText(node){return node.textContent+'\n'+node.children.map(allText).join('\n');}
 
-test('canonical dataset has eight distinct departments and all fifty manual-backed employees',()=>{
+test('canonical dataset has eight distinct departments and all fifty-four manual-backed employees',()=>{
   assert.equal(app.validateDataset(data).valid,true);assert.equal(data.departments.length,8);
-  const skills=[...data.departments.flatMap(d=>d.skills),...data.staff];assert.equal(skills.length,50);assert.equal(new Set(skills.map(s=>s.id)).size,50);
+  const skills=[...data.departments.flatMap(d=>d.skills),...data.staff];assert.equal(skills.length,54);assert.equal(new Set(skills.map(s=>s.id)).size,54);
   for(const skill of skills){const manual=fs.readFileSync(path.join(root,'skills',skill.id,'SKILL.md'),'utf8').replace(/\r\n/g,'\n');assert.ok(manual.includes(skill.output),skill.id);assert.ok(manual.includes('# '+skill.name),skill.id);}
-  assert.deepEqual(data.staff.map(s=>s.id),['chief-of-staff','token-accountant']);
+  assert.deepEqual(data.staff.map(s=>s.id),['chief-of-staff','token-accountant','cto-advisor','skill-vetting','appsec-review','agent-evaluation']);
   for(const department of data.departments)assert.match(department.scope,/^You /);
 });
 test('dataset validation rejects missing, duplicate, malformed and unsafe identifiers',()=>{
@@ -53,8 +55,8 @@ test('dataset validation rejects missing, duplicate, malformed and unsafe identi
   }
   assert.equal(harness({catalog:null}).get('company-error').hidden,false);
 });
-test('all departments are keyboard buttons and all fifty skills can be explored',()=>{
-  const h=harness(),buttons=h.get('department-nav').children;assert.equal(buttons.length,8);assert.equal(h.get('hero-departments').children.length,8);assert.equal(h.get('staff-list').children.length,2);
+test('all departments are keyboard buttons and all fifty-four skills can be explored',()=>{
+  const h=harness(),buttons=h.get('department-nav').children;assert.equal(buttons.length,8);assert.equal(h.get('hero-departments').children.length,8);assert.equal(h.get('staff-list').children.length,2);assert.equal(h.get('cto-skills').children.length,4);
   buttons.forEach((b,i)=>{assert.equal(b.tag,'button');b.click();assert.equal(h.get('department-name').textContent,data.departments[i].name);assert.equal(h.get('employee-list').children.length,6);assert.equal(b.attributes['aria-pressed'],'true');assert.ok(allText(h.get('employee-list')).includes(data.departments[i].skills[0].id));});
   h.get('hero-departments').children[1].click();assert.equal(h.get('department-name').focused,true);assert.equal(h.get('departments').scrolled,true);
 });
@@ -226,4 +228,47 @@ test('a downloaded company brief initializes the real CLI and its multi-departme
     const h=harness();await h.load(output);assert.equal(h.get('snapshot-name').textContent,'Browser CLI fixture');
     assert.match(allText(h.get('snapshot-tasks')),/Recorded review: accept · ceo/);assert.match(allText(h.get('snapshot-tasks')),/Depends on: offer/);
   }finally{assert.equal(path.dirname(path.resolve(temporary)),path.resolve(os.tmpdir()));assert.ok(path.basename(temporary).startsWith('company-cli-browser-'));fs.rmSync(temporary,{recursive:true,force:true});}
+});
+
+const harnessFixtures=require('./harness-fixtures.json');
+const snapshot2=name=>copy(harnessFixtures.states.find(f=>f.name===name).state);
+test('schema 2 displays stage, effort, lifetime usage, next action and literal recorded gate evidence',async()=>{
+  const h=harness(),s=snapshot2('dependency-ready');h.edit();
+  const privateText='<script>PRIVATE GATE OBSERVATION</script>',locator='javascript:PRIVATE LOCATOR';s.harness.assessments[0].results[0].observation=privateText;s.harness.assessments[0].results[0].evidence[0].locator=locator;
+  await h.load(s);assert.equal(h.get('project-board').hidden,false);
+  const overview=allText(h.get('snapshot-harness')),tasks=allText(h.get('snapshot-tasks'));
+  assert.match(overview,/build stage · balanced effort/);assert.match(overview,/Next action from this snapshot: start/);assert.match(overview,/not verified here/);
+  assert.match(tasks,/1 \/ 3 iterations used/);assert.match(tasks,/Last iteration: 1 · submitted at revision 6/);assert.match(tasks,/Gate review: cto · accept · revision 7/);assert.match(tasks,/RECORDED PASS/);assert.ok(tasks.includes(privateText));assert.ok(tasks.includes(locator));
+  h.get('download-brief').click();assert.ok(!(await h.window.blob.text()).includes('PRIVATE'));assert.equal(h.get('project-brief').value,fields.brief);
+  h.get('reset-project').click();for(const id of ['snapshot-harness','snapshot-tasks','snapshot-context','snapshot-decisions'])assert.equal(h.get(id).children.length,0,id);assert.equal(h.get('snapshot-name').textContent,'');
+});
+test('a schema 1 replacement clears all schema 2 controls and gate evidence',async()=>{
+  const h=harness();await h.load(snapshot2('dependency-ready'));assert.match(allText(h.get('snapshot-tasks')),/RECORDED PASS/);
+  await h.load(project());assert.equal(h.get('snapshot-harness').children.length,0);assert.doesNotMatch(allText(h.get('snapshot-tasks')),/RECORDED PASS|Gate review:|iterations used/);assert.equal(h.get('snapshot-name').textContent,'Example project');
+});
+test('schema 2 pending reads cannot restore evidence after newer paste, file import, or close',async()=>{
+  for(const action of ['paste','file','close']){
+    const h=harness();await h.load(snapshot2('dependency-ready'));let resolve;
+    h.get('project-file').files=[{size:100,arrayBuffer:()=>new Promise(done=>{resolve=done;})}];const pending=h.get('project-file').listeners.change();
+    if(action==='paste'){h.get('project-json').value=JSON.stringify(project());h.get('open-pasted-project').click();}
+    else if(action==='file')await h.load(project());else h.get('reset-project').click();
+    resolve(new TextEncoder().encode(JSON.stringify(snapshot2('dependency-ready'))).buffer);await pending;
+    assert.equal(h.get('snapshot-harness').children.length,0);assert.doesNotMatch(allText(h.get('snapshot-tasks')),/RECORDED PASS|Gate review:|iterations used/);assert.equal(h.get('snapshot-name').textContent,action==='close'?'':'Example project');assert.equal(h.get('project-json').value,'');
+  }
+});
+test('new unassessed round never displays earlier PASS as its current gate result',async()=>{
+  const h=harness(),s=snapshot2('dependency-ready'),t=s.tasks[0];t.status='review';t.reviews[0].decision='revise';s.events.at(-1).type='task.revise';
+  s.events.push({revision:++s.revision,type:'task.submit',taskId:t.id,note:'New round'});s.harness.rounds.push({...copy(s.harness.rounds[0]),submitRevision:s.revision});
+  await h.load(s);assert.equal(h.get('project-board').hidden,false);const text=allText(h.get('snapshot-tasks'));assert.match(text,/UNASSESSED UNKNOWN/);assert.doesNotMatch(text,/RECORDED PASS|Gate review:/);assert.match(text,/Last iteration: 2 · submitted at revision 8/);
+});
+test('historical accepted task with a prototype property name stays inert and explicitly ungated',async()=>{
+  const h=harness(),s=snapshot2('dependency-ready'),t=s.tasks[0];t.id='constructor';t.reviews[0].reviewer='ceo';t.reviews[0].revision=5;s.tasks=[t];s.decisions=[];
+  s.events=[{type:'init',taskId:null,note:'Initial project'},{type:'task.add',taskId:t.id,note:'Task'},{type:'task.start',taskId:t.id,note:'Start'},{type:'task.submit',taskId:t.id,note:'Submitted'},{type:'task.accept',taskId:t.id,note:t.reviews[0].note},{type:'harness.generate',taskId:null,note:'Business harness enabled'}].map((e,i)=>({...e,revision:i+1}));
+  s.revision=6;s.harness.enabledRevision=6;s.harness.policies={};s.harness.rounds=[];s.harness.assessments=[];
+  await h.load(s);assert.equal(h.get('project-board').hidden,false);assert.match(allText(h.get('snapshot-tasks')),/Historical acceptance before harness activation\. No harness gates were verified/);assert.doesNotMatch(allText(h.get('snapshot-tasks')),/RECORDED PASS/);
+});
+test('robot image names the eight actual departments and CTO presentation omits internal governance prose',()=>{
+  const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8'),h=harness();
+  assert.match(html,/alt="[^"]*Developers, Designers, Marketing, Social Media, Finance, Small Business, Legal, and Sales/);assert.match(html,/CEO and CTO lead together/);assert.doesNotMatch(allText(h.get('cto-skills')),/Catalog grouping|peer executive of the CEO/);
+  assert.match(html,/og:image:width" content="1774"/);assert.match(html,/og:image:height" content="887"/);assert.match(html,/twitter:image" content="https:\/\/alebgl77.github.io\/claude-inc\/company-team.png"/);
 });

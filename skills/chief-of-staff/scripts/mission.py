@@ -66,8 +66,10 @@ def parse_roster(cli):
     """Read the trusted Bash registry as text; never source or execute it."""
     depts = re.search(r"^DEPTS=\(([^)]+)\)$", cli, re.M)
     registry = re.search(r"^skills_of\(\) \{\n(.*?)^\}", cli, re.M | re.S)
-    staff = re.search(r"^canonical_skills\(\) \{\n(.*?)^\}", cli, re.M | re.S)
-    if not depts or not registry or not staff:
+    staff = re.findall(r"^STAFF=\(([a-z0-9 -]+)\)$", cli, re.M)
+    executives = re.findall(r"^EXECUTIVES=\(([a-z0-9 -]+)\)$", cli, re.M)
+    cto_skills = re.findall(r"^CTO_SKILLS=\(([a-z0-9 -]+)\)$", cli, re.M)
+    if not depts or not registry or len(staff) != 1 or len(executives) != 1 or len(cto_skills) != 1:
         raise MissionError("canonical roster is missing or malformed in bin/company")
     departments = depts.group(1).split()
     if len(departments) != 8 or len(set(departments)) != 8:
@@ -85,11 +87,14 @@ def parse_roster(cli):
             raise MissionError(f"invalid employee slug in {department}")
         roster[department] = skills
         seen.update(skills)
-    staff_entries = re.findall(r'^\s*echo "([a-z0-9 -]+)"\s*$', staff.group(1), re.M)
-    staff_skills = staff_entries[0].split() if len(staff_entries) == 1 else []
-    if (len(staff_skills) != 2 or len(set(staff_skills)) != 2 or seen.intersection(staff_skills)
-            or not all(SLUG.fullmatch(skill) for skill in staff_skills)):
-        raise MissionError("canonical roster must contain 2 unique executive staff")
+    staff_skills = staff[0].split()
+    expected_cto = {"cto-advisor", "skill-vetting", "appsec-review", "agent-evaluation"}
+    expected_staff = {"chief-of-staff", "token-accountant"} | expected_cto
+    if len(staff_skills) != 6 or set(staff_skills) != expected_staff or seen.intersection(staff_skills):
+        raise MissionError("canonical roster must contain the 6 unique executive staff skills")
+    if (executives[0].split() != ["cto"] or len(cto_skills[0].split()) != 4
+            or set(cto_skills[0].split()) != expected_cto):
+        raise MissionError("canonical executive registry must contain cto and its 4 staff skills")
     return roster, staff_skills
 
 

@@ -1,7 +1,7 @@
 # A company around your project
 
 The CEO coordinates an arbitrary founder project across eight departments and
-50 employee skill manuals. Start with your own brief, goals, and constraints.
+54 skill manuals, with peer CEO and CTO executives. Start with your own brief, goals, and constraints.
 The company records real task contracts and evidence as work happens; it does
 not need a mission recipe and does not invent a populated task board at setup.
 
@@ -28,7 +28,7 @@ create fictitious tasks, or modify `.claude/company-team.md`.
 
 The optional `--departments` list contains canonical IDs: `developers`,
 `designers`, `marketing`, `social-media`, `finance`, `small-business`, `legal`,
-and `sales`. These are routing preferences. All eight departments and all 50
+and `sales`. These are routing preferences. All eight departments and all 54
 skill manuals remain available. Repeat `--goal` and `--constraint` as needed.
 
 Plugin users can describe the project through `/claude-inc:company`; the
@@ -64,6 +64,13 @@ employee manuals; the workflow does not require nested subagent spawning.
 Workers return files, observations, and proposed state updates. The CEO
 serializes the actual project mutations.
 
+The CEO owns business direction, priorities, and arbitration. The peer CTO owns
+technical direction across architecture, agent infrastructure, security, skills,
+and code, and returns finding, business impact, options/tradeoffs, recommendation,
+and decision needed before delivery. CEO-only state writes prevent competing
+mutations; they do not make the CTO subordinate. All eight task owners remain
+business departments, with six staff skills available across the company.
+
 `company project prompt` prints the validated resume instructions without
 starting an assistant. It references the packaged company files and the local
 workspace. Another assistant needs access to those files and suitable tools;
@@ -76,6 +83,13 @@ copies `/claude-inc:company` with your brief. Choose **Direct installation** for
 `/company`. Downloading the brief produces the same plain-text file either way.
 
 ## Tasks and review
+
+The commands below describe the original schema-1 lifecycle. To opt into
+bounded review gates, use the [harness and loops guide](harness-loops.md).
+Activation atomically moves the workspace to schema 2; it is not automatic.
+Harness-controlled review adds expected project/submission revisions and an
+evidence gate file derived from the current `loop next` review template.
+Schema 2 also allows `cto` as reviewer without adding a ninth task-owner department.
 
 Each task belongs to a canonical department and has a title, an acceptance
 contract, and optional dependencies. Add only work justified by the project:
@@ -237,6 +251,8 @@ From the repository root:
 
 ```bash
 python -m unittest discover -s tests -p test_project.py
+python -m unittest discover -s tests -p test_harness.py
+python -m unittest discover -s tests -p test_cto.py
 python -m unittest discover -s tests -p test_missions.py
 python scripts/build_company.py --check
 python scripts/build_studio.py --check

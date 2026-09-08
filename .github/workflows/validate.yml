@@ -49,7 +49,7 @@ jobs:
           [[ "$brief_output" == *'CEO Operating Manual'* ]]
           ./bin/company roster > /dev/null
           ./bin/company help > /dev/null
-          [ "$(./bin/company version)" = "company v1.4.1" ]
+          [ "$(./bin/company version)" = "company v1.5.0" ]
 
       - name: A closed pipe ends the CLI quietly (macOS and Linux)
         if: runner.os != 'Windows'
@@ -117,7 +117,7 @@ jobs:
           (
             cd "$empty_project"
             default_team="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" team)"
-            grep -q 'Full canonical company active: 50 employees across 8 departments.' <<< "$default_team"
+            grep -q 'Full canonical company active: 54 skills across 8 departments, with the CTO executive.' <<< "$default_team"
             missing_brief="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" brief 'missing profile' --print)"
             ! grep -q 'ACTIVE TEAM PREFERENCES' <<< "$missing_brief"
             [ -z "$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" profile-context)" ]
@@ -342,7 +342,7 @@ jobs:
           & bash ./bin/company roster | Out-Null
           if ($LASTEXITCODE -ne 0) { throw 'CLI roster failed' }
           $version = & bash ./bin/company version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.1') { throw "Unexpected CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.5.0') { throw "Unexpected CLI version: $version" }
 
           $prompt = (& bash ./bin/company onboard --print) -join "`n"
           foreach ($marker in @('QUESTION 1/3', 'QUESTION 2/3', 'QUESTION 3/3', 'PROPOSAL')) {
@@ -482,17 +482,17 @@ jobs:
           mkdir -p "$HOME"
           bash "$workspace/install.sh"
           bash "$workspace/install.sh"
-          [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
-          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
+          [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 54 ]
+          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 9 ]
           [ -L "$HOME/.local/bin/company" ]
-          [ "$("$HOME/.local/bin/company" version)" = "company v1.4.1" ]
+          [ "$("$HOME/.local/bin/company" version)" = "company v1.5.0" ]
 
           export HOME="$test_root/project home"
           project="$test_root/project with spaces"
           mkdir -p "$HOME" "$project"
           (cd "$project" && bash "$workspace/install.sh" --project)
-          [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 50 ]
-          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 8 ]
+          [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 54 ]
+          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 9 ]
 
           export HOME="$test_root/no cli home"
           mkdir -p "$HOME"
@@ -550,8 +550,8 @@ jobs:
             [ -f "$agent" ] || continue
             agent_count=$((agent_count + 1))
           done
-          [ "$skill_count" -eq 50 ]
-          [ "$agent_count" -eq 8 ]
+          [ "$skill_count" -eq 54 ]
+          [ "$agent_count" -eq 9 ]
 
       - name: Global, project and no-CLI installs work (Windows)
         if: runner.os == 'Windows'
@@ -564,12 +564,12 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
           & "$workspace/install.ps1"
           & "$workspace/install.ps1"
-          if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 50) { throw 'Global skill count is not 50' }
-          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 8) { throw 'Global agent count is not 8' }
+          if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 54) { throw 'Global skill count is not 54' }
+          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 9) { throw 'Global agent count is not 9' }
           $wrapper = Join-Path $env:HOME '.local/bin/company.exe'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
-          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.4.1') { throw "Unexpected installed CLI version: $version" }
+          if ($LASTEXITCODE -ne 0 -or $version -ne 'company v1.5.0') { throw "Unexpected installed CLI version: $version" }
 
           $wrapperProject = Join-Path $testRoot 'wrapper profile project with spaces'
           $wrapperProfileDir = Join-Path $wrapperProject '.claude'
@@ -587,8 +587,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:HOME, $project | Out-Null
           Push-Location $project
           try { & "$workspace/install.ps1" -Project } finally { Pop-Location }
-          if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 50) { throw 'Project skill count is not 50' }
-          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 8) { throw 'Project agent count is not 8' }
+          if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 54) { throw 'Project skill count is not 54' }
+          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 9) { throw 'Project agent count is not 9' }
 
           $env:HOME = Join-Path $testRoot 'no cli home'
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null

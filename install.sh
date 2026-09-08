@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude, Inc. installer: puts 8 departments and 50 employees on your payroll.
+# Claude, Inc. installer: puts 8 departments, a CTO executive and 54 skills on your payroll.
 # Flags: --project, --no-bin, --onboard
 set -euo pipefail
 
@@ -612,7 +612,7 @@ if ! remove_known_path "$ROLLBACK"; then say "warning: installation succeeded bu
 remove_known_path "$STAGE" || true; STAGE=""
 
 if [ "$NO_BIN" = "no" ]; then case ":$PATH:" in *":$HOME/.local/bin:"*) : ;; *) say "note: add ~/.local/bin to your PATH to use 'company'" ;; esac; fi
-echo; say "${G}hired ${n_agents} department heads and ${n_skills} employees${R} -> $TARGET"; echo
+echo; say "${G}hired ${n_agents} agents and ${n_skills} skills${R} -> $TARGET"; echo
 echo "  ${B}Next:${R}"
 if [ "$NO_BIN" = "no" ]; then echo "    company roster                       # meet the team"; echo "    company brief \"launch my product\"    # brief the CEO"; fi
 echo "    claude                               # skills + agents + /company are live in Claude Code"; echo

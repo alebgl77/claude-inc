@@ -2,6 +2,32 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [1.5.0] - 2026-09-08
+
+### Added
+- A peer CTO executive for technical direction, architecture, agent infrastructure,
+  security, skills, and code, with concise decision packets for CEO business arbitration.
+- Four CTO staff manuals: `cto-advisor`, `skill-vetting`, `appsec-review`, and
+  `agent-evaluation`. The company now has 54 skills: 48 across eight departments
+  and six staff skills. Nine registered agents comprise eight VPs and the CTO.
+- `company cto` composes the CTO charter and exactly four manuals; the CEO brief
+  includes the CTO role while loading specialist manuals only when relevant.
+- Optional project harnesses, validated task policies, dynamic work/review guidance,
+  mandatory evidence gates, lifetime submission caps, and recorded extensions.
+  Schema-1 workspaces stay unchanged until explicit atomic schema-2 activation.
+- An unchanged, commit-pinned NVIDIA Skill Inspector reference under Apache-2.0,
+  with license and provenance. External scanners and Trail of Bits plugins remain
+  optional; no tools are installed and no certification is claimed.
+
+### Changed
+- Preserved the eight business task owners and CEO-only serialized state writes;
+  this concurrency rule does not subordinate the CTO's technical authority.
+- Added schema-2 CTO reviewer support and revision-bound gate evidence. Existing
+  accepted work stays historical; reviews open at activation need fresh submission.
+- Updated the company illustration, roster, installation counts, and guides for
+  the peer executives and bounded loops. Browser tools prepare briefs and inspect
+  snapshots; host sessions still perform the work under their existing settings.
+
 ## [1.4.1] - 2026-09-08
 
 ### Fixed

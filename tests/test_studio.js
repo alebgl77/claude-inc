@@ -193,7 +193,7 @@ test('malformed catalog variants fail helpfully instead of producing misleading 
 
 // A minimal document harness exercises state and events. Real browser layout and
 // native clipboard/download behavior are verified separately in browser QA.
-function browserHarness(data = fixture(), href = 'file:///studio/index.html', clipboard) {
+function browserHarness(data = fixture(), href = 'file:///studio/missions.html', clipboard) {
   class Element {
     constructor(tag = 'div') { this.tag = tag; this.children = []; this.attributes = {}; this.listeners = {}; this.dataset = {}; this.value = ''; this.hidden = false; this.textContent = ''; }
     append(...children) { this.children.push(...children); }

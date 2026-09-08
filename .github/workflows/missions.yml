@@ -1,4 +1,4 @@
-name: missions
+name: company-workspace
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   mission-studio:
-    name: Mission compiler and Studio (${{ matrix.os }})
+    name: Company workspace and recipes (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -27,11 +27,20 @@ jobs:
           node-version: 'lts/*'
           package-manager-cache: false
 
+      - name: Project state and native launcher tests
+        run: python -m unittest discover -s tests -p test_project.py
+
       - name: Mission compiler tests
         run: python -m unittest discover -s tests -p test_missions.py
 
+      - name: Company experience tests
+        run: node --test tests/test_company.js
+
       - name: Studio tests
         run: node --test tests/test_studio.js
+
+      - name: Company dataset is current
+        run: python scripts/build_company.py --check
 
       - name: Studio dataset is current
         run: python scripts/build_studio.py --check

@@ -1,184 +1,196 @@
 <div align="center">
 
-# 🏢 Claude, Inc.
+# Claude, Inc.
 
-### Hire a whole AI company in one command.
+### Bring a project. Put the company to work.
 
-**1 CEO · 8 departments · 50 employees, running inside Claude Code (or any AI CLI).**
+**1 CEO · 8 departments · 50 employee skill manuals.**
 
 [![compliance](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml/badge.svg)](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Employees](https://img.shields.io/badge/employees-50-orange)
-![Departments](https://img.shields.io/badge/departments-8-8A2BE2)
-![Works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20any%20CLI-green)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome%20(we're%20hiring)-brightgreen.svg)](CONTRIBUTING.md)
-
-*You are the founder. This repo is your payroll.*
+[![Contribute](https://img.shields.io/badge/contributions-welcome-orange)](CONTRIBUTING.md)
 
 </div>
 
-<img src="assets/banner.png" alt="Claude, Inc.: hire a 50-employee AI company in one command" width="100%">
+Claude, Inc. organizes a virtual company around your project. The CEO turns your
+brief into workstreams, delegates to useful departments, collects files and
+review evidence, and resumes from a local project workspace next session. Your
+project can be a product, a business operation, a research effort, or something
+that spans several departments. You do not have to choose a template first.
 
----
+The 50 employees are **skill manuals**, not 50 processes running in the
+background. Claude Code supplies the active assistant session, native agent
+tools, configured model, and permissions. The company supplies its roles,
+operating instructions, and a local task-and-decision record.
 
-## Try Mission Studio
+[![Claude, Inc. company overview](studio/company-preview.svg)](https://alebgl77.github.io/claude-inc/)
 
-[Try Mission Studio](https://alebgl77.github.io/claude-inc/)
-
-[![Mission Studio preview: one brief, a crew, and a definition of done. Plan the team, handoffs, and review, then export the complete prompt.](studio/social-preview.png)](https://alebgl77.github.io/claude-inc/)
-
-Pick a mission, write your brief, and see who hands what to whom. **Mission
-Studio** turns a recipe into a plan and a self-contained prompt with the selected
-employees' actual manuals, named deliverables, and requested evidence checks.
-
-**Open it locally:** [download the repository ZIP](https://github.com/alebgl77/claude-inc/archive/refs/heads/main.zip)
-and extract it, or clone this repo. Open `studio/index.html` in your browser.
-No install, build, API key, or local server is needed.
-
-| Mission | What the plan covers |
-|---|---|
-| `launch` | Landing-page copy, page files, QA, and a readiness review |
-| `validate` | Customer evidence, a falsifiable experiment, and a decision rule |
-| `release` | Reproduction, regression checks, release notes, and rollback |
-| `proposal` | Client facts, scope and acceptance, pricing assumptions, and terms review |
-| `content` | A voice guide, anchor email, channel drafts, and editorial review |
-
-The Studio shows the unique manuals selected and their byte size against all 50
-manuals. Copy the full prompt into your chosen assistant, download the prompt or
-plan, or export a mission card. The card and preset link omit your private brief.
-
-Prefer a terminal? With the `company` CLI installed and Python 3.9+ available:
-
-```bash
-company missions
-company mission launch --brief "Launch my invoicing app for freelancers"
-company mission launch --brief "Launch my invoicing app for freelancers" --format prompt
-```
-
-These commands print locally; they never start an assistant, even if one is
-installed. You choose where to run the prompt. The plan asks for `PASS`, `FAIL`,
-or `NOT RUN` with evidence; generating it does not perform or verify the work.
-
-[Mission Studio guide](docs/mission-studio.md) covers Windows without Bash,
-output formats, privacy, and recipe authoring.
-
-## Why
-
-Everyone screenshots the org-chart infographics. Nobody ships them.
-
-**Claude, Inc.** turns the *"Build Your Whole Team with Claude"* org chart into a working company: every department is a real Claude Code **subagent**, every employee is a real **skill**, and the CEO is a routing brain that briefs them, parallelizes them, and reports back like a board memo.
-
-*(The company includes a full Sales department on its 8th floor, plus a chief of staff and a token accountant on the executive floor. Headcount: 50.)*
-
-No SaaS. No API keys. No framework. Just markdown with a job description - the way Claude was meant to be staffed.
-
-## The org chart
-
-```mermaid
-graph TD
-    CEO["🧠 CEO<br/><i>your AI CLI</i>"]
-    CEO --> DEV["👨‍💻 Developers<br/>6 skills"]
-    CEO --> DES["🎨 Designers<br/>6 skills"]
-    CEO --> MKT["📣 Marketing<br/>6 skills"]
-    CEO --> SOC["📱 Social Media<br/>6 skills"]
-    CEO --> FIN["💰 Finance<br/>6 skills"]
-    CEO --> SMB["🏪 Small Business<br/>6 skills"]
-    CEO --> LEG["⚖️ Legal<br/>6 skills"]
-    CEO --> SAL["🤝 Sales<br/>6 skills"]
-    CEO -.-> COS["📋 chief-of-staff"]
-    FIN -.-> TOK["🧮 token-accountant"]
-```
-
-You talk to the CEO. The CEO briefs the departments. The departments put their employees to work. You get files and a board memo. **That's the whole product.**
+[Explore the company](https://alebgl77.github.io/claude-inc/) ·
+[Project workspace guide](docs/project-workspace.md) ·
+[Architecture and alternatives](docs/architecture.md)
 
 ## Hire everyone in 60 seconds
 
-**Option A - Claude Code plugin (recommended)**
+**Claude Code plugin**: install in Claude Code, then open your project folder:
 
-```
+```text
 /plugin marketplace add alebgl77/claude-inc
 /plugin install claude-inc@claude-inc
+/claude-inc:company Build the first version of my appointment-booking business for tutors
 ```
 
-**Option B - one-liner (installs skills + agents into `~/.claude`, plus the `company` CLI)**
+The CEO clarifies material unknowns and uses the packaged helper to initialize
+or resume project state when available. It selects the departments your project
+needs; all eight remain available.
+Plugin commands use the `claude-inc:` namespace. Directly installed commands
+use `/company` instead.
+
+**CLI and local files**: install the company, including the `company` command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/alebgl77/claude-inc/main/install.sh | bash
 ```
 
-**Option C - clone and walk into the office**
+Or inspect a clone and run its installer:
 
 ```bash
-git clone https://github.com/alebgl77/claude-inc && cd claude-inc
-./install.sh --project   # hires the company into this project's .claude/
-claude
-/company <mission>       # invoke the installed CEO command explicitly
+git clone https://github.com/alebgl77/claude-inc
+cd claude-inc
+./install.sh
 ```
 
-On Windows PowerShell, run `./install.ps1 -Project` from the clone instead. Run
-`./install.ps1` without `-Project` for a global install. The `company` CLI
-requires Bash (Git for Windows includes it); use `./install.ps1 -NoBin` to
-install only the Claude Code files when Bash is unavailable.
-With `--no-bin` or `-NoBin`, opt-in onboarding is deferred to the plugin because
-the guarded profile-save CLI is intentionally not installed.
+On Windows, run `./install.ps1` from the clone. The `company` wrapper requires
+Bash, such as Git for Windows. Python 3.9+ is required for project and mission
+commands; the direct Python entry points also work without Bash. See the
+[Windows instructions](docs/project-workspace.md#windows-without-bash).
 
-The shell installers record managed skills, agents and the `/company` command
-in the target's `.claude-inc-manifest-v1`. When the `company` CLI is installed,
-its global ownership is recorded separately in
-`~/.claude/.claude-inc-cli-manifest-v1`. They acquire exclusive target and CLI
-locks before taking snapshots or running the global preflight. An unmanaged
-collision, a modified managed entry or a destination changed during the install
-stops the transaction without overwriting that content. Move or back up the
-reported conflict, then run the installer again.
+Use `./install.sh --project` or `./install.ps1 -Project` to install into the
+current project's `.claude/` directory. `--no-bin` / `-NoBin` installs only the
+Claude Code files. Installers retain their collision checks and managed-file
+transactions; they stop before replacing unmanaged or modified content.
+A project install includes `.claude/commands/company.md`; invoke `/company`
+explicitly when you want CEO coordination.
 
-A project install writes the CEO command to `.claude/commands/company.md`.
-Start `claude` in that project, then run `/company <mission>` when you want CEO
-routing; installing the files does not make the CEO context permanently active.
+## Start your project, then resume the company
 
-Team onboarding is optional. Plugin users can run `/onboard`. Installer users
-can add `--onboard` to `install.sh` or `-Onboard` to `install.ps1`, or run it
-later:
+From the folder where the actual work belongs:
 
 ```bash
-/onboard                    # plugin, project profile
-/onboard --global           # plugin, global profile
-company onboard             # CLI, project profile: .claude/company-team.md
-company onboard --global    # CLI, global fallback profile
-company team                # CLI, inspect the active profile
+company project init --name "Tutor desk" \
+  --brief "Build a booking product for independent tutors, from offer to working prototype." \
+  --departments developers,designers,marketing \
+  --goal "A tutor can create a booking link and a student can request a lesson" \
+  --constraint "Use supplied facts; leave publication and purchases to me"
+
+company project start
 ```
 
-Onboarding asks three short questions, proposes the departments and skills to
-activate, and keeps all 50 installed as the available bench. Project profiles
-override global profiles. Existing installs and commands remain noninteractive
-unless onboarding is explicitly requested.
+`init` creates `.claude/company/project.json` with your brief, goals, constraints,
+and routing preferences. It does not fabricate tasks or alter your onboarding
+profile. `start` launches a real Claude Code session in that project with the
+packaged company plugin and resume instructions. It uses Claude Code's normal
+permissions and configured model; it does not start a daemon or enforce a spend
+budget. Claude Code must already be available and configured.
 
-`company brief` and the `/company` plugin command can use an active profile.
-Both obtain only normalized scope, department and skill fields from the CLI
-validator. They never read profile files directly. The free-form body and
-stored research status remain local, never enter the prompt and never authorize
-network access. An invalid project profile blocks global fallback.
-
-Accepted profiles are saved only through the CLI helper. It refuses symbolic
-links and non-regular targets, validates the fixed schema and 32768-byte limit,
-uses a private temporary file in the profile directory, and replaces the target
-atomically. Replacing a regular profile requires separate confirmation.
-
-## Your first day as founder
+The CEO records task contracts, starts work after its dependencies are accepted,
+and delegates with the host's available agent tools. Departments produce actual
+files. Submission records the files' SHA-256 hashes and moves a task to review;
+an acceptance records a different department or CEO as reviewer and requires
+those files to be unchanged. **Hashes establish file identity, not correctness;
+reviewer labels are declarations, not authentication.** Review the evidence.
 
 ```bash
-# Brief the CEO: routes across departments, in parallel, returns a Board Memo
-/company ship a landing page for my invoicing app, with pricing, legal-clean claims and 3 LinkedIn posts
+company project status
+company project status --format json
+company project start                  # resume from the same folder
+company project prompt                 # inspect or copy the resume instructions
+```
 
-# Morning standup: all 8 departments report on your current project
-/standup
+The [workspace guide](docs/project-workspace.md) covers task commands, blocked
+work, review, privacy, and using a different assistant. The structured project
+record remains the task source of truth. A Board Memo or Markdown ledger is a
+report derived from it.
 
-# Or talk to one department directly, from ANY terminal
+## The org chart
+
+```mermaid
+graph TD
+    CEO["CEO / coordinating assistant"]
+    CEO --> DEV["Developers / 6 skills"]
+    CEO --> DES["Designers / 6 skills"]
+    CEO --> MKT["Marketing / 6 skills"]
+    CEO --> SOC["Social Media / 6 skills"]
+    CEO --> FIN["Finance / 6 skills"]
+    CEO --> SMB["Small Business / 6 skills"]
+    CEO --> LEG["Legal / 6 skills"]
+    CEO --> SAL["Sales / 6 skills"]
+    CEO -.-> COS["chief-of-staff"]
+    FIN -.-> TOK["token-accountant"]
+```
+
+The CEO owns coordination and serializes project updates. Department agents
+apply the relevant employee manuals. Independent assignments can run in
+parallel when the host supports it; the company does not assume subagents can
+spawn nested subagents. A host without delegation can use explicit department
+passes, with that limitation made visible.
+
+## Optional team preferences
+
+Onboarding chooses preferred departments and skills; it does not remove the
+rest of the company or create project tasks:
+
+```text
+/claude-inc:onboard          # plugin, project profile
+/claude-inc:onboard --global # plugin, global profile
+company onboard             # CLI onboarding
+company team                # inspect active routing preferences
+```
+
+Installer users can opt in with `--onboard` or `-Onboard`. With `--no-bin` or
+`-NoBin`, onboarding is deferred to the plugin. Project profiles take precedence
+over global profiles. `company brief` and `/company` obtain only normalized
+scope, departments, and skills from the profile validator, never its free-form
+body or research status. An invalid project profile blocks global fallback.
+Stored preferences do not authorize network access.
+Both commands never read profile files directly.
+The plugin form of the CEO command is `/claude-inc:company`; its onboarding and
+standup commands are `/claude-inc:onboard` and `/claude-inc:standup`.
+
+Profiles remain separate from `.claude/company/project.json`; project commands
+leave `company-team.md` untouched. Saving profiles uses the existing strict
+schema, 32,768-byte limit, safe temporary write, and atomic replacement. Replacing
+an existing profile still requires the existing explicit replacement option.
+
+## Optional mission recipes
+
+[Mission Studio](https://alebgl77.github.io/claude-inc/missions.html) provides five
+starting recipes: `launch`, `validate`, `release`, `proposal`, and `content`.
+They are convenient examples inside the broader company, not its boundary.
+Open `studio/missions.html` locally or use the terminal:
+
+```bash
+company missions
+company mission launch --brief "Launch my invoicing app for freelancers" --format prompt
+```
+
+Recipes compile a self-contained prompt with selected manuals, staged handoffs,
+and evidence checks. They do not initialize your project or execute its tasks.
+The browser's cards and preset links omit your edited brief. Manual byte counts
+compare source files; they are not token, cost, or runtime estimates. Read the
+[Mission Studio guide](docs/mission-studio.md).
+
+## Work with one department
+
+For a focused request, use a department directly:
+
+```bash
 company dev "my tests fail after the last refactor"
-company legal "triage this NDA: $(cat nda.md)"
-company marketing "10 ad variants for my beta launch"
+company legal "review the NDA in nda.md"
+company marketing "draft ad variants using the supplied product facts"
 ```
 
-Skills also fire on their own: say *"review this contract"* in any conversation and the Contract Reviewer shows up to work. The org chart is there when you need coordination, invisible when you don't.
+Skills can also be invoked directly. The CEO is useful when work needs
+coordination, dependencies, decisions, or continuity across sessions.
 
 ## Meet the company
 
@@ -299,24 +311,25 @@ Skills also fire on their own: say *"review this contract"* in any conversation 
 
 | Employee | Reports to | Superpower |
 |---|---|---|
-| `chief-of-staff` | CEO | Mission ledger, decision log, weekly review |
-| `token-accountant` | CFO | The company audits its own token payroll |
+| `chief-of-staff` | CEO | Project context, task contracts, decision log, weekly review |
+| `token-accountant` | CFO | Reports from observed or supplied usage records |
 
 </details>
 
 ## How it works
 
-The infographic maps 1:1 onto Claude Code primitives: no magic, just org design:
+The company combines native host roles with a small local state helper:
 
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
-| **CEO** | `commands/company.md` + `/company` | Routing brain: parses the mission, delegates, arbitrates, writes the Board Memo |
-| **8 departments** | `agents/*.md` | Subagents with their own context windows; they run **in parallel** |
+| **CEO** | `commands/company.md`; `/claude-inc:company` in the plugin, `/company` in direct installs | Routing brain: scopes the project, delegates, arbitrates, writes the Board Memo |
+| **8 departments** | `agents/*.md` | Native host agents; independent assignments may run in parallel |
 | **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions; VPs hire them per task, or they self-trigger |
-| **2 staff hires** | `chief-of-staff`, `token-accountant` | Attached to CEO and CFO: org memory and self-auditing of token spend |
+| **2 staff hires** | `chief-of-staff`, `token-accountant` | Project coordination and reporting from supplied usage evidence |
+| **Project workspace** | `.claude/company/project.json` | Validated tasks, dependencies, artifact hashes, reviews, and decisions |
 
 ```
-you ──mission──▶ CEO ──briefs──▶ VP(s) ──hire──▶ skill(s) ──ship──▶ files + Board Memo
+you → project brief → CEO → department assignments → files + review → project state + Board Memo
 ```
 
 ![The full org chart: 1 CEO, 8 departments, 50 employees](assets/org-chart.svg)
@@ -339,7 +352,12 @@ company design "critique screenshot.png" --print | gemini   # any engine
 CLAUDE_INC_ENGINE=codex company dev "add tests"              # or set an engine
 ```
 
-No Claude Code? No problem. The hierarchy travels as plain text.
+The role manuals travel as plain text. `company project start` specifically
+uses native Claude Code so its agents, skills, and plugin context are available.
+For another assistant, inspect `company project prompt` and provide the named
+local files and tools it needs; delegation, permissions, and persistence depend
+on that host. A copied prompt does not turn every assistant into a compatible
+execution adapter.
 
 ### Skill-gap research
 
@@ -355,11 +373,11 @@ copied, installed or executed.
 
 ## FAQ
 
-**Is this over-engineering?** For "fix a typo", yes, which is why skills also trigger individually and the CEO skips ceremony on single-department tasks. For "prepare my product launch", a parallel org beats one long chat every time.
+**Do I need a company for every request?** No. Use a skill or department for a focused change. Use the CEO and project workspace when ownership, dependencies, reviews, and continuity help.
 
-**Does `/company` burn tokens?** Departments are subagents with their own context, so big missions fan out real work. Brief the CEO like you'd brief a real one: clear scope, only the departments you need.
+**Does `/company` use model tokens?** Yes, when the host executes work. Activating a department can create another model context. Manual-size comparisons do not predict the total usage, and Claude, Inc. does not enforce a budget.
 
-**Finance/Legal outputs?** Decision support with mandatory disclaimers, not professional advice. The VPs are contractually incapable of forgetting this.
+**Finance/Legal outputs?** Decision support requiring appropriate professional review. The department manuals require limitations to be stated; instructions cannot guarantee an assistant follows them.
 
 **Can I hire more employees?** Yes: [we're hiring](CONTRIBUTING.md). One PR = one new employee.
 

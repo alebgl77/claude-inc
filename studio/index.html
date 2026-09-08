@@ -1,88 +1,77 @@
 <!doctype html>
+<!-- Direction: editorial company prospectus. Rules: paper, ink, orange, real charters.
+     Signature: the organization chart doubles as the company directory. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="Plan a mission with selected Claude, Inc. manuals, ordered handoffs, and requested review checks. Export a complete prompt. Works offline; no agents run here.">
-  <title>Mission Studio — Claude, Inc.</title>
+  <meta name="description" content="Your project. An entire company. A CEO, eight business departments, and fifty specialist skills working around your project in Claude Code.">
+  <title>Claude, Inc. — Your project. An entire company.</title>
   <link rel="canonical" href="https://alebgl77.github.io/claude-inc/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Mission Studio — Claude, Inc.">
-  <meta property="og:description" content="Plan a mission with selected Claude, Inc. manuals, ordered handoffs, and requested review checks. Export a complete prompt. Works offline; no agents run here.">
+  <meta property="og:title" content="Claude, Inc. — Your project. An entire company.">
+  <meta property="og:description" content="Eight business departments working around your project in Claude Code, with a shared brief, tasks, handoffs, and reviews.">
   <meta property="og:url" content="https://alebgl77.github.io/claude-inc/">
   <meta property="og:image" content="https://alebgl77.github.io/claude-inc/social-preview.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Mission Studio: one brief, a crew, and a definition of done. Brief → Team → Handoffs → Review. Five mission blueprints; offline and open source.">
+  <meta property="og:image:alt" content="Claude, Inc. Your project. An entire company. A founder and CEO above eight departments, with fifty specialist skills.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Mission Studio — Claude, Inc.">
-  <meta name="twitter:description" content="Plan a mission with selected Claude, Inc. manuals, ordered handoffs, and requested review checks. Export a complete prompt. Works offline; no agents run here.">
+  <meta name="twitter:title" content="Claude, Inc. — Your project. An entire company.">
+  <meta name="twitter:description" content="Eight business departments working around your project in Claude Code.">
   <meta name="twitter:image" content="https://alebgl77.github.io/claude-inc/social-preview.png">
-  <meta name="twitter:image:alt" content="Mission Studio: one brief, a crew, and a definition of done. Brief → Team → Handoffs → Review. Five mission blueprints; offline and open source.">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="studio.css">
-  <script src="missions.js" defer></script>
-  <script src="studio.js" defer></script>
+  <meta name="twitter:image:alt" content="Claude, Inc. Your project. An entire company. A founder and CEO above eight departments, with fifty specialist skills.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="company.css">
+  <script src="company-data.js" defer></script>
+  <script src="company.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#workspace">Skip to mission</a>
-  <header class="masthead">
-    <a class="wordmark" href="https://github.com/alebgl77/claude-inc" aria-label="Claude, Inc. on GitHub"><span class="brand-mark" aria-hidden="true">c.</span>claude, inc.</a>
-    <span class="edition">THE MISSION STUDIO <span aria-hidden="true">/</span> VOL. 01</span>
-    <span class="privacy-label"><span aria-hidden="true"></span> Works entirely offline</span>
-  </header>
-
-  <div class="desk">
-    <aside class="mission-index" aria-label="Mission presets">
-      <div class="index-top"><p class="eyebrow">YOUR COMPANY, IN MOTION</p><p class="index-title">Good work starts<br>with a clear mission.</p><p class="index-intro">Choose the job. Shape the brief.<br>Give your assistant a plan.</p></div>
-      <nav id="mission-nav" aria-label="Choose a mission"></nav>
-      <div class="index-note"><span class="index-symbol" aria-hidden="true">↗</span><p>A focused crew.<br>A visible hand-off.<br>A definition of done.</p></div>
-      <div class="index-footer"><span>50 EMPLOYEES</span><span>8 DEPARTMENTS</span><a href="https://github.com/alebgl77/claude-inc#hire-everyone-in-60-seconds">Install the company <span aria-hidden="true">↗</span></a></div>
-    </aside>
-
-    <main id="workspace" tabindex="-1">
-      <noscript><p class="error-notice">Mission Studio needs JavaScript to compose your brief. Enable it and reopen this page, or use the mission CLI from the repository.</p></noscript>
-      <p id="load-error" class="error-notice" role="alert" hidden></p>
-      <div id="studio-content" hidden>
-        <section class="overview" aria-labelledby="mission-title">
-          <div class="overview-copy"><p class="eyebrow"><span id="mission-reference">MISSION 01</span><span class="label-rule" aria-hidden="true"></span>THE BLUEPRINT</p><h1 id="mission-title"></h1><p id="mission-summary" class="mission-summary"></p></div>
-          <div class="outcome-block"><p class="eyebrow">THE FINISH LINE</p><p id="mission-outcome"></p><span class="blueprint-label">A plan to execute. No agents run here.</span></div>
-        </section>
-
-        <section class="mission-facts" aria-label="Mission scope">
-          <div class="fact"><span class="fact-value"><span id="crew-count"></span><span class="fact-denominator"> / 50</span></span><span class="fact-label">employees in this crew</span></div>
-          <div class="fact"><span class="fact-value" id="stage-count"></span><span class="fact-label">stages with hand-offs</span></div>
-          <div class="fact reading-fact"><span class="fact-value" id="reading-reduction"></span><span class="fact-label">smaller skill reading set <a href="#reading-manifest" aria-label="See how the skill reading set is calculated">↘</a></span></div>
-          <p class="fact-note">The right people for the job.<br>Everyone else stays on the bench.</p>
-        </section>
-
-        <div class="working-area">
-          <section class="workflow" aria-labelledby="workflow-title">
-            <div class="section-heading"><div><p class="eyebrow">01 / THE RUN OF SHOW</p><h2 id="workflow-title">A team. A sequence.<br>A way through.</h2></div><span class="section-caption">Open a stage<br>for the details <span aria-hidden="true">↙</span></span></div>
-            <ol id="stage-list" class="stage-list"></ol>
-            <details id="reading-manifest" class="reading-manifest"><summary>The crew &amp; its reading set <span aria-hidden="true">+</span></summary><div class="manifest-body"><p id="reading-explanation"></p><ul id="crew-list"></ul><p class="fine-print">Measured from the UTF-8 bytes of the selected skill manuals versus all 50 unique manuals. This is a source-size comparison, not a token, cost, speed, or runtime estimate.</p></div></details>
-          </section>
-
-          <section class="composer" aria-labelledby="composer-title">
-            <div class="composer-heading"><p class="eyebrow">02 / MAKE IT YOURS</p><h2 id="composer-title">Brief the company.</h2><p>Add your context, constraints, and what a useful result looks like.</p></div>
-            <div class="brief-label-row"><label for="mission-brief">Your mission brief</label><span id="brief-kind" class="example-badge">EXAMPLE · EDIT ME</span></div>
-            <textarea id="mission-brief" rows="9" spellcheck="true" aria-describedby="brief-help brief-error" autocomplete="off"></textarea>
-            <div class="brief-meta"><span id="brief-help">Stays in this tab. Edits reset when you reload.</span><span id="brief-size">0 / 8,000 B</span></div>
-            <p id="brief-error" class="brief-error" role="alert" hidden></p>
-            <button id="copy-prompt" class="button button-primary" type="button" data-export>Copy complete prompt <span aria-hidden="true">↗</span></button>
-            <p class="next-step">Paste it into your preferred assistant. The prompt includes the operating manuals, crew, sequence, and review gates.</p>
-            <div class="download-row"><button id="download-prompt" class="text-button" type="button" data-export>Download prompt <span>.md ↓</span></button><button id="download-plan" class="text-button" type="button" data-export>Download plan <span>.md ↓</span></button></div>
-            <details id="prompt-preview" class="prompt-preview"><summary>Read the complete prompt <span aria-hidden="true">+</span></summary><label for="prompt-text" class="visually-hidden">Complete prompt preview</label><textarea id="prompt-text" readonly rows="12" spellcheck="false"></textarea></details>
-            <div class="share-tools"><p class="eyebrow">03 / PASS THE PLAN AROUND</p><div class="share-actions"><button id="download-card" class="button button-secondary" type="button" data-export>Save mission card <span aria-hidden="true">↓</span></button><button id="share-preset" class="button button-secondary" type="button" data-export>Share preset <span aria-hidden="true">↗</span></button></div><p class="fine-print">The card and preset contain the template only. Your custom brief stays out.</p></div>
-            <p id="action-status" class="action-status" role="status" aria-live="polite" aria-atomic="true"></p>
-            <div id="copy-fallback" class="copy-fallback" hidden><label for="manual-copy">Copy manually</label><p id="copy-fallback-help">Select the text below and use your device’s copy command.</p><textarea id="manual-copy" readonly rows="6" spellcheck="false" aria-describedby="copy-fallback-help"></textarea><button id="select-copy" class="text-button" type="button">Select all text</button></div>
-          </section>
-        </div>
-        <footer class="workspace-footer"><p>Built for the work between “what if” and “done.”</p><div><a href="https://github.com/alebgl77/claude-inc">View source <span aria-hidden="true">↗</span></a><span>LOCAL FIRST. OPEN SOURCE.</span></div></footer>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="masthead"><a class="wordmark" href="./" aria-label="Claude, Inc. home"><span class="brand-mark" aria-hidden="true">c.</span>claude, inc.</a><nav aria-label="Main navigation"><a href="#departments">The company</a><a href="#project">Your project</a><a href="missions.html">Mission Studio ↗</a></nav><a class="source-link" href="https://github.com/alebgl77/claude-inc">Open source ↗</a></header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><p class="eyebrow">— THE COMPANY YOU BRING TO YOUR PROJECT</p><h1 id="hero-title">Your project.<br><em>An entire<br>company.</em></h1><p class="hero-description">Eight business departments, coordinated by a CEO in Claude Code. From the first idea to the next release, your whole company works from one project.</p><div class="hero-actions"><a class="button primary" href="#start">Start your company <span aria-hidden="true">↗</span></a><a class="plain-link" href="#departments">Explore departments ↓</a></div><p class="hero-footnote">Your files. Your decisions. A company that remembers the work.</p></div>
+      <div class="org-preview" aria-label="Company hierarchy"><div class="chart-topline"><span>THE ORGANIZATION</span><span>EST. IN YOUR PROJECT</span></div><div class="founder-node"><span class="eyebrow">YOU · FOUNDER</span><p>The direction.</p></div><div class="chart-stem" aria-hidden="true"></div><div class="ceo-node"><div><span class="eyebrow">CLAUDE · CEO</span><p>The coordination.</p></div><span class="ceo-symbol" aria-hidden="true">✳</span></div><div class="chart-stem" aria-hidden="true"></div><div id="hero-departments" class="hero-departments"></div><p class="chart-caption">8 department heads · 48 employee skills<br>+ Chief of Staff &amp; Token Accountant</p></div>
+    </section>
+    <div class="company-principle"><p>You set the direction.<br><span>The company carries the work.</span></p><div><span>One shared project</span><span>Specialists with operating manuals</span><span>Tasks, dependencies &amp; reviews</span></div></div>
+    <noscript><p class="notice">The directory and project tools need JavaScript. You can still <a href="https://github.com/alebgl77/claude-inc#hire-everyone-in-60-seconds">install the company</a> and start from Claude Code.</p></noscript><p id="company-error" class="notice" role="alert" hidden></p>
+    <section id="departments" class="directory section" aria-labelledby="directory-title">
+      <div class="section-heading"><div><p class="eyebrow">01 / MEET YOUR COMPANY</p><h2 id="directory-title">The right expertise.<br>Under one roof.</h2></div><p>Browse every department and its six employees. Each skill has a job, a workflow, and a quality bar.</p></div>
+      <div class="directory-layout"><nav id="department-nav" aria-label="Explore a department"></nav><div id="department-detail" class="department-detail" aria-labelledby="department-name"><div class="department-heading"><div><p id="department-lead" class="eyebrow"></p><h3 id="department-name"></h3></div><a id="department-source" class="manual-link" href="https://github.com/alebgl77/claude-inc/tree/main/agents">Department charter ↗</a></div><p id="department-scope" class="department-scope"></p><p class="eyebrow employee-label">THE SIX EMPLOYEES <span>OPEN A DELIVERABLE FORMAT TO SEE THE WORK</span></p><div id="employee-list" class="employee-list"></div></div></div>
+      <div class="staff-heading"><p class="eyebrow">COMPANY STAFF</p><p>Continuity for the project. Accountability for the spend.</p></div><div id="staff-list" class="staff-list"></div>
+    </section>
+    <section id="how-it-works" class="operating-model section" aria-labelledby="operating-title">
+      <div class="section-heading"><div><p class="eyebrow">02 / HOW THE COMPANY WORKS</p><h2 id="operating-title">A project, with<br>a working organization.</h2></div><p>Give the company context once. Return to the same project as the work develops.</p></div>
+      <ol class="operating-steps"><li><span class="step-number">01</span><h3>You bring the project.</h3><p>An existing codebase, a business, a new product, or a problem worth solving. Set the goal and constraints.</p></li><li><span class="step-number">02</span><h3>The CEO scopes the work.</h3><p>Clarify what done means. Assign department owners, split tasks, and record dependencies in the project board.</p></li><li><span class="step-number">03</span><h3>Departments deliver.</h3><p>The department heads use their employee manuals. Work produces files, decisions, and explicit handoffs.</p></li><li><span class="step-number">04</span><h3>Review. Decide. Continue.</h3><p>Review the evidence. Record results and blockers locally, then pick up from the project’s saved state.</p></li></ol>
+      <p class="execution-note">↳ Execution happens in your local Claude Code session. This website prepares briefs and displays imported snapshots; it does not run employees.</p>
+    </section>
+    <section id="project" class="project-section section" aria-labelledby="project-title">
+      <div class="section-heading"><div><p class="eyebrow">03 / RETURN TO YOUR PROJECT</p><h2 id="project-title">See where the<br>company stands.</h2></div><p>Open the project state saved by the CLI to see actual recorded tasks, dependencies, and reviews.</p></div>
+      <div class="import-bar"><div><label for="project-file">Open a local company</label><p>Choose your local <code>.claude/company/project.json</code> file. It is read in this tab and never uploaded.</p></div><input id="project-file" type="file" accept=".json,application/json" aria-describedby="import-help import-error"><button id="reset-project" class="copy-button" type="button" hidden>Close snapshot</button></div>
+      <p id="import-help" class="fine-print">Read-only snapshot. Reopen the file to refresh it. Recorded statuses and reviewer names are supplied data; this page does not verify artifact files or execute reviews.</p>
+      <details id="paste-snapshot" class="paste-snapshot"><summary>Or paste a project snapshot</summary><p>In your project terminal, run <code>company project status --format json</code> and copy its output here. This is useful if your browser cannot read local files.</p><label for="project-json">Project JSON</label><textarea id="project-json" rows="6" spellcheck="false" autocomplete="off" aria-describedby="paste-help import-error"></textarea><p id="paste-help">Read in this tab only. Cleared after a successful import or when you close the snapshot.</p><button id="open-pasted-project" class="button" type="button">Open pasted snapshot <span aria-hidden="true">↗</span></button></details>
+      <p id="import-error" class="field-error" role="alert" hidden></p><p id="import-status" class="action-status" role="status" aria-live="polite"></p>
+      <div id="project-board" hidden><div class="board-heading"><div><p id="snapshot-label" class="eyebrow"></p><h3 id="snapshot-name"></h3></div><span class="snapshot-badge">READ-ONLY SNAPSHOT</span></div><div id="snapshot-context"></div><div id="snapshot-departments" class="snapshot-departments"></div><div id="snapshot-tasks" class="snapshot-tasks"></div><details class="decision-details"><summary>Recorded decisions</summary><ol id="snapshot-decisions"></ol></details></div>
+      <div id="project-empty" class="project-empty"><span aria-hidden="true">↳</span><p>Your company’s work will appear here.<br><span>Start a local project below, then open its saved state.</span></p></div>
+    </section>
+    <section id="start" class="start-section section" aria-labelledby="start-title">
+      <div class="setup"><p class="eyebrow">04 / MAKE IT YOUR COMPANY</p><h2 id="start-title">Bring something<br>you want to build.</h2><p class="setup-intro">Start with your own project, at any stage. The entire company is available; your brief gives it a direction.</p>
+        <ol class="setup-steps"><li><h3>Install the company.</h3><p>Install the CLI and company files using the repository instructions. You’ll need Claude Code and Python 3.9+ locally.</p><a class="plain-link" href="https://github.com/alebgl77/claude-inc#hire-everyone-in-60-seconds">Open installation instructions ↗</a></li><li><h3>Download your project brief.</h3><p>Use the form here. Put <code>company-brief.md</code> in the project folder where you want the company to work.</p></li><li><h3>Initialize, then start.</h3><p>In a terminal inside that project folder:</p><pre class="commands"><code>company project init --name 'My project' --brief-file company-brief.md
+company project start</code></pre><p class="fine-print">Replace the fixed sample name in your terminal if you want. Start opens a local Claude Code session with the company and saved project context.</p></li></ol>
+        <div class="status-note"><span class="eyebrow">COME BACK TO THE WORK</span><p>Run <code>company project status</code> to read your persistent board. Tasks, dependencies, and reviews are stored with the local project.</p></div>
       </div>
-    </main>
-  </div>
+      <form id="company-form" class="brief-form"><div class="form-heading"><p class="eyebrow">YOUR FOUNDER BRIEF</p><span>PREPARATION ONLY</span></div><h3>What are we working on?</h3><p class="form-intro">Use your own words. There is no recipe to fit.</p><label for="project-brief">Project &amp; context <span>Required</span></label><textarea id="project-brief" rows="6" placeholder="What is the project? Who is it for? What already exists?" aria-describedby="privacy-note brief-error" autocomplete="off" required></textarea><label for="project-goal">The goal <span>Optional</span></label><textarea id="project-goal" rows="2" placeholder="What would a useful, verifiable result look like?" autocomplete="off"></textarea><label for="project-constraints">Constraints <span>Optional</span></label><textarea id="project-constraints" rows="2" placeholder="Deadline, budget, tools, decisions already made…" autocomplete="off"></textarea>
+        <fieldset><legend>Departments to prioritize <span>Optional</span></legend><p>Preferences for the CEO. All eight departments stay available, including those you leave unchecked.</p><div id="department-preferences" class="department-preferences"></div></fieldset>
+        <div class="brief-meta"><span id="privacy-note">Stays in this tab. No account, API key, or upload. Reloading clears your draft.</span><span id="brief-size">0 / 8,000 B</span></div><p id="brief-error" class="field-error" role="alert" hidden></p>
+        <button id="download-brief" class="button primary" type="button" disabled>Download company-brief.md <span aria-hidden="true">↓</span></button><p class="export-note">The download contains your exact text and department preferences. The 8,000-byte limit includes the brief’s formatting.</p><button id="copy-ceo" class="copy-button" type="button" disabled>Or copy a CEO brief ↗</button>
+        <p id="action-status" class="action-status" role="status" aria-live="polite" aria-atomic="true"></p><div id="copy-fallback" class="copy-fallback" hidden><label for="manual-copy">Copy manually</label><p>Clipboard access is unavailable. Select this text and use your device’s copy command.</p><textarea id="manual-copy" rows="7" readonly spellcheck="false"></textarea><button id="select-copy" class="copy-button" type="button">Select all text</button></div>
+      </form>
+    </section>
+    <aside class="mission-aside"><div><span class="eyebrow">A SMALLER JOB INSIDE YOUR COMPANY?</span><p>Mission Studio has focused blueprints for individual pieces of work.</p></div><a class="plain-link" href="missions.html">Open Mission Studio ↗</a></aside>
+  </main>
+  <footer class="footer"><a class="wordmark" href="./">claude, inc.</a><p>Your project is the starting point.</p><div><a href="https://github.com/alebgl77/claude-inc">View source ↗</a><span>LOCAL PROJECT. OPEN SOURCE.</span></div></footer>
 </body>
 </html>

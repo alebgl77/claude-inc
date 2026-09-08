@@ -1,4 +1,4 @@
-name: studio-pages
+name: company-pages
 
 on:
   push:
@@ -8,7 +8,10 @@ on:
       - 'skills/**'
       - 'agents/**'
       - 'bin/company'
+      - 'commands/company.md'
       - 'scripts/**'
+      - 'tests/test_project.py'
+      - 'tests/test_company.js'
       - 'tests/test_missions.py'
       - 'tests/test_studio.js'
       - '.github/workflows/studio-pages.yml'
@@ -35,27 +38,37 @@ jobs:
           node-version: 'lts/*'
           package-manager-cache: false
 
+      - name: Project state and native launcher tests
+        run: python -m unittest discover -s tests -p test_project.py
+
       - name: Mission compiler tests
         run: python -m unittest discover -s tests -p test_missions.py
+
+      - name: Company experience tests
+        run: node --test tests/test_company.js
 
       - name: Studio tests
         run: node --test tests/test_studio.js
 
+      - name: Company dataset is current
+        run: python scripts/build_company.py --check
+
       - name: Studio dataset is current
         run: python scripts/build_studio.py --check
 
-      - name: Stage only public Studio files
+      - name: Stage only public company and recipe files
         shell: bash
         run: |
+          set -euo pipefail
           test ! -L studio
           mkdir _site
-          for file in index.html studio.css studio.js missions.js social-preview.png favicon.svg; do
+          for file in index.html company.css company.js company-data.js company-preview.svg missions.html social-preview.png favicon.svg studio.css studio.js missions.js; do
             test -f "studio/$file"
             test ! -L "studio/$file"
             cp "studio/$file" "_site/$file"
           done
 
-      - name: Upload Studio artifact
+      - name: Upload company artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
@@ -71,6 +84,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy Studio
+      - name: Deploy company
         id: deployment
         uses: actions/deploy-pages@v4

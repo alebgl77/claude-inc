@@ -23,7 +23,7 @@ Its assets and bundled manual content are local. You can also download the plan
 as Markdown or export a template-only SVG mission card.
 
 The context comparison counts unique selected employee manuals and their UTF-8
-byte size against all 50 employee manuals. Reusing an employee across stages does
+byte size against all 54 unique skill manuals. Reusing an employee across stages does
 not add another copy. Bytes are not tokens, prices, or a prediction of an
 assistant's total context use.
 

@@ -27,7 +27,8 @@ operating instructions, and a local task-and-decision record.
 
 [Explore the company](https://alebgl77.github.io/claude-inc/) ·
 [Project workspace guide](docs/project-workspace.md) ·
-[Architecture and alternatives](docs/architecture.md)
+[Architecture and alternatives](docs/architecture.md) ·
+[Roadmap](ROADMAP.md)
 
 ## Hire everyone in 60 seconds
 
@@ -441,6 +442,21 @@ none gives this company or a candidate NVIDIA certification. Source snapshots
 were checked on 2026-09-08 and do not update themselves. The project's Python
 runtime remains 3.9+; the optional SkillSpector 2.11.1 snapshot requires Python
 3.12 through 3.14. See the [vetting manual](skills/skill-vetting/SKILL.md).
+
+## Where the company goes next
+
+The [proposed roadmap](ROADMAP.md) asks what it would take for one changed
+business decision to reach every affected department, with useful results the
+founder can inspect. Four horizons set the order:
+
+- **Next:** [prove a real company delivery](ROADMAP.md#a-the-first-real-company-delivery) through repeated local pilots and human review.
+- **After that:** [connect decisions across teams](ROADMAP.md#b-one-decision-every-affected-team), preserving accepted history while proposing affected rework.
+- **Then:** [let teams earn their place](ROADMAP.md#c-teams-that-earn-their-place) through measured staffing and skill trials.
+- **Exploration:** [fork the company](ROADMAP.md#d-fork-the-company-compare-the-options) to compare isolated business scenarios before choosing a direction.
+
+These are future proposals with evidence gates, not shipped capabilities or
+release dates. The founder keeps the final mandate; CEO and CTO bring the
+business and technical tradeoffs together.
 
 ## FAQ
 

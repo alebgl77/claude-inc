@@ -4,7 +4,7 @@
 
 ### Bring a project. Put the company to work.
 
-**1 CEO · 8 departments · 50 employee skill manuals.**
+**Peer CEO and CTO executives · 8 departments · 54 skill manuals.**
 
 [![compliance](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml/badge.svg)](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -18,12 +18,12 @@ review evidence, and resumes from a local project workspace next session. Your
 project can be a product, a business operation, a research effort, or something
 that spans several departments. You do not have to choose a template first.
 
-The 50 employees are **skill manuals**, not 50 processes running in the
+The 54 employees are **skill manuals**, not 54 processes running in the
 background. Claude Code supplies the active assistant session, native agent
 tools, configured model, and permissions. The company supplies its roles,
 operating instructions, and a local task-and-decision record.
 
-[![Claude, Inc. company overview](studio/company-preview.svg)](https://alebgl77.github.io/claude-inc/)
+[![Claude, Inc. company overview](studio/company-team.png)](https://alebgl77.github.io/claude-inc/)
 
 [Explore the company](https://alebgl77.github.io/claude-inc/) ·
 [Project workspace guide](docs/project-workspace.md) ·
@@ -101,6 +101,11 @@ packaged company plugin and resume instructions. It uses Claude Code's normal
 permissions and configured model; it does not start a daemon or enforce a spend
 budget. Claude Code must already be available and configured.
 
+The CEO sets business priorities; the peer CTO sets technical direction across
+architecture, agent infrastructure, security, skills, and code. Their handoff is
+finding → business impact → options/tradeoffs → recommendation → decision needed,
+with technical acceptance criteria ready for the delivery team.
+
 The CEO records task contracts, starts work after its dependencies are accepted,
 and delegates with the host's available agent tools. Departments produce actual
 files. Submission records the files' SHA-256 hashes and moves a task to review;
@@ -120,11 +125,40 @@ work, review, privacy, and using a different assistant. The structured project
 record remains the task source of truth. A Board Memo or Markdown ledger is a
 report derived from it.
 
+## Optional harnesses and bounded review loops
+
+For project work that needs explicit review gates, choose a stage and effort:
+
+```bash
+company project harness profiles
+company project status --format json  # read the current revision
+company project harness generate --stage build --effort balanced --expected-revision 1
+company project loop next --format json
+company project loop prompt
+```
+
+Replace `1` with the current revision. Enabling a harness is an explicit choice:
+schema-1 projects remain unchanged until activation. The CEO selects useful
+skills and project-specific criteria; the local compiler checks that plan and
+adds the task contract and two business checks. Light, balanced, and deep allow
+2, 3, and 5 lifetime submissions per task. These limits count submitted attempts,
+not model calls, time, or spending. A recorded extension can raise a cap to 10.
+
+Review uses the current `loop next` template, a different reviewer label, actual
+submitted evidence files, and passing results for every gate. The helper checks
+the recorded contract and artifact hashes; it does not run tests or judge the
+quality of the work. Existing accepted work stays historical. See the
+[complete harness and review example](docs/harness-loops.md).
+
 ## The org chart
 
 ```mermaid
 graph TD
-    CEO["CEO / coordinating assistant"]
+    subgraph EXEC["Peer executives"]
+        CEO["CEO / business direction"]
+        CTO["CTO / technical direction"]
+        CEO <--> CTO
+    end
     CEO --> DEV["Developers / 6 skills"]
     CEO --> DES["Designers / 6 skills"]
     CEO --> MKT["Marketing / 6 skills"]
@@ -135,9 +169,12 @@ graph TD
     CEO --> SAL["Sales / 6 skills"]
     CEO -.-> COS["chief-of-staff"]
     FIN -.-> TOK["token-accountant"]
+    CTO -.-> TECH["cto-advisor / skill-vetting / appsec-review / agent-evaluation"]
 ```
 
-The CEO owns coordination and serializes project updates. Department agents
+The CEO owns business coordination and serializes project updates to prevent
+competing writes; that implementation rule does not subordinate the CTO.
+The CTO owns technical direction and fitness across the departments. Department agents
 apply the relevant employee manuals. Independent assignments can run in
 parallel when the host supports it; the company does not assume subagents can
 spawn nested subagents. A host without delegation can use explicit department
@@ -200,6 +237,10 @@ company marketing "draft ad variants using the supplied product facts"
 
 Skills can also be invoked directly. The CEO is useful when work needs
 coordination, dependencies, decisions, or continuity across sessions.
+
+For a focused technical decision, use `company cto "review our integration plan" --print`.
+It includes the peer CTO charter and only its four staff manuals. CTO decisions
+and CEO business arbitration should unblock teams without unnecessary status ceremony.
 
 ## Meet the company
 
@@ -322,6 +363,10 @@ coordination, dependencies, decisions, or continuity across sessions.
 |---|---|---|
 | `chief-of-staff` | CEO | Project context, task contracts, decision log, weekly review |
 | `token-accountant` | CFO | Reports from observed or supplied usage records |
+| `cto-advisor` | CTO | Technical constraints, architecture decisions, skill selection |
+| `skill-vetting` | CTO | Source/license/hash review, static risk, separate signature verification |
+| `appsec-review` | CTO | Defensive threat models, diffs, dependency and secrets hygiene |
+| `agent-evaluation` | CTO | Paired skill trials, measured results, uncertainty and costs |
 
 </details>
 
@@ -331,25 +376,25 @@ The company combines native host roles with a small local state helper:
 
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
-| **CEO** | `commands/company.md`; `/claude-inc:company` in the plugin, `/company` in direct installs | Routing brain: scopes the project, delegates, arbitrates, writes the Board Memo |
-| **8 departments** | `agents/*.md` | Native host agents; independent assignments may run in parallel |
+| **CEO** | `commands/company.md`; `/claude-inc:company` in the plugin, `/company` in direct installs | Business direction, priorities, arbitration, and serialized state updates |
+| **CTO** | `agents/cto.md`; `company cto` | Peer executive: technical direction, architecture, infrastructure, security, skills, and code |
+| **8 departments** | Eight department charters in `agents/` | Native host agents; independent assignments may run in parallel |
 | **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions; VPs hire them per task, or they self-trigger |
-| **2 staff hires** | `chief-of-staff`, `token-accountant` | Project coordination and reporting from supplied usage evidence |
+| **6 staff skills** | Two coordination/usage manuals and four CTO manuals | Skill packaging; this grouping does not define the CTO's executive authority |
 | **Project workspace** | `.claude/company/project.json` | Validated tasks, dependencies, artifact hashes, reviews, and decisions |
+| **Optional harness** | Local schema-2 task policies and loop guidance | Required review gates, lifetime submission caps, and explicit extensions |
 
 ```
 you → project brief → CEO → department assignments → files + review → project state + Board Memo
 ```
 
-![The full org chart: 1 CEO, 8 departments, 50 employees](assets/org-chart.svg)
-
-Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 50 manageable and PRs reviewable.
+Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 54 manageable and PRs reviewable.
 
 And the company audits itself: `python3 scripts/validate.py` (run in CI on every push) checks every job description, cross-references the CLI roster against the departments, and fails the build if an employee is hired twice, orphaned, or missing from the docs.
 
 ## Works with any CLI
 
-The `company` CLI composes fully self-contained prompts (department charter + all 6 employee manuals + your task). If `claude` is installed it runs it; otherwise pipe it anywhere:
+The `company` CLI composes self-contained prompts: a department charter plus its six manuals, or the peer CTO charter plus its four manuals. If `claude` is installed it runs it; otherwise pipe it anywhere:
 
 ```bash
 company roster                                   # meet the team
@@ -377,8 +422,25 @@ license, security, third-party adoption and available performance evidence.
 Stars include a collection date and never decide the ranking alone. Remote
 content is inspected read-only, treated as untrusted and never saved locally.
 Candidates fail if they are abandoned, opaque, unauditable, insecure,
-incompatible or poorly documented. No third-party content is downloaded,
+incompatible or poorly documented. During this onboarding research, no third-party content is downloaded,
 copied, installed or executed.
+
+### CTO skill verification and cybersecurity
+
+The four CTO manuals are first-party procedures. `skill-vetting` also includes
+an unchanged, commit-pinned [NVIDIA Skill Inspector reference](skills/skill-vetting/references/nvidia-skill-inspector.md)
+with its Apache-2.0 license and [provenance](skills/skill-vetting/references/PROVENANCE.md).
+It is reference material inside one skill, not a 55th registered employee.
+The local wrapper's evidence format, permissions, and trust boundaries take precedence.
+
+NVIDIA SkillSpector and SkillEvaluator, Cisco's scanner, and linked Trail of Bits
+plugins remain optional external tools. They are not installed automatically;
+Trail of Bits skill text is not bundled. Missing tools are `NOT RUN`. Source
+review, runtime usefulness, and signature provenance are different checks;
+none gives this company or a candidate NVIDIA certification. Source snapshots
+were checked on 2026-09-08 and do not update themselves. The project's Python
+runtime remains 3.9+; the optional SkillSpector 2.11.1 snapshot requires Python
+3.12 through 3.14. See the [vetting manual](skills/skill-vetting/SKILL.md).
 
 ## FAQ
 
@@ -398,7 +460,8 @@ copied, installed or executed.
 
 ## License
 
-[MIT](LICENSE) - take the whole company, it's yours.
+[MIT](LICENSE) for first-party content. The vendored NVIDIA reference retains
+its [Apache-2.0 license](skills/skill-vetting/references/LICENSE.nvidia).
 
 ---
 

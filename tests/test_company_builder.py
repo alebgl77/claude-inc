@@ -37,11 +37,11 @@ class CompanyBuilderTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     builder.section(source, "Output format")
 
-    def test_all_fifty_examples_have_source_body_and_sales_qa_keep_the_whole_block(self):
+    def test_all_fifty_four_examples_have_source_body_and_sales_qa_keep_the_whole_block(self):
         generated = builder.generate().decode("ascii")
         data = json.loads(generated.split("window.CLAUDE_INC_COMPANY = ", 1)[1].removesuffix(";\n"))
         employees = [skill for department in data["departments"] for skill in department["skills"]] + data["staff"]
-        self.assertEqual(len(employees), 50)
+        self.assertEqual(len(employees), 54)
         for employee in employees:
             with self.subTest(employee=employee["id"]):
                 output = employee["output"]

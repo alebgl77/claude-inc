@@ -30,11 +30,17 @@ jobs:
       - name: Project state and native launcher tests
         run: python -m unittest discover -s tests -p test_project.py
 
+      - name: Harness policy and bounded loop tests
+        run: python -m unittest discover -s tests -p test_harness.py
+
+      - name: CTO routing and canonical registry tests
+        run: python -m unittest discover -s tests -p test_cto.py
+
       - name: Mission compiler tests
         run: python -m unittest discover -s tests -p test_missions.py
 
       - name: Company experience tests
-        run: node --test tests/test_company.js
+        run: node --test tests/test_company.js tests/test_harness.js
 
       - name: Studio tests
         run: node --test tests/test_studio.js

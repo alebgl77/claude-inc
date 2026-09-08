@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "profiles": {
+    "developers": {"checks": [
+      {"id": "behavior-and-regressions", "criterion": "Record the implemented behavior and observed regression checks, including failure paths; distinguish tests actually run from proposed tests."},
+      {"id": "integration-and-safety", "criterion": "Inspect the changed integration boundaries, data handling and security assumptions; cite evidence for compatibility and disclose unresolved risks."}
+    ]},
+    "designers": {"checks": [
+      {"id": "interaction-and-accessibility", "criterion": "Inspect the intended user journey, keyboard access and relevant empty or error states; cite a concrete design or interaction review artifact."},
+      {"id": "visual-and-handoff", "criterion": "Check hierarchy, legibility and consistency at the intended sizes; provide implementation-ready states or specifications and disclose untested views."}
+    ]},
+    "marketing": {"checks": [
+      {"id": "audience-and-claims", "criterion": "Connect the message to a documented audience need and offer; trace material claims to supplied or researched evidence and mark assumptions."},
+      {"id": "conversion-and-measurement", "criterion": "Inspect the next action, channel fit and measurement plan; separate observed results from forecast performance and identify remaining approval needs."}
+    ]},
+    "social-media": {"checks": [
+      {"id": "voice-and-platform", "criterion": "Check the draft against the intended audience, brand voice and platform format, including readability and accessible captions or descriptions where relevant."},
+      {"id": "claims-and-publication", "criterion": "Verify factual claims, source or media permissions and the proposed call to action; label the publication state accurately and retain required owner approval."}
+    ]},
+    "finance": {"checks": [
+      {"id": "reconciliation-and-inputs", "criterion": "Reconcile material figures to identified source records with periods, units and calculation evidence; distinguish estimates and missing inputs."},
+      {"id": "assumptions-and-controls", "criterion": "Review accounting or financial assumptions, exceptions and relevant controls; document sensitivity or unresolved differences without implying professional approval."}
+    ]},
+    "small-business": {"checks": [
+      {"id": "cash-and-capacity", "criterion": "Check the operational proposal against documented cash timing, capacity and obligations; show calculations or records for material constraints."},
+      {"id": "owner-and-follow-through", "criterion": "Name the owner, next operational action and exception handling; distinguish prepared materials from actions actually authorized or completed."}
+    ]},
+    "legal": {"checks": [
+      {"id": "authority-and-scope", "criterion": "Identify the document scope, relevant jurisdiction or governing terms and supporting authority; separate known facts, assumptions and missing legal inputs."},
+      {"id": "risk-and-escalation", "criterion": "Trace material risks and proposed changes to cited clauses or evidence; flag unresolved issues for appropriate counsel and avoid implying execution or legal clearance."}
+    ]},
+    "sales": {"checks": [
+      {"id": "account-and-offer-fit", "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments."},
+      {"id": "commercial-next-step", "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized."}
+    ]}
+  }
+}

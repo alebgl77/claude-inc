@@ -56,7 +56,7 @@
     const text = value => typeof value === 'string' && value.trim().length > 0;
     const texts = value => Array.isArray(value) && value.length > 0 && value.every(text);
     const unique = value => new Set(value).size === value.length;
-    if (!data || data.schemaVersion !== 1 || data.source !== 'alebgl77/claude-inc' || data.skillCount !== 50 || !Array.isArray(data.missions) || data.missions.length !== 5) return fail('The data is missing or uses an unsupported format.');
+    if (!data || data.schemaVersion !== 1 || data.source !== 'alebgl77/claude-inc' || data.skillCount !== 54 || !Array.isArray(data.missions) || data.missions.length !== 5) return fail('The data is missing or uses an unsupported format.');
     const seen = new Set();
     for (const mission of data.missions) {
       if (!mission || !MISSION_IDS.includes(mission.id) || seen.has(mission.id)) return fail('A preset is missing, duplicated, or unknown.');

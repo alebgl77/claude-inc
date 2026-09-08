@@ -1,6 +1,7 @@
 /* Company directory, exact founder exports, and read-only local project snapshots. */
 (function (root) {
 'use strict';
+const harness = typeof module!=='undefined'&&module.exports ? require('./harness.js') : root.CLAUDE_INC_HARNESS;
 const MAX_BRIEF_BYTES = 8000, MAX_STATE_BYTES = 2 * 1024 * 1024;
 const STATUSES = Object.freeze(['planned','active','blocked','review','done']);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -9,7 +10,11 @@ const bytes = value => new TextEncoder().encode(value).length;
 const plain = value => value && typeof value === 'object' && !Array.isArray(value);
 const unique = values => new Set(values).size === values.length;
 const list = (value,max) => Array.isArray(value) && value.length <= max;
-const exact = (value,keys) => plain(value) && Object.keys(value).sort().join(' ') === keys.split(' ').sort().join(' ');
+const exact = (value,keys) => {
+  if(!plain(value))return false;
+  const actual=Object.keys(value).sort(),expected=keys===''?[]:keys.split(' ').sort();
+  return actual.length===expected.length&&actual.every((key,index)=>key===expected[index]);
+};
 function validText(value,maximum=8000,optional=false) {
   if (typeof value !== 'string' || (!optional && !/[^\t\n\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]/.test(value)) || bytes(value)>maximum || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]/.test(value)) return false;
   for(let i=0;i<value.length;i++) { const c=value.charCodeAt(i); if(c>=0xd800&&c<=0xdbff) {const next=value.charCodeAt(++i);if(!(next>=0xdc00&&next<=0xdfff))return false;} else if(c>=0xdc00&&c<=0xdfff)return false; }
@@ -17,11 +22,12 @@ function validText(value,maximum=8000,optional=false) {
 }
 function validateDataset(data) {
   const fail={valid:false,message:'The company directory could not be loaded. Reopen this page from a complete checkout, or regenerate company-data.js with scripts/build_company.py.'};
-  if(!plain(data)||data.schemaVersion!==1||data.source!=='alebgl77/claude-inc'||!list(data.departments,8)||data.departments.length!==8||!list(data.staff,2)||data.staff.length!==2)return fail;
+  if(!plain(data)||data.schemaVersion!==1||data.source!=='alebgl77/claude-inc'||!list(data.departments,8)||data.departments.length!==8||!list(data.staff,6)||data.staff.length!==6)return fail;
   const ids=[],departments=[];
   const employee=s=>{if(!plain(s)||!validText(s.id,80)||!SLUG.test(s.id)||!['name','role','scope','output'].every(k=>validText(s[k],50000)))return false;ids.push(s.id);return true;};
   for(const d of data.departments){if(!plain(d)||!validText(d.id,80)||!SLUG.test(d.id)||!['name','lead','scope'].every(k=>validText(d[k]))||!list(d.skills,6)||d.skills.length!==6||!d.skills.every(employee))return fail;departments.push(d.id);}
-  if(!data.staff.every(s=>employee(s)&&validText(s.reporting))||!unique(ids)||!unique(departments)||ids.length!==50)return fail;
+  if(!data.staff.every(s=>employee(s)&&validText(s.reporting))||!unique(ids)||!unique(departments)||ids.length!==54)return fail;
+  if(!exact(data.executive,'id name role scope skills')||data.executive.id!=='cto'||!['name','role','scope'].every(k=>validText(data.executive[k]))||!list(data.executive.skills,4)||data.executive.skills.length!==4||!unique(data.executive.skills)||!data.executive.skills.every(id=>data.staff.some(s=>s.id===id)))return fail;
   if(!list(data.missionIds,5)||data.missionIds.length!==5||!unique(data.missionIds)||!data.missionIds.every(id=>typeof id==='string'&&SLUG.test(id)))return fail;
   return {valid:true};
 }
@@ -68,8 +74,8 @@ function parseProject(text,data) {
 function validateProject(state,data) {
   const fail=message=>{throw new Error('The project snapshot is invalid. '+message);};
   if(!validateDataset(data).valid)fail('The company directory is unavailable.');
-  if(!exact(state,'schemaVersion name brief goals constraints activeDepartments departments tasks decisions events revision'))fail('Unexpected project fields.');
-  if(state.schemaVersion!==1)fail('Only schema version 1 is supported.');
+  if(!plain(state)||![1,2].includes(state.schemaVersion))fail('Only schema versions 1 and 2 are supported.');
+  if(!exact(state,'schemaVersion name brief goals constraints activeDepartments departments tasks decisions events revision'+(state.schemaVersion===2?' harness':'')))fail('Unexpected project fields.');
   const depts=data.departments.map(d=>d.id);
   const strings=(items,max=32)=>list(items,max)&&items.every(item=>validText(item));
   if(!validText(state.name,256)||!validText(state.brief)||!strings(state.goals)||!strings(state.constraints))fail('Invalid project context.');
@@ -93,7 +99,7 @@ function validateProject(state,data) {
     if((task.status==='blocked')!==(task.blockedReason!==null))fail('Blocked status requires a reason.');
     if(['review','done'].includes(task.status)&&(!task.artifacts.length||task.summary===null))fail('Submitted tasks need artifacts and a summary.');
     let previous=0;
-    for(const r of task.reviews){if(!exact(r,'decision reviewer note revision')||!['accept','revise'].includes(r.decision)||!['ceo',...depts].includes(r.reviewer)||r.reviewer===task.department||!validText(r.note)||!Number.isSafeInteger(r.revision)||r.revision<=previous||r.revision>state.revision)fail('Invalid review record.');previous=r.revision;}
+    for(const r of task.reviews){if(!exact(r,'decision reviewer note revision')||!['accept','revise'].includes(r.decision)||!['ceo',...(state.schemaVersion===2?['cto']:[]),...depts].includes(r.reviewer)||r.reviewer===task.department||!validText(r.note)||!Number.isSafeInteger(r.revision)||r.revision<=previous||r.revision>state.revision)fail('Invalid review record.');previous=r.revision;}
     const accepts=task.reviews.filter(r=>r.decision==='accept');
     if((accepts.length>0)!==(task.status==='done')||accepts.length>1||(accepts.length&&task.reviews[task.reviews.length-1]!==accepts[0]))fail('Acceptance does not match task status.');
     if(task.status==='planned'&&(task.artifacts.length||task.summary||task.reviews.length))fail('Planned tasks cannot have execution evidence.');
@@ -108,6 +114,8 @@ function validateProject(state,data) {
     if(e.type==='init'){if(i!==0||e.taskId!==null)fail('Invalid initialization.');}
     else if(i===0)fail('Missing initialization.');
     else if(e.type==='decision.add'){if(e.taskId!==null)fail('Invalid decision event.');decisions.push([e.revision,e.note]);}
+    else if(state.schemaVersion===2&&e.type==='harness.generate'){if(e.taskId!==null)fail('Invalid harness activation.');}
+    else if(state.schemaVersion===2&&e.type==='harness.extend'){if(!tasks.has(e.taskId))fail('Invalid loop extension.');}
     else{
       if(!Object.prototype.hasOwnProperty.call(transitions,e.type)||!tasks.has(e.taskId))fail('Invalid task event.');
       const task=tasks.get(e.taskId),[required,next]=transitions[e.type],old=lifecycle.get(e.taskId);
@@ -119,6 +127,7 @@ function validateProject(state,data) {
   });
   if(lifecycle.size!==tasks.size||state.tasks.some(t=>lifecycle.get(t.id)!==t.status)||state.tasks.reduce((n,t)=>n+t.reviews.length,0)!==reviewEvents)fail('Task state differs from history.');
   if(JSON.stringify(decisions)!==JSON.stringify(state.decisions.map(d=>[d.revision,d.text])))fail('Decision history differs.');
+  if(state.schemaVersion===2){if(!harness)fail('Harness support is unavailable.');harness.validate(state,data,{exact,list,unique,validText,invalidArtifactPart,fail});}
   return state;
 }
 
@@ -133,7 +142,7 @@ function boot(window) {
   function employeeCard(skill,staff=false){
     const card=node('article',undefined,'employee');
     card.append(node('h4',staff?skill.name:skill.role),node('p',skill.id,'employee-id'),node('p',skill.scope,'employee-scope'));
-    if(staff)card.append(node('p',skill.reporting,'reporting'));
+    if(staff&&!data.executive.skills.includes(skill.id))card.append(node('p',skill.reporting,'reporting'));
     const details=node('details'),link=node('a','Read the operating manual ↗','manual-link');
     link.href=SOURCE+'skills/'+skill.id+'/SKILL.md';
     details.append(node('summary','Example deliverable format'),node('pre',skill.output),link);card.append(details);return card;
@@ -154,7 +163,8 @@ function boot(window) {
     const label=node('label'),checkbox=node('input');checkbox.type='checkbox';checkbox.value=dept.id;checkbox.checked=false;
     checkbox.addEventListener('change',()=>refreshDraft(true));label.append(checkbox,node('span',dept.name));preferences.push(checkbox);get('department-preferences').append(label);
   });
-  get('staff-list').replaceChildren(...data.staff.map(s=>employeeCard(s,true)));selectDepartment(data.departments[0]);
+  get('staff-list').replaceChildren(...data.staff.filter(s=>!data.executive.skills.includes(s.id)).map(s=>employeeCard(s,true)));
+  get('cto-skills').replaceChildren(...data.executive.skills.map(id=>employeeCard(data.staff.find(s=>s.id===id),true)));selectDepartment(data.departments[0]);
   const fields=()=>({brief:get('project-brief').value,goal:get('project-goal').value,constraints:get('project-constraints').value});
   const preferred=()=>preferences.filter(i=>i.checked).map(i=>i.value);
   const status=text=>{get('action-status').textContent=text;};
@@ -183,11 +193,45 @@ function boot(window) {
     catch(_){if(epoch!==exportEpoch)return;status('Clipboard access is unavailable. Copy the CEO brief manually below.');get('manual-copy').value=output;get('copy-fallback').hidden=false;get('manual-copy').focus();get('manual-copy').select();}
   });
   get('select-copy').addEventListener('click',()=>{get('manual-copy').focus();get('manual-copy').select();});refreshDraft();
+  function renderHarness(state){
+    const panel=get('snapshot-harness');panel.replaceChildren();
+    if(state.schemaVersion!==2)return;
+    const config=state.harness.defaults,next=harness.nextAction(state);
+    panel.append(node('p','HARNESS & LOOPS · ENABLED AT REVISION '+state.harness.enabledRevision,'eyebrow'),node('h4',config.stage+' stage · '+config.effort+' effort'),node('p','Default allowance: '+config.maxIterations+' submissions per task. Iteration usage includes submissions before activation.'));
+    panel.append(node('p','Next action from this snapshot: '+next.action+(next.taskId?' · '+next.taskId:'')+' ('+next.phase+').'),node('p',next.reason));
+    if(next.taskId)panel.append(node('p','Selected task: '+next.used+' / '+next.limit+' submissions used.'));
+    if(next.readyIndependentIds.length)panel.append(node('p','Ready tasks: '+next.readyIndependentIds.join(', ')));
+    panel.append(node('p','Metadata and history checked in this tab. Artifact bytes, reviewer identity, and the truth of recorded observations are not verified here. Recorded PASS / FAIL / UNKNOWN values describe supplied review data.','harness-boundary'));
+  }
+  function taskHarness(state,task){
+    if(state.schemaVersion!==2)return null;
+    const section=node('div',undefined,'task-harness'),policy=Object.prototype.hasOwnProperty.call(state.harness.policies,task.id)?state.harness.policies[task.id]:null;
+    if(!policy){section.append(node('p','Historical acceptance before harness activation. No harness gates were verified for this task.','historical-note'));return section;}
+    const {used,limit}=harness.usedLimit(state,task.id),round=harness.latestRound(state,task.id);
+    section.append(node('p',policy.stage+' · '+policy.effort+' · '+used+' / '+limit+' iterations used','gate-status'));
+    if(used>=limit)section.append(node('p',task.status==='review'?'Submission allowance exhausted. Review this final submission before deciding whether an extension is needed.':'Submission allowance exhausted. Further work needs an explicit extension.'));
+    section.append(node('p','Selected skills: '+(policy.skills.join(', ')||'none recorded'),'harness-meta'));
+    if(round)section.append(node('p','Last iteration: '+used+' · submitted at revision '+round.submitRevision,'harness-meta'));
+    else section.append(node('p',used?'Earlier submissions predate activation. Revise and submit a fresh round before gated acceptance.':'No harness submission recorded.','harness-meta'));
+    const assessment=round?[...state.harness.assessments].reverse().find(a=>a.taskId===task.id&&a.submitRevision===round.submitRevision):null;
+    if(assessment){const review=task.reviews.find(r=>r.revision===assessment.reviewRevision);section.append(node('p','Gate review: '+review.reviewer+' · '+review.decision+' · revision '+review.revision,'harness-meta'));}
+    else section.append(node('p','No gate assessment recorded for the current round.','harness-meta'));
+    const details=node('details');details.append(node('summary','Required gates & recorded results'));
+    for(const gate of policy.gates){
+      const result=assessment?assessment.results.find(r=>r.gateId===gate.id):null,status=result?result.status:'unknown',row=node('div',undefined,'gate-detail');
+      row.append(node('p',(result?'RECORDED ':'UNASSESSED ')+status.toUpperCase()+' · '+gate.id,'gate-status gate-'+status),node('p',gate.criterion),node('p','Required · '+gate.source,'harness-meta'));
+      if(result){if(result.observation)row.append(node('p',result.observation));for(const evidence of result.evidence)row.append(node('p','Evidence: '+evidence.path+' · '+evidence.locator));if(!result.evidence.length)row.append(node('p','No artifact evidence recorded.'));}
+      details.append(row);
+    }
+    const provenance=node('details');provenance.append(node('summary','Policy & profile metadata'),node('pre','Policy SHA-256: '+policy.fingerprint+'\nProfile source: '+state.harness.profiles[task.department].source.path+'\nRecorded source SHA-256: '+state.harness.profiles[task.department].source.sha256));
+    section.append(details,provenance);return section;
+  }
   function renderProject(state){
     get('snapshot-name').textContent=state.name;get('snapshot-label').textContent='IMPORTED PROJECT SNAPSHOT / REVISION '+state.revision;
     const context=node('details');context.append(node('summary','Project brief, goals & constraints'),node('pre',state.brief));
     for(const [title,values] of [['Goals',state.goals],['Constraints',state.constraints]])if(values.length){context.append(node('h4',title));const items=node('ul');items.append(...values.map(v=>node('li',v)));context.append(items);}
     get('snapshot-context').replaceChildren(context);
+    renderHarness(state);
     const nonportable=[...new Set(state.tasks.flatMap(task=>task.artifacts.map(artifact=>artifact.path)).filter(path=>path.split('/').some(invalidArtifactPart)))];
     if(nonportable.length)get('snapshot-context').append(node('p','Some recorded artifact names are not portable across operating systems: '+nonportable.join(', ')+'. This snapshot remains readable. Before accepting an affected review, revise the task, rename the file, and resubmit through the CLI.','field-error'));
     get('snapshot-departments').replaceChildren(...data.departments.map(d=>{const n=state.tasks.filter(t=>t.department===d.id).length,label=node('p',d.name);label.append(node('span',n+' recorded task'+(n===1?'':'s')+' · '+(state.activeDepartments.includes(d.id)?'in project scope':'available')));return label;}));
@@ -202,7 +246,7 @@ function boot(window) {
         const artifacts=node('ul');artifacts.append(...task.artifacts.map(a=>node('li',a.path+' ('+a.size.toLocaleString('en-US')+' B; recorded SHA-256 '+a.sha256+')')));details.append(artifacts);
         if(!task.artifacts.length)details.append(node('p','No artifacts recorded.'));
         for(const r of task.reviews)details.append(node('p','Recorded review: '+r.decision+' · '+r.reviewer+' · revision '+r.revision+'. '+r.note));
-        if(!task.reviews.length)details.append(node('p','No review recorded.'));card.append(details);column.append(card);
+        if(!task.reviews.length)details.append(node('p','No review recorded.'));card.append(details);const checks=taskHarness(state,task);if(checks)card.append(checks);column.append(card);
       }return column;
     }));
     get('snapshot-decisions').replaceChildren(...state.decisions.map(d=>node('li','Revision '+d.revision+': '+d.text)));
@@ -217,16 +261,16 @@ function boot(window) {
       const buffer=await file.arrayBuffer();if(epoch!==importEpoch)return;if(buffer.byteLength>MAX_STATE_BYTES)throw new Error('The project file exceeds the 2 MiB limit.');
       const state=parseProject(new TextDecoder('utf-8',{fatal:true}).decode(buffer),data);if(epoch!==importEpoch)return;
       renderProject(state);get('project-json').value='';get('import-status').textContent='Local snapshot opened. Reopen the file to see later changes.';
-    }catch(error){if(epoch!==importEpoch)return;const reason=error instanceof TypeError?'The browser could not read this file as UTF-8.':error.message;get('import-error').textContent='Could not open this snapshot. '+reason+' Choose a schema version 1 project.json (UTF-8, up to 2 MiB) from the company CLI. Any previously opened snapshot is unchanged.';get('import-error').hidden=false;get('import-status').textContent='';}
+    }catch(error){if(epoch!==importEpoch)return;const reason=error instanceof TypeError?'The browser could not read this file as UTF-8.':error.message;get('import-error').textContent='Could not open this snapshot. '+reason+' Choose a schema version 1 or 2 project.json (UTF-8, up to 2 MiB) from the company CLI. Any previously opened snapshot is unchanged.';get('import-error').hidden=false;get('import-status').textContent='';}
     finally{if(epoch===importEpoch)get('project-file').value='';}
   });
   get('open-pasted-project').addEventListener('click',()=>{
     importEpoch++;get('project-file').value='';get('import-error').hidden=true;get('import-status').textContent='';
     try{const state=parseProject(get('project-json').value,data);renderProject(state);get('project-json').value='';get('paste-snapshot').open=false;get('import-status').textContent='Pasted snapshot opened. Paste fresh CLI output to see later changes.';}
-    catch(_){get('import-error').textContent='Could not open this snapshot. Paste valid schema version 1 JSON from company project status --format json (up to 2 MiB). Any previously opened snapshot is unchanged.';get('import-error').hidden=false;}
+    catch(_){get('import-error').textContent='Could not open this snapshot. Paste valid schema version 1 or 2 JSON from company project status --format json (up to 2 MiB). Any previously opened snapshot is unchanged.';get('import-error').hidden=false;}
   });
   get('reset-project').addEventListener('click',()=>{
-    importEpoch++;get('project-file').value='';get('project-json').value='';['snapshot-context','snapshot-departments','snapshot-tasks','snapshot-decisions'].forEach(id=>get(id).replaceChildren());
+    importEpoch++;get('project-file').value='';get('project-json').value='';['snapshot-context','snapshot-harness','snapshot-departments','snapshot-tasks','snapshot-decisions'].forEach(id=>get(id).replaceChildren());
     get('snapshot-name').textContent='';get('snapshot-label').textContent='';get('project-board').hidden=true;get('project-empty').hidden=false;get('reset-project').hidden=true;
     get('import-error').hidden=true;get('import-status').textContent='Snapshot closed. Imported content has been cleared.';
   });

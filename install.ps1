@@ -218,7 +218,7 @@ if ((-not $NoBin) -or $Onboard) {
         if ($git) { $gitBash = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $git.Source) "..\bin\bash.exe")); if (Test-Path -LiteralPath $gitBash -PathType Leaf) { $bashes += $gitBash } }
         foreach ($bash in @($bashes | Select-Object -Unique)) {
             $probe = & $bash -l $CompanyScriptProbe version 2>$null
-            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.4.1") { $BashPath = $bash; break }
+            if ($LASTEXITCODE -eq 0 -and $probe -eq "company v1.5.0") { $BashPath = $bash; break }
         }
     }
     if ((-not $NoBin) -and -not $BashPath) { throw "The company CLI requires a working Bash. Install Git for Windows, or rerun with -NoBin." }
@@ -512,7 +512,7 @@ if (-not $NoBin) {
     $PathEntries = @($env:PATH -split [IO.Path]::PathSeparator)
     if ($PathEntries -notcontains $BinDir) { Write-Status "note: add $BinDir to your PATH to use 'company'" }
 }
-Write-Host ""; Write-Status "hired $($AgentFiles.Count) department heads and $($SkillDirs.Count) employees -> $Target"; Write-Host ""; Write-Host "  Next:"
+Write-Host ""; Write-Status "hired $($AgentFiles.Count) agents and $($SkillDirs.Count) skills -> $Target"; Write-Host ""; Write-Host "  Next:"
 if (-not $NoBin) { Write-Host "    company roster"; Write-Host '    company brief "launch my product"' }
 Write-Host "    claude"
 

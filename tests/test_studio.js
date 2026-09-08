@@ -14,11 +14,11 @@ vm.runInNewContext(fs.readFileSync(path.join(root, 'studio/missions.js'), 'utf8'
 const published = JSON.parse(JSON.stringify(datasetContext.window.CLAUDE_INC_MISSIONS));
 
 function fixture() {
-  return { schemaVersion: 1, source: 'alebgl77/claude-inc', skillCount: 50, missions: app.MISSION_IDS.map(id => ({
+  return { schemaVersion: 1, source: 'alebgl77/claude-inc', skillCount: 54, missions: app.MISSION_IDS.map(id => ({
     id, title: 'Mission ' + id, summary: 'A focused piece of work.', outcome: 'A reviewed plan.', sampleBrief: 'Build a useful thing.',
     departments: ['developers'], skills: [{ id: 'webapp-testing', department: 'developers' }],
     stages: [{ id: 'review', title: 'Review the evidence', department: 'developers', skills: ['webapp-testing'], needs: [], deliverables: ['evidence.md'], checks: ['Cite the evidence.'], review: true }],
-    metrics: { selectedSkillBytes: 100, allSkillBytes: 1000, selectedSkills: 1, totalSkills: 50 },
+    metrics: { selectedSkillBytes: 100, allSkillBytes: 1000, selectedSkills: 1, totalSkills: 54 },
     promptPrefix: 'COMPLETE OPERATING MANUAL\n---BRIEF---\n', promptSuffix: '\n---END---\n', planMarkdown: '# Mission blueprint\n\nChecks: NOT RUN.\n'
   })) };
 }
@@ -151,7 +151,7 @@ test('skill metrics correspond to actual unique manual files, not prompt or runt
   const skillsRoot = path.join(root, 'skills');
   const manuals = fs.readdirSync(skillsRoot).filter(name => fs.existsSync(path.join(skillsRoot, name, 'SKILL.md')));
   const allBytes = manuals.reduce((sum, name) => sum + fs.readFileSync(path.join(skillsRoot, name, 'SKILL.md')).length, 0);
-  assert.equal(manuals.length, 50);
+  assert.equal(manuals.length, 54);
   for (const mission of published.missions) {
     const selectedBytes = mission.skills.reduce((sum, skill) => sum + fs.readFileSync(path.join(skillsRoot, skill.id, 'SKILL.md')).length, 0);
     assert.equal(mission.metrics.selectedSkillBytes, selectedBytes);

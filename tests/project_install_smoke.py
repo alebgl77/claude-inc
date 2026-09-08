@@ -15,11 +15,14 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def run(argv, cwd, env):
+def run(argv, cwd, env, expected_error=None):
     result = subprocess.run(argv, cwd=str(cwd), env=env, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, encoding="utf-8", errors="replace",
                             timeout=120, creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
-    if result.returncode:
+    if expected_error is not None:
+        assert result.returncode != 0, "Command unexpectedly succeeded: " + str(argv[0])
+        assert expected_error in result.stderr, "Unexpected refusal: " + result.stderr[-3000:]
+    elif result.returncode:
         raise AssertionError("Command failed (" + str(result.returncode) + "): " + str(argv[0]) +
                              "\n" + result.stdout[-3000:] + "\n" + result.stderr[-3000:])
     return result.stdout
@@ -117,16 +120,16 @@ exit $LASTEXITCODE
             request = sandbox / "arguments.json"
             env.update({"SMOKE_WRAPPER": str(wrapper), "SMOKE_PROJECT": str(project), "SMOKE_REQUEST": str(request)})
 
-            def company(*arguments):
+            def company(*arguments, expected_error=None):
                 request.write_text(json.dumps({"arguments": list(arguments)}, ensure_ascii=False), encoding="utf-8")
-                return run([shell, "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(driver)], project, env)
+                return run([shell, "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(driver)], project, env, expected_error)
         else:
             run(["bash", str(ROOT / "install.sh")], ROOT, env)
             wrapper = home / ".local/bin/company"
             assert wrapper.is_symlink() and wrapper.resolve() == (ROOT / "bin/company").resolve()
 
-            def company(*arguments):
-                return run([str(wrapper), *arguments], project, env)
+            def company(*arguments, expected_error=None):
+                return run([str(wrapper), *arguments], project, env, expected_error)
 
         assert len(list((home / ".claude/skills").iterdir())) == 54
         assert len(list((home / ".claude/agents").glob("*.md"))) == 9
@@ -171,6 +174,103 @@ exit $LASTEXITCODE
         assert bootstrap["validatedRevisionAtLaunch"] == state["revision"]
         assert [argument for argument in launched["argv"] if argument.startswith("--")] == ["--plugin-dir"]
         print("PASS: real recording host received project cwd, packaged plugin and resume argv; no permission/model overrides")
+
+        historical = state["tasks"][0]
+        task_id = "installed-harness"
+        company("project", "task", "add", "--id", task_id, "--department", "developers",
+                "--title", "Check the installed harness lifecycle", "--acceptance", "The UTF-8 fixture records observed installed-wrapper checks")
+        state = json.loads(company("project", "status", "--format", "json"))
+        assert state["schemaVersion"] == 1
+        company("project", "harness", "generate", "--stage", "build", "--effort", "light",
+                "--max-iterations", "1", "--expected-revision", str(state["revision"]))
+        state = json.loads(company("project", "status", "--format", "json"))
+        assert state["schemaVersion"] == 2 and state["tasks"][0] == historical
+        assert set(state["harness"]["policies"]) == {task_id}
+        assert state["harness"]["defaults"]["maxIterations"] == 1
+        policy = state["harness"]["policies"][task_id]
+        company("project", "task", "start", task_id)
+        evidence = project / "preuves harnais café.md"
+        evidence_text = ("# Observed installed-wrapper checks\n"
+                         "PASS: UTF-8 project text café 空白 and paths with spaces round-tripped.\n"
+                         "PASS: legacy submission hash matched the actual fixture bytes.\n"
+                         "PASS: the recording host received the expected cwd and argv.\n"
+                         "Isolation: temporary home; recording-host PATH guard; no real model or scanner ran.\n"
+                         "Limit: these are synthetic lifecycle and transport checks, not output quality or security certification.\n")
+        evidence.write_text(evidence_text, encoding="utf-8")
+        assert evidence.read_text(encoding="utf-8") == evidence_text
+        company("project", "task", "submit", task_id, "--artifact", evidence.name, "--summary", "Recorded observed installed-wrapper checks")
+        next_value = json.loads(company("project", "loop", "next", "--format", "json"))
+        assert next_value["action"] == "evaluate" and next_value["taskId"] == task_id
+        assert (next_value["used"], next_value["limit"]) == (1, 1)
+        gates_file = project / "contrôle harnais.json"
+
+        def write_gates(guidance):
+            template = guidance["reviewTemplate"]
+            assert template["taskId"] == task_id
+            assert {result["gateId"] for result in template["results"]} == {gate["id"] for gate in policy["gates"]}
+            for result in template["results"]:
+                assert result["status"] == "unknown"
+                result.update(status="pass", evidence=[{"path": evidence.name, "locator": "Observed installed-wrapper checks"}],
+                              observation="Read the UTF-8 fixture recording the executed checks, isolation boundaries and untested model/scanner limits.")
+            gates_file.write_text(json.dumps(template, ensure_ascii=False), encoding="utf-8")
+            return template
+
+        gates = write_gates(next_value)
+        state_file = project / ".claude/company/project.json"
+
+        def refused(error, *arguments):
+            before = state_file.read_bytes()
+            company(*arguments, expected_error=error)
+            assert state_file.read_bytes() == before, "Refused command changed project state"
+
+        review = ["project", "task", "review", task_id, "--decision", "accept", "--reviewer", "cto",
+                  "--note", "Inspected the synthetic fixture evidence", "--submission-revision", str(gates["submitRevision"]),
+                  "--gates-file", gates_file.name]
+        refused("project revision changed", *review, "--expected-revision", str(next_value["sourceRevision"] - 1))
+        for status in ("unknown", "fail"):
+            gates["results"][0]["status"] = status
+            gates_file.write_text(json.dumps(gates, ensure_ascii=False), encoding="utf-8")
+            refused("all required gates must pass", *review, "--expected-revision", str(next_value["sourceRevision"]))
+        company("project", "task", "review", task_id, "--decision", "revise", "--reviewer", "cto",
+                "--note", "Record the observed refusal checks before acceptance", "--expected-revision", str(next_value["sourceRevision"]),
+                "--submission-revision", str(gates["submitRevision"]))
+        next_value = json.loads(company("project", "loop", "next", "--format", "json"))
+        assert next_value["action"] == "escalate" and (next_value["used"], next_value["limit"]) == (1, 1)
+        company("project", "task", "block", task_id, "--reason", "Submission allowance exhausted")
+        refused("allowance", "project", "task", "start", task_id)
+        state = json.loads(company("project", "status", "--format", "json"))
+        reason = "Permit one more submission to record the observed refusal checks"
+        company("project", "harness", "extend", task_id, "--max-iterations", "2", "--reason", reason,
+                "--expected-revision", str(state["revision"]))
+        company("project", "task", "start", task_id)
+        evidence_text += "PASS: stale revision, unknown/failed gates and exhausted resume were refused with unchanged project bytes.\n"
+        evidence.write_text(evidence_text, encoding="utf-8")
+        assert evidence.read_text(encoding="utf-8") == evidence_text
+        company("project", "task", "submit", task_id, "--artifact", evidence.name, "--summary", "Recorded refusal and compatibility observations")
+        next_value = json.loads(company("project", "loop", "next", "--format", "json"))
+        assert next_value["action"] == "evaluate" and (next_value["used"], next_value["limit"]) == (2, 2)
+        previous_submission = gates["submitRevision"]
+        gates = write_gates(next_value)
+        assert gates["submitRevision"] > previous_submission
+        company("project", "task", "review", task_id, "--decision", "accept", "--reviewer", "cto",
+                "--note", "Inspected the current fixture and its recorded observations", "--expected-revision", str(next_value["sourceRevision"]),
+                "--submission-revision", str(gates["submitRevision"]), "--gates-file", gates_file.name)
+        state = json.loads(company("project", "status", "--format", "json"))
+        task = next(task for task in state["tasks"] if task["id"] == task_id)
+        assert task["status"] == "done" and state["tasks"][0] == historical
+        assert [(review["decision"], review["reviewer"]) for review in task["reviews"]] == [("revise", "cto"), ("accept", "cto")]
+        assert task["artifacts"][0]["sha256"] == hashlib.sha256(evidence.read_bytes()).hexdigest()
+        assert state["harness"]["policies"] == {task_id: policy}
+        assert [round_value["submitRevision"] for round_value in state["harness"]["rounds"]] == [previous_submission, gates["submitRevision"]]
+        assert len(state["harness"]["extensions"]) == 1
+        extension = state["harness"]["extensions"][0]
+        assert (extension["taskId"], extension["fromLimit"], extension["toLimit"], extension["reason"]) == (task_id, 1, 2, reason)
+        assert len(state["harness"]["assessments"]) == 1
+        assert state["harness"]["assessments"][0]["results"] == gates["results"]
+        next_value = json.loads(company("project", "loop", "next", "--format", "json"))
+        assert next_value["action"] == "complete" and next_value["sourceRevision"] == state["revision"]
+        assert next_value["reviewTemplate"] is None
+        print("PASS: installed schema-2 harness preserves history, refuses stale/nonpassing reviews atomically, enforces/extends the cap and completes two CTO-reviewed rounds")
 
         if args.quote_probe:
             if os.name != "nt":

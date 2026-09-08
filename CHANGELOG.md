@@ -2,6 +2,14 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [1.5.1] - 2026-09-08
+
+### Fixed
+- Derived Mission Studio employee and manual totals from the validated catalog,
+  with matching HTML fallbacks and the current CEO/CTO company preview image.
+- Added catalog-based count checks and an installed schema-2 project lifecycle
+  regression covering the bounded harness and CTO review flow.
+
 ## [1.5.0] - 2026-09-08
 
 ### Added

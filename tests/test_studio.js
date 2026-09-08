@@ -9,6 +9,7 @@ const app = require('../studio/studio.js');
 
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'studio/studio.js'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'studio/missions.html'), 'utf8');
 const datasetContext = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(root, 'studio/missions.js'), 'utf8'), datasetContext);
 const published = JSON.parse(JSON.stringify(datasetContext.window.CLAUDE_INC_MISSIONS));
@@ -124,6 +125,7 @@ test('mission cards contain only template data, no brief, script, event, externa
     assert.match(card, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
     assert.ok(card.includes(app.escapeXml(mission.title)));
     assert.ok(card.includes('PLAN ONLY / NO CUSTOM BRIEF'));
+    assert.ok(card.includes('THE CREW / ' + mission.skills.length + ' EMPLOYEES'));
     assert.doesNotMatch(card, /PRIVATE|<script|<foreignObject|\son\w+\s*=|\b(?:href|src)\s*=|url\(/i);
     assert.match(card, /OWNER \/ /);
     assert.match(card, /REVIEW OWNER \/ /);
@@ -151,7 +153,7 @@ test('skill metrics correspond to actual unique manual files, not prompt or runt
   const skillsRoot = path.join(root, 'skills');
   const manuals = fs.readdirSync(skillsRoot).filter(name => fs.existsSync(path.join(skillsRoot, name, 'SKILL.md')));
   const allBytes = manuals.reduce((sum, name) => sum + fs.readFileSync(path.join(skillsRoot, name, 'SKILL.md')).length, 0);
-  assert.equal(manuals.length, 54);
+  assert.equal(published.skillCount, manuals.length);
   for (const mission of published.missions) {
     const selectedBytes = mission.skills.reduce((sum, skill) => sum + fs.readFileSync(path.join(skillsRoot, skill.id, 'SKILL.md')).length, 0);
     assert.equal(mission.metrics.selectedSkillBytes, selectedBytes);
@@ -214,6 +216,31 @@ function browserHarness(data = fixture(), href = 'file:///studio/missions.html',
   vm.runInNewContext(source, { window, URL, TextEncoder, Blob });
   return { window, document, get: id => document.getElementById(id) };
 }
+
+test('HTML fallback totals match the published catalog', () => {
+  assert.equal(html.match(/id="company-count">([^<]+)</)?.[1], published.skillCount + ' EMPLOYEES');
+  assert.equal(html.match(/id="crew-total"[^>]*>([^<]+)</)?.[1], ' / ' + published.skillCount);
+  assert.equal(html.match(/id="manual-count">([^<]+)</)?.[1], String(published.skillCount));
+  const imageAlts = [...html.matchAll(/(?:property|name)="(?:og|twitter):image:alt" content="([^"]+)"/g)];
+  assert.equal(imageAlts.length, 2);
+  for (const [, alt] of imageAlts) assert.match(alt, /CEO and CTO above eight business departments/);
+  for (const tag of ['og', 'twitter']) assert.match(html, new RegExp('(?:property|name)="' + tag + ':image" content="https://alebgl77.github.io/claude-inc/company-team.png"'));
+  const preview = fs.readFileSync(path.join(root, 'studio/company-team.png'));
+  assert.equal(Number(html.match(/property="og:image:width" content="(\d+)"/)[1]), preview.readUInt32BE(16));
+  assert.equal(Number(html.match(/property="og:image:height" content="(\d+)"/)[1]), preview.readUInt32BE(20));
+});
+
+test('all mission presets render catalog totals and the selected crew count', () => {
+  const harness = browserHarness(published);
+  for (const [index, mission] of published.missions.entries()) {
+    harness.get('mission-nav').children[index].click();
+    assert.equal(harness.get('company-count').textContent, published.skillCount + ' EMPLOYEES');
+    assert.equal(harness.get('crew-total').textContent, ' / ' + published.skillCount);
+    assert.equal(harness.get('manual-count').textContent, String(published.skillCount));
+    assert.equal(harness.get('crew-count').textContent, String(mission.skills.length));
+    assert.equal(mission.metrics.totalSkills, published.skillCount);
+  }
+});
 
 test('the browser entry point displays a helpful missing-data error', () => {
   const harness = browserHarness(null);

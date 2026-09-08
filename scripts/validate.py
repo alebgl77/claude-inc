@@ -23,7 +23,7 @@ EXECUTIVES = {"cto"}
 EXPECTED_EMPLOYEES = 54
 EXPECTED_DEPARTMENTS = 8
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
-EXPECTED_VERSION = "1.5.0"
+EXPECTED_VERSION = "1.5.1"
 CANONICAL_DEPARTMENTS = {
     "developers", "designers", "marketing", "social-media", "finance",
     "small-business", "legal", "sales",

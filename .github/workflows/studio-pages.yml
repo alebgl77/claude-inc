@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'studio/**'
+      - 'assets/org-chart.svg'
       - 'skills/**'
       - 'agents/**'
       - 'bin/company'
@@ -68,6 +69,10 @@ jobs:
             test ! -L "studio/$file"
             cp "studio/$file" "_site/$file"
           done
+          test ! -L assets
+          test -f assets/org-chart.svg
+          test ! -L assets/org-chart.svg
+          cp assets/org-chart.svg _site/org-chart.svg
 
       - name: Upload company artifact
         uses: actions/upload-pages-artifact@v4

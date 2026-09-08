@@ -49,7 +49,7 @@ jobs:
         run: |
           test ! -L studio
           mkdir _site
-          for file in index.html studio.css studio.js missions.js; do
+          for file in index.html studio.css studio.js missions.js social-preview.png favicon.svg; do
             test -f "studio/$file"
             test ! -L "studio/$file"
             cp "studio/$file" "_site/$file"

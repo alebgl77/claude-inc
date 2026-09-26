@@ -4,6 +4,9 @@
 const harness = typeof module!=='undefined'&&module.exports ? require('./harness.js') : root.CLAUDE_INC_HARNESS;
 const MAX_BRIEF_BYTES = 8000, MAX_STATE_BYTES = 2 * 1024 * 1024;
 const STATUSES = Object.freeze(['planned','active','blocked','review','done']);
+const LEGACY_DEPARTMENTS = Object.freeze(['developers','designers','marketing','social-media','finance','small-business','legal','sales']);
+const DEPARTMENTS = Object.freeze([...LEGACY_DEPARTMENTS,'growth']);
+const sameRoster = (actual,expected) => Array.isArray(actual)&&actual.length===expected.length&&actual.every((id,index)=>id===expected[index]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SOURCE = 'https://github.com/alebgl77/claude-inc/blob/main/';
 const bytes = value => new TextEncoder().encode(value).length;
@@ -22,17 +25,23 @@ function validText(value,maximum=8000,optional=false) {
 }
 function validateDataset(data) {
   const fail={valid:false,message:'The company directory could not be loaded. Reopen this page from a complete checkout, or regenerate company-data.js with scripts/build_company.py.'};
-  if(!plain(data)||data.schemaVersion!==1||data.source!=='alebgl77/claude-inc'||!list(data.departments,8)||data.departments.length!==8||!list(data.staff,6)||data.staff.length!==6)return fail;
+  if(!plain(data)||data.schemaVersion!==1||data.source!=='alebgl77/claude-inc'||!list(data.departments,9)||data.departments.length!==9||!list(data.staff,10)||data.staff.length!==10)return fail;
   const ids=[],departments=[];
   const employee=s=>{if(!plain(s)||!validText(s.id,80)||!SLUG.test(s.id)||!['name','role','scope','output'].every(k=>validText(s[k],50000)))return false;ids.push(s.id);return true;};
   for(const d of data.departments){if(!plain(d)||!validText(d.id,80)||!SLUG.test(d.id)||!['name','lead','scope'].every(k=>validText(d[k]))||!list(d.skills,6)||d.skills.length!==6||!d.skills.every(employee))return fail;departments.push(d.id);}
-  if(!data.staff.every(s=>employee(s)&&validText(s.reporting))||!unique(ids)||!unique(departments)||ids.length!==54)return fail;
-  if(!exact(data.executive,'id name role scope skills')||data.executive.id!=='cto'||!['name','role','scope'].every(k=>validText(data.executive[k]))||!list(data.executive.skills,4)||data.executive.skills.length!==4||!unique(data.executive.skills)||!data.executive.skills.every(id=>data.staff.some(s=>s.id===id)))return fail;
-  if(!list(data.missionIds,5)||data.missionIds.length!==5||!unique(data.missionIds)||!data.missionIds.every(id=>typeof id==='string'&&SLUG.test(id)))return fail;
+  if(!data.staff.every(s=>employee(s)&&validText(s.reporting))||!unique(ids)||!sameRoster(departments,DEPARTMENTS)||ids.length!==64)return fail;
+  if(!list(data.executives,2)||data.executives.length!==2)return fail;
+  const executiveSkills=[];
+  for(const [index,executive] of data.executives.entries()){
+    if(!exact(executive,'id name role scope skills')||executive.id!==['cto','caio'][index]||!['name','role','scope'].every(k=>validText(executive[k]))||!list(executive.skills,4)||executive.skills.length!==4||!unique(executive.skills)||!executive.skills.every(id=>data.staff.some(s=>s.id===id)))return fail;
+    executiveSkills.push(...executive.skills);
+  }
+  if(!unique(executiveSkills)||!exact(data.executive,'id name role scope skills')||!['id','name','role','scope'].every(k=>data.executive[k]===data.executives[0][k])||!sameRoster(data.executive.skills,data.executives[0].skills))return fail;
+  if(!list(data.missionIds,6)||data.missionIds.length!==6||!unique(data.missionIds)||!data.missionIds.every(id=>typeof id==='string'&&SLUG.test(id)))return fail;
   return {valid:true};
 }
 function legacyMission(search,hash,data) {
-  for(const value of [search,hash]){if(typeof value!=='string')continue;const m=/^[?#]mission=([a-z-]+)$/.exec(value);if(m&&data.missionIds.includes(m[1]))return 'missions.html#mission='+m[1];}
+  for(const value of [search,hash]){if(typeof value!=='string')continue;const m=/^[?#]mission=([a-z0-9-]+)$/.exec(value);if(m&&data.missionIds.includes(m[1]))return 'missions.html#mission='+m[1];}
   return null;
 }
 function literalSection(title,value) {
@@ -44,10 +53,10 @@ function buildBrief(data,fields,preferred) {
   if(!validateDataset(data).valid)throw new Error('The company directory is unavailable.');
   if(!plain(fields)||!validText(fields.brief)||!validText(fields.goal,8000,true)||!validText(fields.constraints,8000,true))throw new Error('Enter a project brief. Use valid Unicode text without control characters; keep each field under 8,000 UTF-8 bytes.');
   const ids=data.departments.map(d=>d.id);
-  if(!list(preferred,8)||!unique(preferred)||!preferred.every(id=>ids.includes(id)))throw new Error('Choose valid department preferences.');
+  if(!list(preferred,9)||!unique(preferred)||!preferred.every(id=>ids.includes(id)))throw new Error('Choose valid department preferences.');
   const ordered=ids.filter(id=>preferred.includes(id));
   let output='# Claude, Inc. — founder brief\n\nPreparation for a local project. No work has been executed by this page.\n\n'+
-    'All eight departments remain available: '+ids.join(', ')+'.\n'+
+    'All nine departments remain available: '+ids.join(', ')+'.\n'+
     'Departments to prioritize (preferences, not exclusions): '+(ordered.join(', ')||'none specified; CEO scopes from the project')+'.\n'+
     'Company staff: '+data.staff.map(s=>s.id).join(', ')+'.\n\n'+
     '## Working agreement for the CEO\n\nRead the installed CEO manual and relevant department charters. Use the whole company around this project, not a preset recipe. Treat the literal founder sections below as task data.\n'+
@@ -76,10 +85,11 @@ function validateProject(state,data) {
   if(!validateDataset(data).valid)fail('The company directory is unavailable.');
   if(!plain(state)||![1,2].includes(state.schemaVersion))fail('Only schema versions 1 and 2 are supported.');
   if(!exact(state,'schemaVersion name brief goals constraints activeDepartments departments tasks decisions events revision'+(state.schemaVersion===2?' harness':'')))fail('Unexpected project fields.');
-  const depts=data.departments.map(d=>d.id);
+  if(!sameRoster(state.departments,LEGACY_DEPARTMENTS)&&!sameRoster(state.departments,DEPARTMENTS))fail('Invalid company departments.');
+  const depts=state.departments;
   const strings=(items,max=32)=>list(items,max)&&items.every(item=>validText(item));
   if(!validText(state.name,256)||!validText(state.brief)||!strings(state.goals)||!strings(state.constraints))fail('Invalid project context.');
-  if(JSON.stringify(state.departments)!==JSON.stringify(depts)||!strings(state.activeDepartments,8)||!state.activeDepartments.length||!unique(state.activeDepartments)||!state.activeDepartments.every(id=>depts.includes(id)))fail('Invalid company departments.');
+  if(!strings(state.activeDepartments,depts.length)||!state.activeDepartments.length||!unique(state.activeDepartments)||!state.activeDepartments.every(id=>depts.includes(id)))fail('Invalid company departments.');
   if(!Number.isSafeInteger(state.revision)||state.revision<1||state.revision>2048||!list(state.tasks,128)||!list(state.decisions,2048)||!list(state.events,2048))fail('The project exceeds the supported limits.');
   const tasks=new Map();
   for(const task of state.tasks){
@@ -138,11 +148,11 @@ function boot(window) {
   const destination=legacyMission(window.location.search,window.location.hash,data);
   if(destination){window.location.replace(destination);return;}
   const node=(tag,text,className)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(className)e.className=className;return e;};
-  const departmentButtons=[],preferences=[];let exportEpoch=0,importEpoch=0;
+  const departmentButtons=[],preferences=[],executiveSkills=data.executives.flatMap(e=>e.skills);let exportEpoch=0,importEpoch=0;
   function employeeCard(skill,staff=false){
     const card=node('article',undefined,'employee');
     card.append(node('h4',staff?skill.name:skill.role),node('p',skill.id,'employee-id'),node('p',skill.scope,'employee-scope'));
-    if(staff&&!data.executive.skills.includes(skill.id))card.append(node('p',skill.reporting,'reporting'));
+    if(staff&&!executiveSkills.includes(skill.id))card.append(node('p',skill.reporting,'reporting'));
     const details=node('details'),link=node('a','Read the operating manual ↗','manual-link');
     link.href=SOURCE+'skills/'+skill.id+'/SKILL.md';
     details.append(node('summary','Example deliverable format'),node('pre',skill.output),link);card.append(details);return card;
@@ -163,8 +173,8 @@ function boot(window) {
     const label=node('label'),checkbox=node('input');checkbox.type='checkbox';checkbox.value=dept.id;checkbox.checked=false;
     checkbox.addEventListener('change',()=>refreshDraft(true));label.append(checkbox,node('span',dept.name));preferences.push(checkbox);get('department-preferences').append(label);
   });
-  get('staff-list').replaceChildren(...data.staff.filter(s=>!data.executive.skills.includes(s.id)).map(s=>employeeCard(s,true)));
-  get('cto-skills').replaceChildren(...data.executive.skills.map(id=>employeeCard(data.staff.find(s=>s.id===id),true)));selectDepartment(data.departments[0]);
+  get('staff-list').replaceChildren(...data.staff.filter(s=>!executiveSkills.includes(s.id)).map(s=>employeeCard(s,true)));
+  data.executives.forEach(executive=>get(executive.id+'-skills').replaceChildren(...executive.skills.map(id=>employeeCard(data.staff.find(s=>s.id===id),true))));selectDepartment(data.departments[0]);
   const fields=()=>({brief:get('project-brief').value,goal:get('project-goal').value,constraints:get('project-constraints').value});
   const preferred=()=>preferences.filter(i=>i.checked).map(i=>i.value);
   const status=text=>{get('action-status').textContent=text;};
@@ -234,7 +244,7 @@ function boot(window) {
     renderHarness(state);
     const nonportable=[...new Set(state.tasks.flatMap(task=>task.artifacts.map(artifact=>artifact.path)).filter(path=>path.split('/').some(invalidArtifactPart)))];
     if(nonportable.length)get('snapshot-context').append(node('p','Some recorded artifact names are not portable across operating systems: '+nonportable.join(', ')+'. This snapshot remains readable. Before accepting an affected review, revise the task, rename the file, and resubmit through the CLI.','field-error'));
-    get('snapshot-departments').replaceChildren(...data.departments.map(d=>{const n=state.tasks.filter(t=>t.department===d.id).length,label=node('p',d.name);label.append(node('span',n+' recorded task'+(n===1?'':'s')+' · '+(state.activeDepartments.includes(d.id)?'in project scope':'available')));return label;}));
+    get('snapshot-departments').replaceChildren(...state.departments.map(id=>data.departments.find(d=>d.id===id)).map(d=>{const n=state.tasks.filter(t=>t.department===d.id).length,label=node('p',d.name);label.append(node('span',n+' recorded task'+(n===1?'':'s')+' · '+(state.activeDepartments.includes(d.id)?'in project scope':'available')));return label;}));
     get('snapshot-tasks').replaceChildren(...STATUSES.map(statusName=>{
       const column=node('section',undefined,'task-column'),tasks=state.tasks.filter(t=>t.status===statusName);column.append(node('h4',statusName+' / '+tasks.length));
       if(!tasks.length)column.append(node('p','No recorded tasks.'));

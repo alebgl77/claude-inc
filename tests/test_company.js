@@ -41,11 +41,11 @@ function harness({catalog=data,clipboard,search='',hash=''}={}){
 }
 function allText(node){return node.textContent+'\n'+node.children.map(allText).join('\n');}
 
-test('canonical dataset has eight distinct departments and all fifty-four manual-backed employees',()=>{
-  assert.equal(app.validateDataset(data).valid,true);assert.equal(data.departments.length,8);
-  const skills=[...data.departments.flatMap(d=>d.skills),...data.staff];assert.equal(skills.length,54);assert.equal(new Set(skills.map(s=>s.id)).size,54);
+test('canonical dataset has nine distinct departments and all sixty-four manual-backed employees',()=>{
+  assert.equal(app.validateDataset(data).valid,true);assert.equal(data.departments.length,9);
+  const skills=[...data.departments.flatMap(d=>d.skills),...data.staff];assert.equal(skills.length,64);assert.equal(new Set(skills.map(s=>s.id)).size,64);
   for(const skill of skills){const manual=fs.readFileSync(path.join(root,'skills',skill.id,'SKILL.md'),'utf8').replace(/\r\n/g,'\n');assert.ok(manual.includes(skill.output),skill.id);assert.ok(manual.includes('# '+skill.name),skill.id);}
-  assert.deepEqual(data.staff.map(s=>s.id),['chief-of-staff','token-accountant','cto-advisor','skill-vetting','appsec-review','agent-evaluation']);
+  assert.deepEqual(data.staff.map(s=>s.id),['chief-of-staff','token-accountant','cto-advisor','skill-vetting','appsec-review','agent-evaluation','ai-workflow-architect','agent-reliability','ai-data-steward','ai-adoption-lead']);
   for(const department of data.departments)assert.match(department.scope,/^You /);
 });
 test('dataset validation rejects missing, duplicate, malformed and unsafe identifiers',()=>{
@@ -55,8 +55,36 @@ test('dataset validation rejects missing, duplicate, malformed and unsafe identi
   }
   assert.equal(harness({catalog:null}).get('company-error').hidden,false);
 });
-test('all departments are keyboard buttons and all fifty-four skills can be explored',()=>{
-  const h=harness(),buttons=h.get('department-nav').children;assert.equal(buttons.length,8);assert.equal(h.get('hero-departments').children.length,8);assert.equal(h.get('staff-list').children.length,2);assert.equal(h.get('cto-skills').children.length,4);
+
+test('directory validates both peer executive offices and the exact canonical roster',()=>{
+  assert.deepEqual(data.executives.map(e=>e.id),['cto','caio']);assert.deepEqual(data.executive,data.executives[0]);
+  for(const mutate of [d=>d.departments.reverse(),d=>d.departments[8].id='unknown',d=>d.executives.pop(),d=>d.executives.reverse(),d=>d.executives[1].skills[0]=d.executives[0].skills[0],d=>d.executives[1].skills[0]=d.departments[8].skills[0].id,d=>d.executive.scope='Different scope']){
+    const value=copy(data);mutate(value);assert.equal(app.validateDataset(value).valid,false,mutate.toString());
+  }
+});
+
+test('saved rosters accept only the historical eight or current nine in exact order',async()=>{
+  for(const roster of [ids.slice(0,8),ids]){
+    const s=project();s.departments=[...roster];s.activeDepartments=[...roster];
+    assert.deepEqual(app.validateProject(s,data),s);const h=harness();await h.load(s);
+    assert.equal(h.get('snapshot-departments').children.length,roster.length);
+    assert.equal(allText(h.get('snapshot-departments')).includes('Growth'),roster.includes('growth'));
+  }
+  const rosters=[ids.slice(1),ids.slice(0,7),[...ids].reverse(),[...ids.slice(0,8),'sales'],[...ids.slice(0,8),'caio'],[...ids,'unknown']];
+  for(const roster of rosters){const s=project();s.departments=roster;assert.throws(()=>app.validateProject(s,data),/departments/);}
+  for(const mutate of [s=>s.activeDepartments=['growth'],s=>s.tasks[0].department='growth',s=>s.tasks[4].reviews[0].reviewer='growth']){
+    const legacy=project();legacy.departments=ids.slice(0,8);mutate(legacy);assert.throws(()=>app.validateProject(legacy,data));
+    const current=project();mutate(current);assert.deepEqual(app.validateProject(current,data),current);
+  }
+});
+
+test('CAIO is never a project task owner, active department or reviewer',()=>{
+  for(const schema of [1,2])for(const mutate of [s=>s.activeDepartments=['caio'],s=>s.tasks[0].department='caio',s=>s.tasks.find(t=>t.reviews.length).reviews[0].reviewer='caio']){
+    const s=schema===1?project():snapshot2('dependency-ready');mutate(s);assert.throws(()=>app.validateProject(s,data));
+  }
+});
+test('all departments are keyboard buttons and all sixty-four skills can be explored',()=>{
+  const h=harness(),buttons=h.get('department-nav').children;assert.equal(buttons.length,9);assert.equal(h.get('hero-departments').children.length,9);assert.equal(h.get('staff-list').children.length,2);assert.equal(h.get('cto-skills').children.length,4);assert.equal(h.get('caio-skills').children.length,4);
   buttons.forEach((b,i)=>{assert.equal(b.tag,'button');b.click();assert.equal(h.get('department-name').textContent,data.departments[i].name);assert.equal(h.get('employee-list').children.length,6);assert.equal(b.attributes['aria-pressed'],'true');assert.ok(allText(h.get('employee-list')).includes(data.departments[i].skills[0].id));});
   h.get('hero-departments').children[1].click();assert.equal(h.get('department-name').focused,true);assert.equal(h.get('departments').scrolled,true);
 });
@@ -70,7 +98,7 @@ test('literal founder sections preserve Unicode, whitespace, line endings, and f
   const output=app.composeBrief(data,f,[ids[3],ids[0]]);
   for(const value of Object.values(f))assert.ok(output.includes(value));
   assert.ok(output.includes(String.fromCharCode(96).repeat(10)+'text\n'+raw+'\n'+String.fromCharCode(96).repeat(10)));
-  assert.match(output,/All eight departments remain available/);for(const id of ids)assert.ok(output.includes(id));
+  assert.match(output,/All nine departments remain available/);for(const id of ids)assert.ok(output.includes(id));
   assert.match(output,/preferences, not exclusions/);assert.match(output,/dependencies.*acceptance checks/);assert.match(output,/PASS, FAIL, or NOT RUN/);
   assert.equal(app.bytes(output),Buffer.byteLength(output,'utf8'));
 });
@@ -93,7 +121,7 @@ test('invalid text, controls, unpaired surrogates and unknown preferences cannot
 test('draft stays freeform; selecting preferences does not exclude any department',()=>{
   const h=harness();assert.equal(h.get('download-brief').disabled,true);h.edit();
   const checkbox=h.get('department-preferences').children[1].children[0];checkbox.checked=true;checkbox.listeners.change();
-  assert.equal(h.get('download-brief').disabled,false);assert.equal(h.get('department-nav').children.length,8);assert.equal(h.get('project-brief').value,fields.brief);
+  assert.equal(h.get('download-brief').disabled,false);assert.equal(h.get('department-nav').children.length,9);assert.equal(h.get('project-brief').value,fields.brief);
   h.edit({...fields,brief:' '});assert.equal(h.get('copy-ceo').disabled,true);assert.equal(h.get('brief-error').hidden,false);assert.equal(h.get('project-brief').attributes['aria-invalid'],'true');
 });
 test('downloaded UTF-8 Blob matches complete brief exactly and releases its URL',async()=>{
@@ -123,7 +151,7 @@ test('clipboard completion is honest and stale completions cannot restore privat
 });
 test('realistic multi-department state validates every lifecycle status and displays actual tasks',async()=>{
   const s=project();assert.deepEqual(app.parseProject(JSON.stringify(s),data),s);const h=harness();await h.load(s);
-  assert.equal(h.get('project-board').hidden,false);assert.equal(h.get('snapshot-name').textContent,s.name);assert.equal(h.get('snapshot-departments').children.length,8);assert.equal(h.get('snapshot-tasks').children.length,5);
+  assert.equal(h.get('project-board').hidden,false);assert.equal(h.get('snapshot-name').textContent,s.name);assert.equal(h.get('snapshot-departments').children.length,9);assert.equal(h.get('snapshot-tasks').children.length,5);
   assert.match(allText(h.get('snapshot-tasks')),/task-4/);assert.match(allText(h.get('snapshot-tasks')),/Recorded review: accept · ceo/);assert.match(allText(h.get('snapshot-tasks')),/output\/result-4.md/);
   assert.match(allText(h.get('snapshot-context')),/PRIVATE project context 🚀/);assert.match(allText(h.get('snapshot-decisions')),/Use supplied sources only/);
 });
@@ -185,7 +213,15 @@ test('company generator is deterministic, current, profile-free, and check mode 
     fs.mkdirSync(path.join(temporary,'studio'));const target=path.join(temporary,'studio/company-data.js');
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.existsSync(target),false);
     assert.equal(run(['-B','scripts/build_company.py'],temporary).status,0);const before=fs.readFileSync(target);assert.deepEqual(before,fs.readFileSync(path.join(root,'studio/company-data.js')));
+    for(const name of ['org-chart.svg','company-preview.svg'])assert.deepEqual(fs.readFileSync(path.join(temporary,'studio',name)),fs.readFileSync(path.join(root,'studio',name)));
+    const asset=path.join(temporary,'assets/org-chart.svg');assert.deepEqual(fs.readFileSync(asset),fs.readFileSync(path.join(temporary,'studio/org-chart.svg')));
+    fs.writeFileSync(asset,'STALE README DIAGRAM');const assetStat=fs.statSync(asset).mtimeMs;
+    assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.readFileSync(asset,'utf8'),'STALE README DIAGRAM');assert.equal(fs.statSync(asset).mtimeMs,assetStat);
+    fs.copyFileSync(path.join(temporary,'studio/org-chart.svg'),asset);
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,0);const stat=fs.statSync(target).mtimeMs;
+    const preview=path.join(temporary,'studio/company-preview.svg'),previewStat=fs.statSync(preview).mtimeMs;fs.writeFileSync(preview,'STALE DIAGRAM');
+    const staleStat=fs.statSync(preview).mtimeMs;assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.readFileSync(preview,'utf8'),'STALE DIAGRAM');assert.equal(fs.statSync(preview).mtimeMs,staleStat);
+    fs.copyFileSync(path.join(root,'studio/company-preview.svg'),preview);
     const manual=path.join(temporary,'skills',data.departments[0].skills[0].id,'SKILL.md');fs.writeFileSync(manual,fs.readFileSync(manual,'utf8').replace('## Output format','## Output format\n\nCANONICAL OUTPUT CHANGE'));
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.deepEqual(fs.readFileSync(target),before);assert.equal(fs.statSync(target).mtimeMs,stat);
     const generated=before.toString('ascii');assert.doesNotMatch(generated,/<|C:\\\\Users|company-team\.md|PRIVATE/);
@@ -267,8 +303,14 @@ test('historical accepted task with a prototype property name stays inert and ex
   s.revision=6;s.harness.enabledRevision=6;s.harness.policies={};s.harness.rounds=[];s.harness.assessments=[];
   await h.load(s);assert.equal(h.get('project-board').hidden,false);assert.match(allText(h.get('snapshot-tasks')),/Historical acceptance before harness activation\. No harness gates were verified/);assert.doesNotMatch(allText(h.get('snapshot-tasks')),/RECORDED PASS/);
 });
-test('robot image names the eight actual departments and CTO presentation omits internal governance prose',()=>{
+test('generated diagrams and executive cards name the current company',()=>{
   const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8'),h=harness();
-  assert.match(html,/alt="[^"]*Developers, Designers, Marketing, Social Media, Finance, Small Business, Legal, and Sales/);assert.match(html,/CEO and CTO lead together/);assert.doesNotMatch(allText(h.get('cto-skills')),/Catalog grouping|peer executive of the CEO/);
-  assert.match(html,/og:image:width" content="1774"/);assert.match(html,/og:image:height" content="887"/);assert.match(html,/twitter:image" content="https:\/\/alebgl77.github.io\/claude-inc\/company-team.png"/);
+  assert.match(html,/alt="[^"]*Developers, Designers, Marketing, Social Media, Finance, Small Business, Legal, Sales, and Growth/);assert.match(html,/CEO, CTO and CAIO lead together/);
+  for(const id of ['cto','caio'])assert.doesNotMatch(allText(h.get(id+'-skills')),/Catalog grouping|peer executive of the CEO/);
+  assert.match(html,/og:image:width" content="1200"/);assert.match(html,/og:image:height" content="630"/);assert.match(html,/twitter:image" content="https:\/\/alebgl77.github.io\/claude-inc\/company-preview.svg"/);
+  assert.doesNotMatch(html,/company-team\.png/);
+  const diagram=fs.readFileSync(path.join(root,'studio/org-chart.svg'),'utf8');
+  for(const skill of [...data.departments.flatMap(d=>d.skills),...data.staff])assert.ok(diagram.includes('>'+skill.id+'</text>'),skill.id);
+  for(const name of ['CEO','CTO','CAIO'])assert.ok(diagram.includes('>'+name+'</text>'));
+  assert.equal((diagram.match(/>PEER EXECUTIVE<\/text>/g)||[]).length,3);
 });

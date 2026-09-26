@@ -131,13 +131,13 @@ exit $LASTEXITCODE
             def company(*arguments, expected_error=None):
                 return run([str(wrapper), *arguments], project, env, expected_error)
 
-        assert len(list((home / ".claude/skills").iterdir())) == 54
-        assert len(list((home / ".claude/agents").glob("*.md"))) == 9
+        assert len(list((home / ".claude/skills").iterdir())) == 64
+        assert len(list((home / ".claude/agents").glob("*.md"))) == 11
         assert (home / ".claude/commands/company.md").read_bytes() == (ROOT / "commands/company.md").read_bytes()
         profiles = json.loads(company("project", "harness", "profiles", "--format", "json"))
-        assert profiles["version"] == 1 and set(profiles["profiles"]) == {"developers", "designers", "marketing", "social-media", "finance", "small-business", "legal", "sales"}
+        assert profiles["version"] == 1 and set(profiles["profiles"]) == {"developers", "designers", "marketing", "social-media", "finance", "small-business", "legal", "sales", "growth"}
         assert all(len(profile["checks"]) == 2 for profile in profiles["profiles"].values())
-        print("PASS: installed wrapper loads the harness profile catalog with eight departments and two checks each")
+        print("PASS: installed wrapper loads the harness profile catalog with nine departments and two checks each")
         brief = 'Un projet café pour "Camille & associés". Texte littéral, sans exécution.'
         brief_file = project / "brief français.txt"
         brief_file.write_text(brief, encoding="utf-8")

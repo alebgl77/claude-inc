@@ -15,19 +15,28 @@ vm.runInNewContext(fs.readFileSync(path.join(root, 'studio/missions.js'), 'utf8'
 const published = JSON.parse(JSON.stringify(datasetContext.window.CLAUDE_INC_MISSIONS));
 
 function fixture() {
-  return { schemaVersion: 1, source: 'alebgl77/claude-inc', skillCount: 54, missions: app.MISSION_IDS.map(id => ({
+  return { schemaVersion: 1, source: 'alebgl77/claude-inc', skillCount: 64, missions: app.MISSION_IDS.map(id => ({
     id, title: 'Mission ' + id, summary: 'A focused piece of work.', outcome: 'A reviewed plan.', sampleBrief: 'Build a useful thing.',
     departments: ['developers'], skills: [{ id: 'webapp-testing', department: 'developers' }],
     stages: [{ id: 'review', title: 'Review the evidence', department: 'developers', skills: ['webapp-testing'], needs: [], deliverables: ['evidence.md'], checks: ['Cite the evidence.'], review: true }],
-    metrics: { selectedSkillBytes: 100, allSkillBytes: 1000, selectedSkills: 1, totalSkills: 54 },
+    metrics: { selectedSkillBytes: 100, allSkillBytes: 1000, selectedSkills: 1, totalSkills: 64 },
     promptPrefix: 'COMPLETE OPERATING MANUAL\n---BRIEF---\n', promptSuffix: '\n---END---\n', planMarkdown: '# Mission blueprint\n\nChecks: NOT RUN.\n'
   })) };
 }
 
-test('the published catalog validates, has all five presets, and loads without browser APIs', () => {
+test('the published catalog validates, has all six presets, and loads without browser APIs', () => {
   assert.equal(app.validateDataset(published).valid, true);
   assert.deepEqual(published.missions.map(m => m.id), app.MISSION_IDS);
   assert.equal(app.validateDataset(fixture()).valid, true);
+});
+
+test('B2B Growth connects its specialist evidence to Marketing and independent Sales review', () => {
+  const mission=published.missions.find(m=>m.id==='b2b-growth');
+  assert.deepEqual(new Set(mission.departments),new Set(['growth','marketing','sales']));
+  assert.equal(mission.skills.filter(s=>s.department==='growth').length,6);
+  assert.equal(mission.stages.length,4);assert.equal(mission.stages.at(-1).department,'sales');assert.equal(mission.stages.at(-1).review,true);
+  assert.ok(mission.stages.every(s=>!['ceo','cto','caio'].includes(s.department)));
+  assert.match(mission.planMarkdown,/account-level|account level/);assert.match(mission.planMarkdown,/acceptance or rejection/);assert.match(mission.planMarkdown,/inconclusive/);
 });
 
 test('UTF-8 counting covers ASCII, accented text, combining text, and astral characters', () => {
@@ -223,11 +232,11 @@ test('HTML fallback totals match the published catalog', () => {
   assert.equal(html.match(/id="manual-count">([^<]+)</)?.[1], String(published.skillCount));
   const imageAlts = [...html.matchAll(/(?:property|name)="(?:og|twitter):image:alt" content="([^"]+)"/g)];
   assert.equal(imageAlts.length, 2);
-  for (const [, alt] of imageAlts) assert.match(alt, /CEO and CTO above eight business departments/);
-  for (const tag of ['og', 'twitter']) assert.match(html, new RegExp('(?:property|name)="' + tag + ':image" content="https://alebgl77.github.io/claude-inc/company-team.png"'));
-  const preview = fs.readFileSync(path.join(root, 'studio/company-team.png'));
-  assert.equal(Number(html.match(/property="og:image:width" content="(\d+)"/)[1]), preview.readUInt32BE(16));
-  assert.equal(Number(html.match(/property="og:image:height" content="(\d+)"/)[1]), preview.readUInt32BE(20));
+  for (const [, alt] of imageAlts) assert.match(alt, /peer CEO, CTO and CAIO executives and nine business departments/);
+  for (const tag of ['og', 'twitter']) assert.match(html, new RegExp('(?:property|name)="' + tag + ':image" content="https://alebgl77.github.io/claude-inc/company-preview.svg"'));
+  const preview = fs.readFileSync(path.join(root, 'studio/company-preview.svg'), 'utf8');
+  assert.equal(Number(html.match(/property="og:image:width" content="(\d+)"/)[1]), Number(preview.match(/width="(\d+)"/)[1]));
+  assert.equal(Number(html.match(/property="og:image:height" content="(\d+)"/)[1]), Number(preview.match(/height="(\d+)"/)[1]));
 });
 
 test('all mission presets render catalog totals and the selected crew count', () => {

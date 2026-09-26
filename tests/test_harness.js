@@ -56,6 +56,22 @@ test('historical acceptance and preactivation review have honest distinct semant
 test('CTO reviewer cannot be retroactively inserted before harness activation',()=>{
   const s=activateLate('dependency-ready');first(s).reviews[0].reviewer='cto';assert.throws(()=>validate(s),/CTO reviews require/);
 });
+
+test('profile coverage follows the saved eight or nine departments with Python parity',()=>{
+  const legacy=state('dependency-ready'),current=copy(legacy);current.departments.push('growth');
+  current.harness.profiles.growth={source:copy(current.harness.profiles.sales.source),checks:[{id:'account-evidence',criterion:'Synthetic Growth account evidence check.'},{id:'outcome-learning',criterion:'Synthetic Growth outcome learning check.'}]};
+  const missing=copy(current);delete missing.harness.profiles.growth;
+  const extra=copy(legacy);extra.harness.profiles.growth=copy(current.harness.profiles.growth);
+  const caio=copy(current);first(caio).reviews[0].reviewer='caio';
+  const reordered=copy(current);reordered.departments.reverse();
+  const duplicate=copy(current);duplicate.departments[8]='sales';
+  const unknown=copy(current);unknown.departments[8]='unknown';
+  const snapshots=[legacy,current,missing,extra,caio,reordered,duplicate,unknown];
+  const expected=[true,true,false,false,false,false,false,false];
+  assert.deepEqual(snapshots.map(s=>{try{validate(s);return true;}catch(_){return false;}}),expected);
+  const script='import json,sys\nsys.path.insert(0,"skills/chief-of-staff/scripts")\nimport project\nvalues=json.loads(sys.stdin.buffer.read().decode("utf-8"))\nresults=[]\nfor value in values:\n try:\n  project.validate_state(value,project.canonical_roster()[0]); results.append(True)\n except project.ProjectError:\n  results.append(False)\nprint(json.dumps(results))';
+  const r=spawnSync(process.env.PYTHON||'python',['-B','-c',script],{cwd:root,input:JSON.stringify(snapshots),encoding:'utf8'});assert.equal(r.status,0,r.stderr);assert.deepEqual(JSON.parse(r.stdout),expected);
+});
 test('final review wins over exhausted allowance, then a revision requires escalation',()=>{
   const review=state('review');review.harness.defaults.maxIterations=1;validate(review);assert.equal(harness.nextAction(review).action,'evaluate');
   const s=revise();s.harness.defaults.maxIterations=1;validate(s);assert.equal(harness.nextAction(s).action,'escalate');

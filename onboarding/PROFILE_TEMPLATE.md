@@ -22,7 +22,7 @@ Record the confirmed delivery, budget, risk, stack, channel and data constraints
 
 ## Gaps
 
-List capabilities that the 50 installed skills do not cover.
+List capabilities that the 64 installed skill manuals do not cover. Distinguish an unavailable tool or integration from a missing manual; an optional-tool recommendation does not mean it is installed or connected.
 
 ## Candidate metadata
 

@@ -69,11 +69,12 @@ def parse_roster(cli):
     staff = re.findall(r"^STAFF=\(([a-z0-9 -]+)\)$", cli, re.M)
     executives = re.findall(r"^EXECUTIVES=\(([a-z0-9 -]+)\)$", cli, re.M)
     cto_skills = re.findall(r"^CTO_SKILLS=\(([a-z0-9 -]+)\)$", cli, re.M)
-    if not depts or not registry or len(staff) != 1 or len(executives) != 1 or len(cto_skills) != 1:
+    caio_skills = re.findall(r"^CAIO_SKILLS=\(([a-z0-9 -]+)\)$", cli, re.M)
+    if not depts or not registry or len(staff) != 1 or len(executives) != 1 or len(cto_skills) != 1 or len(caio_skills) != 1:
         raise MissionError("canonical roster is missing or malformed in bin/company")
     departments = depts.group(1).split()
-    if len(departments) != 8 or len(set(departments)) != 8:
-        raise MissionError("canonical roster must contain 8 unique departments")
+    if departments != ["developers", "designers", "marketing", "social-media", "finance", "small-business", "legal", "sales", "growth"]:
+        raise MissionError("canonical roster must contain the 9 ordered business departments")
     roster = {}
     seen = set()
     for department in departments:
@@ -89,12 +90,14 @@ def parse_roster(cli):
         seen.update(skills)
     staff_skills = staff[0].split()
     expected_cto = {"cto-advisor", "skill-vetting", "appsec-review", "agent-evaluation"}
-    expected_staff = {"chief-of-staff", "token-accountant"} | expected_cto
-    if len(staff_skills) != 6 or set(staff_skills) != expected_staff or seen.intersection(staff_skills):
-        raise MissionError("canonical roster must contain the 6 unique executive staff skills")
-    if (executives[0].split() != ["cto"] or len(cto_skills[0].split()) != 4
-            or set(cto_skills[0].split()) != expected_cto):
-        raise MissionError("canonical executive registry must contain cto and its 4 staff skills")
+    expected_caio = {"ai-workflow-architect", "agent-reliability", "ai-data-steward", "ai-adoption-lead"}
+    expected_staff = {"chief-of-staff", "token-accountant"} | expected_cto | expected_caio
+    if len(staff_skills) != 10 or set(staff_skills) != expected_staff or seen.intersection(staff_skills):
+        raise MissionError("canonical roster must contain the 10 unique executive staff skills")
+    if (executives[0].split() != ["cto", "caio"] or len(cto_skills[0].split()) != 4
+            or set(cto_skills[0].split()) != expected_cto or len(caio_skills[0].split()) != 4
+            or set(caio_skills[0].split()) != expected_caio):
+        raise MissionError("canonical executive registry must contain cto and caio with 4 staff skills each")
     return roster, staff_skills
 
 

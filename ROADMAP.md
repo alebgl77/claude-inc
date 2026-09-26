@@ -5,27 +5,31 @@ responds coherently.**
 
 This roadmap proposes the next capabilities. They are not shipped features or
 dated commitments. The founder owns the goals, mandate, and final decisions;
-CEO and CTO lead as peers. The founder should see what each department changed,
+CEO, CTO, and CAIO lead as peers. The founder should see what each department changed,
 why, and which decision needs attention next.
 
 **Future scenario:** a founder changes service pricing. Finance revisits the
 assumptions, Sales revises the offer, Marketing checks its claims, Legal reviews
 the terms, and developers and designers update the relevant implementation.
-CEO and CTO bring the unresolved business and technical tradeoffs to the founder
+CEO, CTO, and CAIO bring unresolved business, technical, and operating tradeoffs to the founder
 in one decision brief. The proposed result is consistent work across departments;
 it does not predict how the market will respond.
 
-## The foundation today: v1.5.1
+## The foundation: v1.5.1 and unreleased additions
 
-- Eight departments, 48 employee manuals and six staff manuals: 54 unique skill
-  manuals, with nine registered agents. These are operating instructions, not
-  54 continuously running workers.
+- Nine departments, 54 department manuals and ten staff manuals: 64 unique skill
+  manuals, with eleven registered agents including CTO and CAIO. These are operating
+  instructions, not 64 continuously running workers. Growth and CAIO are described
+  in the [Unreleased changelog](CHANGELOG.md#unreleased).
 - Native Claude Code execution with local projects, dependencies, artifacts, and
   recorded reviews. See the [project workspace guide](docs/project-workspace.md).
 - Optional business harnesses with task policies, lifetime submission budgets,
   revision checks, and explicit extensions. See [harness loops](docs/harness-loops.md).
 - A website directory, brief preparation, and read-only project snapshots, plus
   optional focused [Mission Studio recipes](docs/mission-studio.md).
+- A [Growth playbook](docs/growth-playbook.md), [optional toolkit](docs/growth-toolkit.md),
+  and [CAIO operating model](docs/caio-operating-model.md) for bounded cross-team work.
+  These do not supply automatic CRM connections, monitoring, or measured uplift.
 
 Local contract tests do not establish real model delivery quality or security.
 Reviewer labels are declarations, not authenticated identities. NVIDIA and
@@ -46,8 +50,9 @@ Each milestone must earn the next through the evidence below.
 
 **Next:** instrument one local Claude Code pilot for a real, consented project or
 an explicitly synthetic one. Start with one concrete project involving at least
-three departments. Bring CEO business scope and CTO technical and security
-review into the same decision brief; activating all 54 manuals is not the goal.
+three departments. Bring CEO business scope, CTO technical and security review,
+and CAIO handoff/effectiveness criteria into the same decision brief when relevant;
+activate only the useful manuals.
 
 The pilot must demonstrate interruption and resumption without repeating an
 already completed external action. Require explicit user authorization before
@@ -70,7 +75,7 @@ generalizing beyond software.
 **Planned after A:** explicitly link business assumptions and decisions to tasks,
 artifacts, and their consumers. A changed decision would compute impact from
 those links, flag superseded evidence, propose only affected rework, and route
-unresolved CEO/CTO tradeoffs to the founder. Accepted tasks remain immutable
+unresolved executive tradeoffs to the founder. Accepted tasks remain immutable
 history; revisions create superseding work with traceable links.
 
 An optional local live company view would require an authenticated companion

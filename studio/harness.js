@@ -58,7 +58,7 @@ function validate(state,data,helpers){
   const {exact,list,unique,validText,fail}=helpers,h=state.harness;
   const check=(condition,message)=>{if(!condition)fail('Harness: '+message);};
   const same=(a,b)=>canonical(a)===canonical(b);
-  const ids=data.departments.map(d=>d.id),tasks=new Map(state.tasks.map(t=>[t.id,t]));
+  const ids=state.departments,tasks=new Map(state.tasks.map(t=>[t.id,t]));
   check(exact(h,'version enabledRevision defaults profiles policies rounds assessments extensions'),'unexpected fields.');
   check(h.version===1&&integer(h.enabledRevision,2,state.revision),'invalid activation revision.');
   const enabled=h.enabledRevision;

@@ -2,6 +2,11 @@
 
 Status: accepted for version 1.4.0. Date: 2026-09-08.
 
+The counts in this decision describe that historical release. The current
+company has nine departments, 64 manuals, and peer CEO, CTO, and CAIO executives.
+See the [workspace guide](project-workspace.md) for current behavior and the
+compatibility contract for historical eight-department workspaces.
+
 ## Context
 
 Claude, Inc. already provides a CEO command, eight department agent definitions,

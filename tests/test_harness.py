@@ -98,7 +98,7 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(harness.next_action(self.state())["action"], "plan")
         result = self.cli("harness", "profiles", "--format", "json")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(json.loads(result.stdout)["profiles"]), 8)
+        self.assertEqual(len(json.loads(result.stdout)["profiles"]), 9)
         self.assertEqual(self.workspace.path.read_bytes(), before)
         with tempfile.TemporaryDirectory() as absent:
             result = subprocess.run([sys.executable, str(HELPER), "harness", "profiles", "--format", "json"], cwd=absent, capture_output=True)
@@ -113,8 +113,8 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(state["harness"]["policies"], {})
         self.assertEqual(harness.next_action(state)["action"], "plan")
         criteria = [check["criterion"] for profile in state["harness"]["profiles"].values() for check in profile["checks"]]
-        self.assertEqual(len(criteria), 16)
-        self.assertEqual(len(set(criteria)), 16)
+        self.assertEqual(len(criteria), 18)
+        self.assertEqual(len(set(criteria)), 18)
         self.assertTrue(all(len(value) > 80 for value in criteria))
 
     def test_generate_requires_current_revision_and_never_resets_or_replaces_defaults(self):

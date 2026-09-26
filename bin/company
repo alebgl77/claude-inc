@@ -34,10 +34,11 @@ out()  { printf '%s\n' "$*" 2>/dev/null || exit 141; }
 outf() { printf "$@" 2>/dev/null || exit 141; }
 
 # ---------------------------------------------------------------- org registry
-DEPTS=(developers designers marketing social-media finance small-business legal sales)
-STAFF=(chief-of-staff token-accountant cto-advisor skill-vetting appsec-review agent-evaluation)
-EXECUTIVES=(cto)
+DEPTS=(developers designers marketing social-media finance small-business legal sales growth)
+STAFF=(chief-of-staff token-accountant cto-advisor skill-vetting appsec-review agent-evaluation ai-workflow-architect agent-reliability ai-data-steward ai-adoption-lead)
+EXECUTIVES=(cto caio)
 CTO_SKILLS=(cto-advisor skill-vetting appsec-review agent-evaluation)
+CAIO_SKILLS=(ai-workflow-architect agent-reliability ai-data-steward ai-adoption-lead)
 PROFILE_MAX_BYTES=32768
 PROFILE_TEMP=""
 
@@ -52,7 +53,8 @@ dept_of() { # alias -> canonical department
   case "$1" in
     dev|developers|engineering)      echo "developers" ;;
     design|designers)                echo "designers" ;;
-    marketing|mkt|growth)            echo "marketing" ;;
+    marketing|mkt)                   echo "marketing" ;;
+    growth)                          echo "growth" ;;
     social|social-media|sm)          echo "social-media" ;;
     finance|fin|cfo)                 echo "finance" ;;
     smb|small-business|business|ops) echo "small-business" ;;
@@ -72,6 +74,7 @@ skills_of() {
     small-business) echo "cash-flow-snapshot invoice-chase plan-payroll margin-analyzer tax-prep run-campaign" ;;
     legal)          echo "review-contract triage-nda compliance-check legal-risk-assessment vendor-check signature-request" ;;
     sales)          echo "account-research draft-outreach call-prep proposal-builder objection-handler pipeline-review" ;;
+    growth)         echo "growth-strategy account-intelligence growth-engineering growth-experiments lifecycle-growth revenue-operations" ;;
   esac
 }
 
@@ -277,7 +280,7 @@ show_team() {
   else
     status=$?
     if [ "$status" -eq 1 ]; then
-      out "Full canonical company active: 54 skills across 8 departments, with the CTO executive."
+      out "Full canonical company active: 64 skills across 9 departments, with CTO and CAIO executives."
     else
       return "$status"
     fi
@@ -474,12 +477,18 @@ emit_ceo_manual() {
   ' "$ROOT/commands/company.md"
 }
 
-compose_cto() { # $1=task -> executive charter and its four staff manuals
-  local task="$1" s
-  echo "# Claude, Inc. - CTO executive"
-  echo "----- EXECUTIVE CHARTER: cto -----"
-  cat "$ROOT/agents/cto.md" || return $?
-  for s in "${CTO_SKILLS[@]}"; do
+compose_executive() { # $1=executive $2=task -> charter and four staff manuals
+  local executive="$1" task="$2" s title
+  local -a selected_skills
+  case "$executive" in
+    cto) selected_skills=("${CTO_SKILLS[@]}"); title="CTO" ;;
+    caio) selected_skills=("${CAIO_SKILLS[@]}"); title="CAIO" ;;
+    *) return 1 ;;
+  esac
+  echo "# Claude, Inc. - $title executive"
+  echo "----- EXECUTIVE CHARTER: $executive -----"
+  cat "$ROOT/agents/$executive.md" || return $?
+  for s in "${selected_skills[@]}"; do
     echo
     echo "----- EMPLOYEE: ${s} -----"
     cat "$ROOT/skills/${s}/SKILL.md" || return $?
@@ -507,6 +516,9 @@ compose_brief() { # $1=mission
   echo
   echo "----- EXECUTIVE CHARTER: cto -----"
   cat "$ROOT/agents/cto.md" || return $?
+  echo
+  echo "----- EXECUTIVE CHARTER: caio -----"
+  cat "$ROOT/agents/caio.md" || return $?
   echo
   echo "----- NOTE -----"
   echo "The packaged company source root is the following literal absolute path:"
@@ -560,7 +572,7 @@ run_prompt() { # $1=prompt $2=print_only
 
 # --------------------------------------------------------------------- roster
 roster() {
-  out "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · 1 CTO executive · 8 departments · 54 skills${R}"
+  out "${OR}${B}Claude, Inc.${R} ${DIM}· 1 CEO · CTO and CAIO executives · 9 departments · 64 skills${R}"
   out
   out "                        ${B}CEO${R} ${DIM}(your AI CLI)${R}"
   out "  ┌──────────┬──────────┬─────┴─────┬──────────┬──────────┬──────────┐"
@@ -570,10 +582,12 @@ roster() {
   done
   outf '  %s%-15s%s %s\n' "$DIM" "staff (CEO)" "$R" "chief-of-staff · token-accountant"
   outf '  %s%-15s%s %s\n' "$B" "cto (executive)" "$R" "${CTO_SKILLS[*]}"
+  outf '  %s%-15s%s %s\n' "$B" "caio (executive)" "$R" "${CAIO_SKILLS[*]}"
   out
   out "  ${DIM}company brief \"<mission>\"    → CEO routes across departments${R}"
   out "  ${DIM}company <dept> \"<task>\"      → talk to one department directly${R}"
   out "  ${DIM}company cto \"<task>\"         → technical decisions and review${R}"
+  out "  ${DIM}company caio \"<task>\"        → AI operating model and adoption${R}"
 }
 
 usage() {
@@ -584,6 +598,7 @@ USAGE
   company brief "<mission>"          Brief the CEO; routes to relevant departments
   company <dept> "<task>"            Task one department directly
   company cto "<technical brief>"    Consult the CTO with four staff manuals
+  company caio "<AI operating brief>" Consult the CAIO with four staff manuals
   company roster                     Show the org chart
   company project init [options]     Create a private persistent company project
   company project status             Inspect the saved project and task board
@@ -592,7 +607,7 @@ USAGE
   company project harness profiles  List optional task harness profiles
   company project loop next         Inspect the next bounded work/review action
   company project --help             Project initialization and lifecycle commands
-  company missions                   List five local mission blueprints
+  company missions                   List six local mission blueprints
   company mission <id> [options]      Print a staged blueprint; never calls an AI engine
   company team                       Show the active team profile
   company onboard [--global]         Configure an optional active team profile
@@ -600,7 +615,7 @@ USAGE
   company help                       This help
 
 DEPARTMENTS (aliases)
-  dev · design · marketing · social · finance · smb · legal · sales
+  dev · design · marketing · social · finance · smb · legal · sales · growth
 
 OPTIONS
   -p, --print                        Print the composed prompt instead of running it
@@ -673,10 +688,10 @@ case "$CMD" in
     [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
     run_prompt "$PROMPT" "$PRINT_ONLY"
     ;;
-  cto)
-    [ $# -ge 1 ] || { echo "usage: company cto \"<technical brief>\"" >&2; exit 1; }
+  cto|caio)
+    [ $# -ge 1 ] || { echo "usage: company $CMD \"<executive brief>\"" >&2; exit 1; }
     PROMPT=""; COMPOSE_STATUS=0
-    PROMPT="$(compose_cto "$*")" || COMPOSE_STATUS=$?
+    PROMPT="$(compose_executive "$CMD" "$*")" || COMPOSE_STATUS=$?
     [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
     run_prompt "$PROMPT" "$PRINT_ONLY"
     ;;
@@ -690,7 +705,7 @@ case "$CMD" in
       run_prompt "$PROMPT" "$PRINT_ONLY"
     else
       echo "unknown command or department: $CMD" >&2
-      echo "departments: dev · design · marketing · social · finance · smb · legal · sales" >&2
+      echo "departments: dev · design · marketing · social · finance · smb · legal · sales · growth" >&2
       exit 1
     fi
     ;;

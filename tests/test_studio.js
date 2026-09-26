@@ -233,10 +233,11 @@ test('HTML fallback totals match the published catalog', () => {
   const imageAlts = [...html.matchAll(/(?:property|name)="(?:og|twitter):image:alt" content="([^"]+)"/g)];
   assert.equal(imageAlts.length, 2);
   for (const [, alt] of imageAlts) assert.match(alt, /peer CEO, CTO and CAIO executives and nine business departments/);
-  for (const tag of ['og', 'twitter']) assert.match(html, new RegExp('(?:property|name)="' + tag + ':image" content="https://alebgl77.github.io/claude-inc/company-preview.svg"'));
-  const preview = fs.readFileSync(path.join(root, 'studio/company-preview.svg'), 'utf8');
-  assert.equal(Number(html.match(/property="og:image:width" content="(\d+)"/)[1]), Number(preview.match(/width="(\d+)"/)[1]));
-  assert.equal(Number(html.match(/property="og:image:height" content="(\d+)"/)[1]), Number(preview.match(/height="(\d+)"/)[1]));
+  for (const tag of ['og', 'twitter']) assert.match(html, new RegExp('(?:property|name)="' + tag + ':image" content="https://alebgl77.github.io/claude-inc/social-preview.png"'));
+  const preview = fs.readFileSync(path.join(root, 'studio/social-preview.png'));
+  assert.deepEqual([...preview.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+  assert.equal(Number(html.match(/property="og:image:width" content="(\d+)"/)[1]), preview.readUInt32BE(16));
+  assert.equal(Number(html.match(/property="og:image:height" content="(\d+)"/)[1]), preview.readUInt32BE(20));
 });
 
 test('all mission presets render catalog totals and the selected crew count', () => {

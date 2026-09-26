@@ -13,6 +13,29 @@ spec.loader.exec_module(builder)
 
 
 class CompanyBuilderTests(unittest.TestCase):
+    def test_social_preview_uses_canonical_peers_departments_and_totals(self):
+        data = builder.company_dataset()
+        generated = builder.social_preview_svg(data)
+        self.assertEqual(generated, (ROOT / "studio/social-preview.svg").read_bytes())
+        diagram = ET.fromstring(generated)
+        namespace = {"svg": "http://www.w3.org/2000/svg"}
+        self.assertEqual((diagram.get("width"), diagram.get("height")), ("1200", "630"))
+        self.assertTrue(diagram.findtext("svg:title", namespaces=namespace))
+        self.assertTrue(diagram.findtext("svg:desc", namespaces=namespace))
+        labels = diagram.findall(".//svg:text", namespace)
+        executives = [label for label in labels if "executive" in label.get("class", "").split()]
+        self.assertEqual([label.text for label in executives], ["CEO", "CTO", "CAIO"])
+        self.assertEqual(len({label.get("y") for label in executives}), 1)
+        departments = [label.text for label in labels if "department" in label.get("class", "").split()]
+        self.assertEqual(departments, [department["name"] for department in data["departments"]])
+        self.assertIn("3 PEER EXECUTIVES · 9 DEPARTMENTS · 64 SKILLS", [label.text for label in labels])
+        data["departments"][0]["name"] = "Research & delivery"
+        data["staff"].pop()
+        changed = ET.fromstring(builder.social_preview_svg(data))
+        labels = [label.text for label in changed.findall(".//svg:text", namespace)]
+        self.assertIn("Research & delivery", labels)
+        self.assertIn("3 PEER EXECUTIVES · 9 DEPARTMENTS · 63 SKILLS", labels)
+
     def test_organization_map_names_every_canonical_manual_once(self):
         generated = builder.generate().decode("ascii")
         data = json.loads(generated.split("window.CLAUDE_INC_COMPANY = ", 1)[1].removesuffix(";\n"))

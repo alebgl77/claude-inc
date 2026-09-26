@@ -29,6 +29,10 @@
       {"id": "authority-and-scope", "criterion": "Identify the document scope, relevant jurisdiction or governing terms and supporting authority; separate known facts, assumptions and missing legal inputs."},
       {"id": "risk-and-escalation", "criterion": "Trace material risks and proposed changes to cited clauses or evidence; flag unresolved issues for appropriate counsel and avoid implying execution or legal clearance."}
     ]},
+    "growth": {"checks": [
+      {"id": "signal-and-qualification", "criterion": "Trace account or lifecycle signals to dated evidence, separate fit from inferred intent, and record qualification rules plus Sales acceptance or rejection."},
+      {"id": "experiment-and-revenue-learning", "criterion": "State the experiment hypothesis, baseline, comparison and decision rule; connect observed outcomes to retention or revenue with uncertainty and keep unrun checks explicit."}
+    ]},
     "sales": {"checks": [
       {"id": "account-and-offer-fit", "criterion": "Connect the account or buyer context to the proposed offer using attributable facts; mark unknown needs and avoid invented personalization or commitments."},
       {"id": "commercial-next-step", "criterion": "Verify commercial terms, proof points and the proposed next step; distinguish drafts and recommendations from messages sent, deals agreed or revenue realized."}

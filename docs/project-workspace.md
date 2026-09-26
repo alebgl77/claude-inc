@@ -1,7 +1,7 @@
 # A company around your project
 
-The CEO coordinates an arbitrary founder project across eight departments and
-54 skill manuals, with peer CEO and CTO executives. Start with your own brief, goals, and constraints.
+The CEO coordinates an arbitrary founder project across nine departments and
+64 skill manuals, with peer CEO, CTO, and CAIO executives. Start with your own brief, goals, and constraints.
 The company records real task contracts and evidence as work happens; it does
 not need a mission recipe and does not invent a populated task board at setup.
 
@@ -28,8 +28,8 @@ create fictitious tasks, or modify `.claude/company-team.md`.
 
 The optional `--departments` list contains canonical IDs: `developers`,
 `designers`, `marketing`, `social-media`, `finance`, `small-business`, `legal`,
-and `sales`. These are routing preferences. All eight departments and all 54
-skill manuals remain available. Repeat `--goal` and `--constraint` as needed.
+`sales`, and `growth`. These are routing preferences. New projects have all nine
+departments and all 64 skill manuals available. Repeat `--goal` and `--constraint` as needed.
 
 Plugin users can describe the project through `/claude-inc:company`; the
 directly installed command is `/company`. The CEO first uses
@@ -68,8 +68,19 @@ The CEO owns business direction, priorities, and arbitration. The peer CTO owns
 technical direction across architecture, agent infrastructure, security, skills,
 and code, and returns finding, business impact, options/tradeoffs, recommendation,
 and decision needed before delivery. CEO-only state writes prevent competing
-mutations; they do not make the CTO subordinate. All eight task owners remain
-business departments, with six staff skills available across the company.
+mutations; they do not make the CTO or CAIO subordinate. The peer CAIO owns
+AI process effectiveness, shared context, handoffs, and adoption; VPs retain
+delivery and the CTO retains technical/security acceptance. Consult only the
+relevant specialists. New projects have nine business task owners and ten staff
+skills; CAIO is advisory, not a department or reviewer enum.
+
+Historical schema-1 and schema-2 workspaces with the exact eight-department
+roster remain readable, resumable, and usable through the normal lifecycle.
+They retain their saved roster and frozen policies; no profile preference or
+harness activation silently adds Growth. Initialize a new workspace in a new
+project folder when Growth must own tasks. Never edit project JSON to change
+the roster. See the [Growth playbook](growth-playbook.md) and
+[CAIO operating model](caio-operating-model.md) for the role boundaries.
 
 `company project prompt` prints the validated resume instructions without
 starting an assistant. It references the packaged company files and the local
@@ -89,7 +100,9 @@ bounded review gates, use the [harness and loops guide](harness-loops.md).
 Activation atomically moves the workspace to schema 2; it is not automatic.
 Harness-controlled review adds expected project/submission revisions and an
 evidence gate file derived from the current `loop next` review template.
-Schema 2 also allows `cto` as reviewer without adding a ninth task-owner department.
+Schema 2 also allows `cto` as reviewer without adding an executive task owner.
+Valid department owners and reviewers follow the saved workspace roster; `caio`
+is not a reviewer in either schema.
 
 Each task belongs to a canonical department and has a title, an acceptance
 contract, and optional dependencies. Add only work justified by the project:

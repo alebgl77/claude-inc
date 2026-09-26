@@ -2,6 +2,29 @@
 
 Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [Unreleased]
+
+### Added
+- A Growth department with six manuals for strategy, account intelligence,
+  engineering, experiments, lifecycle growth, and revenue operations; `company
+  growth` prepares a focused department brief and `b2b-growth` provides a mission recipe.
+- A peer CAIO executive with four senior staff manuals covering workflow design,
+  reliability, shared data, and adoption; `company caio` prepares its operating brief.
+- Growth playbook, toolkit guidance, and CAIO handoff/evaluation examples for B2B,
+  SaaS, services, and ecommerce. Optional Scrapling extraction uses saved HTML
+  offline and requires Python 3.10+ independently of the core Python 3.9+ helper.
+
+### Changed
+- The current company has nine departments, 54 department manuals, and ten staff
+  manuals: 64 capabilities, with eleven registered agents including CTO and CAIO.
+- CEO routing distinguishes Growth from Marketing and Sales, and uses CAIO advice
+  for material process needs. VPs retain delivery; CTO retains technical/security
+  acceptance; CEO remains the sole project-state writer.
+- Historical eight-department schema-1 and schema-2 workspaces retain their saved
+  roster and frozen policies and remain resumable without implicit migration.
+  Growth task ownership requires a new nine-department workspace; CAIO is advisory
+  and is not a task department or reviewer enum.
+
 ## [1.5.1] - 2026-09-08
 
 ### Fixed

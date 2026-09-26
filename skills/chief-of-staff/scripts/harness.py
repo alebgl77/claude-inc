@@ -110,7 +110,7 @@ def artifact_fingerprint(artifacts):
     return fingerprint("artifacts", sorted(artifacts, key=lambda item: item["path"]))
 
 
-def profiles(root, departments, read_regular):
+def profiles(root, departments, read_regular, packaged_departments=None):
     path = root / PROFILE_PATH
     raw = read_regular(path, INPUT_MAX_BYTES)
     try:
@@ -119,15 +119,19 @@ def profiles(root, departments, read_regular):
         fail("invalid packaged harness profiles")
     keys(document, "version profiles", "profile document")
     integer(document["version"], 1, 1, "profile version")
-    if not isinstance(document["profiles"], dict) or set(document["profiles"]) != set(departments):
+    packaged = departments if packaged_departments is None else packaged_departments
+    if not isinstance(document["profiles"], dict) or set(document["profiles"]) != set(packaged):
         fail("profile departments do not match the canonical roster")
+    if not set(departments).issubset(packaged):
+        fail("saved departments do not match packaged profiles")
     result = {}
     for department, profile in document["profiles"].items():
         keys(profile, "checks", "packaged profile")
         result[department] = {"source": {"path": PROFILE_PATH, "sha256": hashlib.sha256(raw).hexdigest()},
                               "checks": copy.deepcopy(profile["checks"])}
-    validate_profiles(result, departments)
-    return result
+    validate_profiles(result, packaged)
+    # Source digests name the complete package file, even for a legacy subset.
+    return {department: result[department] for department in departments}
 
 
 def validate_profiles(value, departments):
@@ -213,7 +217,7 @@ def plan_selections(plan, allowed, tasks, departments, staff):
     return {task_id: {"version": 1, **selection} for task_id, selection in plan["tasks"].items()}
 
 
-def generate(state, revision, root, departments, staff, read_regular, stage=None, effort=None, maximum=None, plan=None):
+def generate(state, revision, root, departments, staff, read_regular, stage=None, effort=None, maximum=None, plan=None, packaged_departments=None):
     tasks = {task["id"]: task for task in state["tasks"]}
     if state["schemaVersion"] == 2:
         h = state["harness"]
@@ -228,7 +232,7 @@ def generate(state, revision, root, departments, staff, read_regular, stage=None
                     fail("harness policies are immutable; regenerate cannot replace task gates")
         return False
     h = {"version": 1, "enabledRevision": revision, "defaults": defaults(stage, effort, maximum),
-         "profiles": profiles(root, departments, read_regular), "policies": {}, "rounds": [], "assessments": [], "extensions": []}
+         "profiles": profiles(root, departments, read_regular, packaged_departments), "policies": {}, "rounds": [], "assessments": [], "extensions": []}
     eligible = {task_id for task_id, task in tasks.items() if task["status"] != "done"}
     if any(used_limit(state, task_id)[0] >= 10 for task_id in eligible):
         fail("unfinished task already has ten lifetime submissions; finish its existing schema-1 work before enabling the harness. History cannot be reset")

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude, Inc. installer: puts 8 departments, a CTO executive and 54 skills on your payroll.
+# Claude, Inc. installer: puts 9 departments, CTO/CAIO executives and 64 skills on your payroll.
 # Flags: --project, --no-bin, --onboard
 set -euo pipefail
 

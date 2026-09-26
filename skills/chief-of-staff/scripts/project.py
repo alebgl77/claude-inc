@@ -203,6 +203,16 @@ def artifact_records(records):
             raise ProjectError("invalid artifact digest")
 
 
+def saved_roster(state, departments):
+    """Use an exact supported saved roster, never silently upgrade a workspace."""
+    saved = state.get("departments") if isinstance(state, dict) else None
+    current = list(departments)
+    historical = [department for department in current if department != "growth"]
+    if saved != current and saved != historical:
+        raise ProjectError("project departments must match the current nine or historical eight department roster in order")
+    return {department: departments[department] for department in saved}
+
+
 def validate_state(state, departments):
     version = state.get("schemaVersion") if isinstance(state, dict) else None
     if type(version) is not int or version not in (1, 2):
@@ -212,9 +222,8 @@ def validate_state(state, departments):
     text_value(state["brief"], "brief")
     string_list(state["goals"], "goals")
     string_list(state["constraints"], "constraints")
-    if state["departments"] != list(departments):
-        raise ProjectError("project departments do not match the canonical roster")
-    string_list(state["activeDepartments"], "active departments", 8, True)
+    departments = saved_roster(state, departments)
+    string_list(state["activeDepartments"], "active departments", len(departments), True)
     if not state["activeDepartments"] or any(d not in departments for d in state["activeDepartments"]):
         raise ProjectError("invalid active department")
     if type(state["revision"]) is not int or not 1 <= state["revision"] <= MAX_EVENTS:
@@ -437,6 +446,7 @@ class Workspace:
     def mutate(self, action, task_id=None, **values):
         with self.locked():
             state, before = self.load()
+            departments = saved_roster(state, self.departments)
             expected = values.get("expected_revision")
             controlled_review = (state["schemaVersion"] == 2 and action in {"task.accept", "task.revise"}
                                  and task_id in state["harness"]["policies"])
@@ -446,8 +456,9 @@ class Workspace:
                 raise ProjectError("project revision changed; refresh state and pass its --expected-revision")
             if action == "harness.generate":
                 plan = harness_call("read_json", Path(values["plan_file"]).absolute(), read_regular) if values.get("plan_file") else values.get("plan")
-                changed = harness_call("generate", state, state["revision"] + 1, ROOT, self.departments, canonical_roster()[1], read_regular,
-                                       stage=values.get("stage"), effort=values.get("effort"), maximum=values.get("max_iterations"), plan=plan)
+                changed = harness_call("generate", state, state["revision"] + 1, ROOT, departments, canonical_roster()[1], read_regular,
+                                       stage=values.get("stage"), effort=values.get("effort"), maximum=values.get("max_iterations"), plan=plan,
+                                       packaged_departments=self.departments)
                 if not changed:
                     return state
             if state["revision"] >= MAX_EVENTS:
@@ -465,16 +476,18 @@ class Workspace:
                 slug(task_id)
                 if task is not None:
                     raise ProjectError("task id already exists")
+                if values["department"] not in departments:
+                    if values["department"] == "growth" and "growth" not in departments:
+                        raise ProjectError("Growth is unavailable in this historical eight-department workspace; create a new project workspace to use Growth")
+                    raise ProjectError("unknown task department")
                 task = {"id": task_id, "department": values["department"], "title": values["title"], "acceptance": values["acceptance"],
                         "dependsOn": values.get("depends_on", []), "status": "planned", "artifacts": [], "summary": None,
                         "blockedReason": None, "reviews": []}
                 state["tasks"].append(task)
                 note = values["title"]
                 if state["schemaVersion"] == 2:
-                    if task["department"] not in self.departments:
-                        raise ProjectError("unknown task department")
                     selection = harness_call("read_json", Path(values["harness_file"]).absolute(), read_regular) if values.get("harness_file") else values.get("harness_plan")
-                    state["harness"]["policies"][task_id] = harness_call("make_policy", task, state["harness"], revision, selection, self.departments, canonical_roster()[1])
+                    state["harness"]["policies"][task_id] = harness_call("make_policy", task, state["harness"], revision, selection, departments, canonical_roster()[1])
                 elif values.get("harness_file") is not None or values.get("harness_plan") is not None:
                     raise ProjectError("enable the project harness before using a task harness plan")
             elif action == "decision.add":
@@ -513,7 +526,7 @@ class Workspace:
                     if task["status"] != "review":
                         raise ProjectError("only submitted tasks can be reviewed")
                     reviewer = values["reviewer"]
-                    if reviewer not in ["ceo", *(["cto"] if state["schemaVersion"] == 2 else []), *self.departments] or reviewer == task["department"]:
+                    if reviewer not in ["ceo", *(["cto"] if state["schemaVersion"] == 2 else []), *departments] or reviewer == task["department"]:
                         raise ProjectError("reviewer must be ceo or a different canonical department")
                     note = text_value(values["note"], "review note")
                     if controlled_review:
@@ -559,15 +572,15 @@ def render_status(state):
 
 
 def render_prompt(workspace, state, full_state=False):
+    departments = saved_roster(state, workspace.departments)
     references = {"projectDirectory": str(workspace.project), "pluginRoot": str(ROOT),
                   "ceoManual": str(ROOT / "commands/company.md"),
                   "stateHelper": [sys.executable, str(ROOT / "skills/chief-of-staff/scripts/project.py")],
                   "staff": {s: str(ROOT / "skills" / s / "SKILL.md") for s in canonical_roster()[1]},
                   "departments": {d: {"charter": str(ROOT / "agents" / (d + ".md")),
                                       "skills": {s: str(ROOT / "skills" / s / "SKILL.md") for s in skills}}
-                                  for d, skills in workspace.departments.items()}}
-    if state["schemaVersion"] == 2:
-        references["executives"] = {"cto": str(ROOT / "agents/cto.md")}
+                                  for d, skills in departments.items()}}
+    references["executives"] = {name: str(ROOT / "agents" / (name + ".md")) for name in ("cto", "caio")}
     harness_context = ""
     if state["schemaVersion"] == 2:
         next_value = harness_call("next_action", state)
@@ -591,7 +604,7 @@ def render_prompt(workspace, state, full_state=False):
             "Earlier rounds, assessments and events are deliberately omitted, not silently truncated. Use `status --format json` or `context` for the full validated state when necessary; sourceRevision identifies this view.\n")
     result = """# Resume the founder's company project
 
-You are the CEO running this saved project through Claude Code in the project directory. Read the packaged CEO manual and chief-of-staff instructions at the absolute references below. Use the full company: eight departments and the canonical executive staff in the source references. Load only applicable departments and skills for the actual founder scope. Active departments are a preference; every bench department remains available. This is an arbitrary project, not a preset recipe.
+You are the CEO running this saved project through Claude Code in the project directory. Read the packaged CEO manual and chief-of-staff instructions at the absolute references below. Use this workspace's saved department roster and the canonical executive staff in the source references. Load only applicable departments and skills for the actual founder scope. Active departments are a preference; every saved bench department remains available. Do not assign Growth to a historical eight-department workspace; create a new project workspace to use Growth. CAIO is a peer adviser on AI workflows, reliability, data and adoption, not a task department or reviewer label. The CTO technical and AppSec review gate remains unchanged. This is an arbitrary project, not a preset recipe.
 
 First inspect the saved state using the helper's `status --format json` command. The embedded state is a snapshot at the stated revision; always refresh before updating. Preserve prior tasks, decisions, accepted artifacts and constraints. Resume unfinished work and ask only for inputs that block dependent work. Do not repeat done tasks or fabricate evidence. Done records historical acceptance: before consuming any dependency artifact, inspect its current file and compare its SHA-256 to the recorded snapshot. If it changed or disappeared, stop dependent work and report the discrepancy; a status record does not prove perpetual freshness or correctness.
 

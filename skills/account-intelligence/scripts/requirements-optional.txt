@@ -1,0 +1,3 @@
+# Optional offline parser only. Core project tests do not require this package.
+# Requires Python 3.10+; install in a dedicated virtual environment.
+scrapling==0.4.15

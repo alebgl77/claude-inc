@@ -1,132 +1,109 @@
-<svg width="1240" height="640" viewBox="0 0 1240 640" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" role="img" aria-labelledby="org-title org-description">
-  <title id="org-title">Claude, Inc. organization map</title>
-  <desc id="org-description">Peer CEO and CTO executives coordinate eight departments with six employee manuals each. Chief of staff supports the CEO, token accountant supports Finance and the CFO, and four CTO office manuals support technical direction: 54 skill manuals in total.</desc>
-  <style>
-    .bg{fill:#0d1117}.ceo{fill:#1c2128;stroke:#e8833a;stroke-width:2}
-    .hdr{fill:#161b22}.chip{fill:#161b22}.staff{fill:#161b22;stroke:#8b949e;stroke-dasharray:4 3}
-    .t{fill:#e6edf3}.d{fill:#8b949e}.o{fill:#e8833a}
-    .ln{stroke:#30363d;stroke-width:1.5;fill:none}.lns{stroke:#484f58;stroke-width:1;stroke-dasharray:3 3;fill:none}
-    text{dominant-baseline:middle}
-  </style>
-  <rect class="bg" width="1240" height="640" rx="8"/>
-  <text class="d" x="620" y="16" text-anchor="middle" font-size="9" letter-spacing="1">PEER EXECUTIVES</text>
-  <rect class="ceo" x="350" y="30" width="220" height="66" rx="10"/>
-  <text class="o" x="460" y="52" text-anchor="middle" font-size="17" font-weight="700">CEO</text>
-  <text class="d" x="460" y="76" text-anchor="middle" font-size="11">Business direction</text>
-  <rect class="ceo" x="670" y="30" width="220" height="66" rx="10"/>
-  <text class="o" x="780" y="52" text-anchor="middle" font-size="17" font-weight="700">CTO</text>
-  <text class="d" x="780" y="76" text-anchor="middle" font-size="11">Technical direction</text>
-  <path class="lns" d="M570 63 H670 M350 63 H326 V141 H310 M890 63 H908 V141 H930"/>
-  <text class="d" x="175" y="113" text-anchor="middle" font-size="9" letter-spacing="1">CEO SUPPORT</text>
-  <text class="d" x="175" y="183" text-anchor="middle" font-size="9" letter-spacing="1">FINANCE / CFO SUPPORT</text>
-  <text class="d" x="1062" y="113" text-anchor="middle" font-size="9" letter-spacing="1">CTO OFFICE</text>
-  <g font-size="11" font-family="ui-monospace,Consolas,monospace">
-    <rect class="staff" x="40" y="126" width="270" height="30" rx="6"/><text class="t skill" x="175" y="141" text-anchor="middle">chief-of-staff</text>
-    <rect class="staff" x="40" y="196" width="270" height="30" rx="6"/><text class="t skill" x="175" y="211" text-anchor="middle">token-accountant</text>
-    <rect class="staff" x="930" y="126" width="264" height="30" rx="6"/><text class="t skill" x="1062" y="141" text-anchor="middle">cto-advisor</text>
-    <rect class="staff" x="930" y="164" width="264" height="30" rx="6"/><text class="t skill" x="1062" y="179" text-anchor="middle">skill-vetting</text>
-    <rect class="staff" x="930" y="202" width="264" height="30" rx="6"/><text class="t skill" x="1062" y="217" text-anchor="middle">appsec-review</text>
-    <rect class="staff" x="930" y="240" width="264" height="30" rx="6"/><text class="t skill" x="1062" y="255" text-anchor="middle">agent-evaluation</text>
-  </g>
-  <path class="ln" d="M460 96 V284 M780 96 V284 M94 284 H1144"/>
-  <g transform="translate(0 180)">
-  <path class="ln" d="M94 104 V132"/>
-  <rect class="hdr" x="24" y="132" width="140" height="44" rx="8" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="94" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#3fb950">DEVELOPERS</text>
-  <text class="d" x="94" y="164" text-anchor="middle" font-size="9">VP of Engineering</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="24" y="186" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="200" text-anchor="middle">superpowers</text>
-    <rect class="chip" x="24" y="219" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="233" text-anchor="middle">context7</text>
-    <rect class="chip" x="24" y="252" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="266" text-anchor="middle">mcp-builder</text>
-    <rect class="chip" x="24" y="285" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="299" text-anchor="middle">skill-creator</text>
-    <rect class="chip" x="24" y="318" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="332" text-anchor="middle">webapp-testing</text>
-    <rect class="chip" x="24" y="351" width="140" height="27" rx="6" stroke="#3fb950" stroke-opacity=".45"/><text class="t skill" x="94" y="365" text-anchor="middle">claude-mem</text>
-  </g>
-  <path class="ln" d="M244 104 V132"/>
-  <rect class="hdr" x="174" y="132" width="140" height="44" rx="8" stroke="#58a6ff" stroke-width="1.5"/>
-  <text x="244" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#58a6ff">DESIGNERS</text>
-  <text class="d" x="244" y="164" text-anchor="middle" font-size="9">VP of Design</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="174" y="186" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="200" text-anchor="middle">ui-ux-pro-max</text>
-    <rect class="chip" x="174" y="219" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="233" text-anchor="middle">taste</text>
-    <rect class="chip" x="174" y="252" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="266" text-anchor="middle">frontend-design</text>
-    <rect class="chip" x="174" y="285" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="299" text-anchor="middle">transitions</text>
-    <rect class="chip" x="174" y="318" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="332" text-anchor="middle">web-artifacts</text>
-    <rect class="chip" x="174" y="351" width="140" height="27" rx="6" stroke="#58a6ff" stroke-opacity=".45"/><text class="t skill" x="244" y="365" text-anchor="middle">brand-guidelines</text>
-  </g>
-  <path class="ln" d="M394 104 V132"/>
-  <rect class="hdr" x="324" y="132" width="140" height="44" rx="8" stroke="#e8833a" stroke-width="1.5"/>
-  <text x="394" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#e8833a">MARKETING</text>
-  <text class="d" x="394" y="164" text-anchor="middle" font-size="9">CMO</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="324" y="186" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="200" text-anchor="middle">copywriting</text>
-    <rect class="chip" x="324" y="219" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="233" text-anchor="middle">ai-seo</text>
-    <rect class="chip" x="324" y="252" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="266" text-anchor="middle">cro</text>
-    <rect class="chip" x="324" y="285" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="299" text-anchor="middle">ad-creative</text>
-    <rect class="chip" x="324" y="318" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="332" text-anchor="middle">customer-research</text>
-    <rect class="chip" x="324" y="351" width="140" height="27" rx="6" stroke="#e8833a" stroke-opacity=".45"/><text class="t skill" x="394" y="365" text-anchor="middle">lead-magnets</text>
-  </g>
-  <path class="ln" d="M544 104 V132"/>
-  <rect class="hdr" x="474" y="132" width="140" height="44" rx="8" stroke="#f778ba" stroke-width="1.5"/>
-  <text x="544" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#f778ba">SOCIAL MEDIA</text>
-  <text class="d" x="544" y="164" text-anchor="middle" font-size="9">Head of Social</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="474" y="186" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="200" text-anchor="middle">post-writer</text>
-    <rect class="chip" x="474" y="219" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="233" text-anchor="middle">profile-optimizer</text>
-    <rect class="chip" x="474" y="252" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="266" text-anchor="middle">reels-scripting</text>
-    <rect class="chip" x="474" y="285" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="299" text-anchor="middle">hook-generator</text>
-    <rect class="chip" x="474" y="318" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="332" text-anchor="middle">voice-builder</text>
-    <rect class="chip" x="474" y="351" width="140" height="27" rx="6" stroke="#f778ba" stroke-opacity=".45"/><text class="t skill" x="544" y="365" text-anchor="middle">youtube-thumbnail</text>
-  </g>
-  <path class="ln" d="M694 104 V132"/>
-  <rect class="hdr" x="624" y="132" width="140" height="44" rx="8" stroke="#2dd4bf" stroke-width="1.5"/>
-  <text x="694" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2dd4bf">FINANCE</text>
-  <text class="d" x="694" y="164" text-anchor="middle" font-size="9">CFO</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="624" y="186" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="200" text-anchor="middle">financial-statements</text>
-    <rect class="chip" x="624" y="219" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="233" text-anchor="middle">journal-entry</text>
-    <rect class="chip" x="624" y="252" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="266" text-anchor="middle">reconciliation</text>
-    <rect class="chip" x="624" y="285" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="299" text-anchor="middle">variance-analysis</text>
-    <rect class="chip" x="624" y="318" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="332" text-anchor="middle">audit-support</text>
-    <rect class="chip" x="624" y="351" width="140" height="27" rx="6" stroke="#2dd4bf" stroke-opacity=".45"/><text class="t skill" x="694" y="365" text-anchor="middle">close-management</text>
-  </g>
-  <path class="ln" d="M844 104 V132"/>
-  <rect class="hdr" x="774" y="132" width="140" height="44" rx="8" stroke="#e3b341" stroke-width="1.5"/>
-  <text x="844" y="148" text-anchor="middle" font-size="11" font-weight="700" fill="#e3b341">SMALL BUSINESS</text>
-  <text class="d" x="844" y="164" text-anchor="middle" font-size="9">COO</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="774" y="186" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="200" text-anchor="middle">cash-flow-snapshot</text>
-    <rect class="chip" x="774" y="219" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="233" text-anchor="middle">invoice-chase</text>
-    <rect class="chip" x="774" y="252" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="266" text-anchor="middle">plan-payroll</text>
-    <rect class="chip" x="774" y="285" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="299" text-anchor="middle">margin-analyzer</text>
-    <rect class="chip" x="774" y="318" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="332" text-anchor="middle">tax-prep</text>
-    <rect class="chip" x="774" y="351" width="140" height="27" rx="6" stroke="#e3b341" stroke-opacity=".45"/><text class="t skill" x="844" y="365" text-anchor="middle">run-campaign</text>
-  </g>
-  <path class="ln" d="M994 104 V132"/>
-  <rect class="hdr" x="924" y="132" width="140" height="44" rx="8" stroke="#bc8cff" stroke-width="1.5"/>
-  <text x="994" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#bc8cff">LEGAL</text>
-  <text class="d" x="994" y="164" text-anchor="middle" font-size="9">General Counsel</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="924" y="186" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="200" text-anchor="middle">review-contract</text>
-    <rect class="chip" x="924" y="219" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="233" text-anchor="middle">triage-nda</text>
-    <rect class="chip" x="924" y="252" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="266" text-anchor="middle">compliance-check</text>
-    <rect class="chip" x="924" y="285" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="299" text-anchor="middle">legal-risk-assessment</text>
-    <rect class="chip" x="924" y="318" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="332" text-anchor="middle">vendor-check</text>
-    <rect class="chip" x="924" y="351" width="140" height="27" rx="6" stroke="#bc8cff" stroke-opacity=".45"/><text class="t skill" x="994" y="365" text-anchor="middle">signature-request</text>
-  </g>
-  <path class="ln" d="M1144 104 V132"/>
-  <rect class="hdr" x="1074" y="132" width="140" height="44" rx="8" stroke="#ff7b72" stroke-width="1.5"/>
-  <text x="1144" y="148" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ff7b72">SALES</text>
-  <text class="d" x="1144" y="164" text-anchor="middle" font-size="9">VP of Sales</text>
-  <g font-size="10" font-family="ui-monospace,Consolas,monospace">
-    <rect class="chip" x="1074" y="186" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="200" text-anchor="middle">account-research</text>
-    <rect class="chip" x="1074" y="219" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="233" text-anchor="middle">draft-outreach</text>
-    <rect class="chip" x="1074" y="252" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="266" text-anchor="middle">call-prep</text>
-    <rect class="chip" x="1074" y="285" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="299" text-anchor="middle">proposal-builder</text>
-    <rect class="chip" x="1074" y="318" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="332" text-anchor="middle">objection-handler</text>
-    <rect class="chip" x="1074" y="351" width="140" height="27" rx="6" stroke="#ff7b72" stroke-opacity=".45"/><text class="t skill" x="1144" y="365" text-anchor="middle">pipeline-review</text>
-  </g>
-  </g>
-  <text class="t" x="620" y="592" text-anchor="middle" font-size="12">CEO + CTO · 8 departments · 54 skill manuals</text>
-  <text class="d" x="620" y="615" text-anchor="middle" font-size="11">48 employee manuals + 6 staff manuals · github.com/alebgl77/claude-inc</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1110" viewBox="0 0 1440 1110" role="img" aria-labelledby="title description">
+<!-- Generated by scripts/build_company.py; do not edit. -->
+<title id="title">Claude, Inc. organization map</title>
+<desc id="description">Peer CEO, CTO and CAIO executives support nine departments, six employee manuals each and ten staff manuals: 64 operating manuals.</desc>
+<style>text{font-family:Trebuchet MS,Segoe UI,sans-serif;fill:#25271f}.muted{fill:#626458}.accent{fill:#b9462c}.label{font-family:Consolas,monospace;font-size:12px}.rule{fill:none;stroke:#b9b5a7}.card{fill:#ede9df;stroke:#d4d0c3}</style>
+<rect width="1440" height="1110" fill="#f6f3eb"/>
+<text x="40" y="43" font-size="28" class="" text-anchor="start">claude, inc.</text>
+<text x="1400" y="40" font-size="12" class="label muted" text-anchor="end">9 DEPARTMENTS / 64 OPERATING MANUALS</text>
+<text x="720" y="83" font-size="12" class="label muted" text-anchor="middle">YOU / FOUNDER — DIRECTION AND AUTHORITY</text>
+<rect x="40" y="111" width="440" height="76" class="card"/>
+<text x="58" y="140" font-size="12" class="label accent" text-anchor="start">CEO</text>
+<text x="128" y="140" font-size="12" class="label muted" text-anchor="start">PEER EXECUTIVE</text>
+<text x="58" y="167" font-size="15" class="" text-anchor="start">Business direction &amp; priorities</text>
+<rect x="500" y="111" width="440" height="76" class="card"/>
+<text x="518" y="140" font-size="12" class="label accent" text-anchor="start">CTO</text>
+<text x="588" y="140" font-size="12" class="label muted" text-anchor="start">PEER EXECUTIVE</text>
+<text x="518" y="167" font-size="15" class="" text-anchor="start">Technology, security &amp; evaluation</text>
+<rect x="960" y="111" width="440" height="76" class="card"/>
+<text x="978" y="140" font-size="12" class="label accent" text-anchor="start">CAIO</text>
+<text x="1048" y="140" font-size="12" class="label muted" text-anchor="start">PEER EXECUTIVE</text>
+<text x="978" y="167" font-size="15" class="" text-anchor="start">AI workflows, handoffs &amp; adoption</text>
+<text x="720" y="215" font-size="12" class="label muted" text-anchor="middle">DEPARTMENT VPs OWN DELIVERY</text>
+<rect x="40" y="237" width="440" height="207" class="card"/>
+<text x="56" y="266" font-size="20" class="" text-anchor="start">Developers</text>
+<text x="56" y="295" font-size="13" class="muted skill" text-anchor="start">superpowers</text>
+<text x="56" y="320" font-size="13" class="muted skill" text-anchor="start">context7</text>
+<text x="56" y="345" font-size="13" class="muted skill" text-anchor="start">mcp-builder</text>
+<text x="56" y="370" font-size="13" class="muted skill" text-anchor="start">skill-creator</text>
+<text x="56" y="395" font-size="13" class="muted skill" text-anchor="start">webapp-testing</text>
+<text x="56" y="420" font-size="13" class="muted skill" text-anchor="start">claude-mem</text>
+<rect x="500" y="237" width="440" height="207" class="card"/>
+<text x="516" y="266" font-size="20" class="" text-anchor="start">Designers</text>
+<text x="516" y="295" font-size="13" class="muted skill" text-anchor="start">ui-ux-pro-max</text>
+<text x="516" y="320" font-size="13" class="muted skill" text-anchor="start">taste</text>
+<text x="516" y="345" font-size="13" class="muted skill" text-anchor="start">frontend-design</text>
+<text x="516" y="370" font-size="13" class="muted skill" text-anchor="start">transitions</text>
+<text x="516" y="395" font-size="13" class="muted skill" text-anchor="start">web-artifacts</text>
+<text x="516" y="420" font-size="13" class="muted skill" text-anchor="start">brand-guidelines</text>
+<rect x="960" y="237" width="440" height="207" class="card"/>
+<text x="976" y="266" font-size="20" class="" text-anchor="start">Marketing</text>
+<text x="976" y="295" font-size="13" class="muted skill" text-anchor="start">copywriting</text>
+<text x="976" y="320" font-size="13" class="muted skill" text-anchor="start">ai-seo</text>
+<text x="976" y="345" font-size="13" class="muted skill" text-anchor="start">cro</text>
+<text x="976" y="370" font-size="13" class="muted skill" text-anchor="start">ad-creative</text>
+<text x="976" y="395" font-size="13" class="muted skill" text-anchor="start">customer-research</text>
+<text x="976" y="420" font-size="13" class="muted skill" text-anchor="start">lead-magnets</text>
+<rect x="40" y="458" width="440" height="207" class="card"/>
+<text x="56" y="487" font-size="20" class="" text-anchor="start">Social Media</text>
+<text x="56" y="516" font-size="13" class="muted skill" text-anchor="start">post-writer</text>
+<text x="56" y="541" font-size="13" class="muted skill" text-anchor="start">profile-optimizer</text>
+<text x="56" y="566" font-size="13" class="muted skill" text-anchor="start">reels-scripting</text>
+<text x="56" y="591" font-size="13" class="muted skill" text-anchor="start">hook-generator</text>
+<text x="56" y="616" font-size="13" class="muted skill" text-anchor="start">voice-builder</text>
+<text x="56" y="641" font-size="13" class="muted skill" text-anchor="start">youtube-thumbnail</text>
+<rect x="500" y="458" width="440" height="207" class="card"/>
+<text x="516" y="487" font-size="20" class="" text-anchor="start">Finance</text>
+<text x="516" y="516" font-size="13" class="muted skill" text-anchor="start">financial-statements</text>
+<text x="516" y="541" font-size="13" class="muted skill" text-anchor="start">journal-entry</text>
+<text x="516" y="566" font-size="13" class="muted skill" text-anchor="start">reconciliation</text>
+<text x="516" y="591" font-size="13" class="muted skill" text-anchor="start">variance-analysis</text>
+<text x="516" y="616" font-size="13" class="muted skill" text-anchor="start">audit-support</text>
+<text x="516" y="641" font-size="13" class="muted skill" text-anchor="start">close-management</text>
+<rect x="960" y="458" width="440" height="207" class="card"/>
+<text x="976" y="487" font-size="20" class="" text-anchor="start">Small Business</text>
+<text x="976" y="516" font-size="13" class="muted skill" text-anchor="start">cash-flow-snapshot</text>
+<text x="976" y="541" font-size="13" class="muted skill" text-anchor="start">invoice-chase</text>
+<text x="976" y="566" font-size="13" class="muted skill" text-anchor="start">plan-payroll</text>
+<text x="976" y="591" font-size="13" class="muted skill" text-anchor="start">margin-analyzer</text>
+<text x="976" y="616" font-size="13" class="muted skill" text-anchor="start">tax-prep</text>
+<text x="976" y="641" font-size="13" class="muted skill" text-anchor="start">run-campaign</text>
+<rect x="40" y="679" width="440" height="207" class="card"/>
+<text x="56" y="708" font-size="20" class="" text-anchor="start">Legal</text>
+<text x="56" y="737" font-size="13" class="muted skill" text-anchor="start">review-contract</text>
+<text x="56" y="762" font-size="13" class="muted skill" text-anchor="start">triage-nda</text>
+<text x="56" y="787" font-size="13" class="muted skill" text-anchor="start">compliance-check</text>
+<text x="56" y="812" font-size="13" class="muted skill" text-anchor="start">legal-risk-assessment</text>
+<text x="56" y="837" font-size="13" class="muted skill" text-anchor="start">vendor-check</text>
+<text x="56" y="862" font-size="13" class="muted skill" text-anchor="start">signature-request</text>
+<rect x="500" y="679" width="440" height="207" class="card"/>
+<text x="516" y="708" font-size="20" class="" text-anchor="start">Sales</text>
+<text x="516" y="737" font-size="13" class="muted skill" text-anchor="start">account-research</text>
+<text x="516" y="762" font-size="13" class="muted skill" text-anchor="start">draft-outreach</text>
+<text x="516" y="787" font-size="13" class="muted skill" text-anchor="start">call-prep</text>
+<text x="516" y="812" font-size="13" class="muted skill" text-anchor="start">proposal-builder</text>
+<text x="516" y="837" font-size="13" class="muted skill" text-anchor="start">objection-handler</text>
+<text x="516" y="862" font-size="13" class="muted skill" text-anchor="start">pipeline-review</text>
+<rect x="960" y="679" width="440" height="207" class="card"/>
+<text x="976" y="708" font-size="20" class="" text-anchor="start">Growth</text>
+<text x="976" y="737" font-size="13" class="muted skill" text-anchor="start">growth-strategy</text>
+<text x="976" y="762" font-size="13" class="muted skill" text-anchor="start">account-intelligence</text>
+<text x="976" y="787" font-size="13" class="muted skill" text-anchor="start">growth-engineering</text>
+<text x="976" y="812" font-size="13" class="muted skill" text-anchor="start">growth-experiments</text>
+<text x="976" y="837" font-size="13" class="muted skill" text-anchor="start">lifecycle-growth</text>
+<text x="976" y="862" font-size="13" class="muted skill" text-anchor="start">revenue-operations</text>
+<text x="40" y="928" font-size="12" class="label accent" text-anchor="start">COMPANY STAFF</text>
+<text x="40" y="955" font-size="14" class="muted skill" text-anchor="start">chief-of-staff</text>
+<text x="40" y="980" font-size="14" class="muted skill" text-anchor="start">token-accountant</text>
+<text x="500" y="928" font-size="12" class="label accent" text-anchor="start">CTO OFFICE</text>
+<text x="500" y="955" font-size="14" class="muted skill" text-anchor="start">cto-advisor</text>
+<text x="500" y="980" font-size="14" class="muted skill" text-anchor="start">skill-vetting</text>
+<text x="500" y="1005" font-size="14" class="muted skill" text-anchor="start">appsec-review</text>
+<text x="500" y="1030" font-size="14" class="muted skill" text-anchor="start">agent-evaluation</text>
+<text x="960" y="928" font-size="12" class="label accent" text-anchor="start">CAIO OFFICE</text>
+<text x="960" y="955" font-size="14" class="muted skill" text-anchor="start">ai-workflow-architect</text>
+<text x="960" y="980" font-size="14" class="muted skill" text-anchor="start">agent-reliability</text>
+<text x="960" y="1005" font-size="14" class="muted skill" text-anchor="start">ai-data-steward</text>
+<text x="960" y="1030" font-size="14" class="muted skill" text-anchor="start">ai-adoption-lead</text>
+<text x="40" y="1083" font-size="14" class="muted" text-anchor="start">54 department manuals + 10 staff manuals. One shared company.</text>
 </svg>

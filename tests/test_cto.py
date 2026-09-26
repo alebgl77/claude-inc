@@ -13,7 +13,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CTO_SKILLS = ["cto-advisor", "skill-vetting", "appsec-review", "agent-evaluation"]
-STAFF = {"chief-of-staff", "token-accountant", *CTO_SKILLS}
+CAIO_SKILLS = ["ai-workflow-architect", "agent-reliability", "ai-data-steward", "ai-adoption-lead"]
+STAFF = {"chief-of-staff", "token-accountant", *CTO_SKILLS, *CAIO_SKILLS}
 spec = importlib.util.spec_from_file_location("cto_mission", ROOT / "skills/chief-of-staff/scripts/mission.py")
 mission = importlib.util.module_from_spec(spec)
 previous_bytecode_setting = sys.dont_write_bytecode
@@ -25,15 +26,16 @@ finally:
 
 
 class RegistryTests(unittest.TestCase):
-    def test_eight_departments_six_staff_and_one_peer_executive(self):
+    def test_nine_departments_ten_staff_and_two_peer_executives(self):
         roster, staff = mission.parse_roster((ROOT / "bin/company").read_text(encoding="utf-8"))
-        self.assertEqual(len(roster), 8)
+        self.assertEqual(len(roster), 9)
         self.assertNotIn("cto", roster)
+        self.assertNotIn("caio", roster)
         self.assertTrue(all(len(skills) == 6 for skills in roster.values()))
         self.assertEqual(set(staff), STAFF)
-        self.assertEqual(len(staff), 6)
-        self.assertEqual({path.stem for path in (ROOT / "agents").glob("*.md")}, set(roster) | {"cto"})
-        self.assertEqual(len(list((ROOT / "skills").glob("*/SKILL.md"))), 54)
+        self.assertEqual(len(staff), 10)
+        self.assertEqual({path.stem for path in (ROOT / "agents").glob("*.md")}, set(roster) | {"cto", "caio"})
+        self.assertEqual(len(list((ROOT / "skills").glob("*/SKILL.md"))), 64)
 
     def test_malformed_staff_and_executive_registries_are_rejected(self):
         cli = (ROOT / "bin/company").read_text(encoding="utf-8")
@@ -41,10 +43,13 @@ class RegistryTests(unittest.TestCase):
             cli.replace("STAFF=(", "MISSING=(", 1),
             cli.replace("STAFF=(chief-of-staff token-accountant", "STAFF=(chief-of-staff chief-of-staff", 1),
             cli.replace("STAFF=(chief-of-staff", "STAFF=(unknown-skill", 1),
-            cli.replace("EXECUTIVES=(cto)", "EXECUTIVES=(developers)"),
-            cli.replace("EXECUTIVES=(cto)", "EXECUTIVES=(cto cto)"),
+            cli.replace("EXECUTIVES=(cto caio)", "EXECUTIVES=(developers)"),
+            cli.replace("EXECUTIVES=(cto caio)", "EXECUTIVES=(cto cto)"),
             cli.replace("CTO_SKILLS=(cto-advisor", "CTO_SKILLS=(unknown-skill", 1),
             cli.replace("CTO_SKILLS=(cto-advisor skill-vetting", "CTO_SKILLS=(cto-advisor cto-advisor", 1),
+            cli.replace("CAIO_SKILLS=(", "MISSING_CAIO=(", 1),
+            cli.replace("CAIO_SKILLS=(ai-workflow-architect agent-reliability", "CAIO_SKILLS=(ai-workflow-architect ai-workflow-architect", 1),
+            cli.replace("EXECUTIVES=(cto caio)", "EXECUTIVES=(caio cto)"),
             cli + "\nEXECUTIVES=(cto)\n",
             cli.replace("CTO_SKILLS=(", "CTO_SKILLS=($(touch unsafe) ", 1),
         ]
@@ -105,6 +110,24 @@ class CtoCliTests(unittest.TestCase):
             self.assertNotIn("INVALID_PROFILE_SENTINEL", text)
             self.assertFalse((sandbox / "NEVER_EXECUTE").exists())
 
+    def test_caio_print_is_advisory_with_exactly_its_four_manuals(self):
+        brief = 'Review "AI workflows", café, $(touch NEVER_EXECUTE) & literal text'
+        with tempfile.TemporaryDirectory() as directory:
+            sandbox = Path(directory)
+            env = dict(os.environ, CLAUDE_INC_ENGINE="missing-caio-test-engine")
+            result = self.run_company("caio", brief, "--print", cwd=sandbox, env=env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            text = result.stdout.decode("utf-8")
+            self.assertEqual(re.findall(r"^----- EMPLOYEE: ([a-z-]+) -----$", text, re.M), CAIO_SKILLS)
+            self.assertIn((ROOT / "agents/caio.md").read_text(encoding="utf-8"), text)
+            for employee in CAIO_SKILLS:
+                self.assertEqual(text.count((ROOT / "skills" / employee / "SKILL.md").read_text(encoding="utf-8")), 1)
+            self.assertIn(brief, text)
+            self.assertFalse((sandbox / "NEVER_EXECUTE").exists())
+        self.assertNotEqual(self.run_company("caio", "--print").returncode, 0)
+        for command in ("help", "roster"):
+            self.assertIn(b"company caio", self.run_company(command).stdout)
+
     def test_department_prompts_still_have_exactly_six_manuals(self):
         roster, _ = mission.parse_roster((ROOT / "bin/company").read_text(encoding="utf-8"))
         for department, skills in roster.items():
@@ -120,8 +143,9 @@ class CtoCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         text = result.stdout.decode("utf-8")
         self.assertIn((ROOT / "agents/cto.md").read_text(encoding="utf-8"), text)
+        self.assertIn((ROOT / "agents/caio.md").read_text(encoding="utf-8"), text)
         self.assertEqual(text.count("----- CEO STAFF:"), 2)
-        for slug in CTO_SKILLS:
+        for slug in CTO_SKILLS + CAIO_SKILLS:
             self.assertNotIn((ROOT / "skills" / slug / "SKILL.md").read_text(encoding="utf-8"), text)
 
     def test_cto_uses_existing_engine_path_with_one_literal_prompt(self):

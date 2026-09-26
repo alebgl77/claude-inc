@@ -78,7 +78,7 @@ class ProjectTests(unittest.TestCase):
         state = self.state()
         self.assertEqual([t["status"] for t in state["tasks"]], ["done"] * 3)
         self.assertEqual(state["activeDepartments"], ["marketing"])
-        self.assertEqual(len(state["departments"]), 8)
+        self.assertEqual(len(state["departments"]), 9)
         self.assertEqual(state["revision"], len(state["events"]))
         self.assertEqual(state["decisions"][0]["text"], "Founder retained pricing approval")
 

@@ -40,10 +40,14 @@ jobs:
         shell: bash
         run: |
           chmod +x bin/company
-          for dept in developers designers marketing social-media finance small-business legal sales; do
+          for dept in developers designers marketing social-media finance small-business legal sales growth; do
             count=$(./bin/company "$dept" "ci smoke test" --print | grep -c '^----- EMPLOYEE:')
             echo "$dept -> $count employees"
             [ "$count" -eq 6 ] || { echo "::error::$dept composed $count employees, expected 6"; exit 1; }
+          done
+          for executive in cto caio; do
+            count=$(./bin/company "$executive" "ci smoke test" --print | grep -c '^----- EMPLOYEE:')
+            [ "$count" -eq 4 ] || { echo "::error::$executive composed $count employees, expected 4"; exit 1; }
           done
           brief_output="$(./bin/company brief "ci smoke test" --print)"
           [[ "$brief_output" == *'CEO Operating Manual'* ]]
@@ -117,7 +121,7 @@ jobs:
           (
             cd "$empty_project"
             default_team="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" team)"
-            grep -q 'Full canonical company active: 54 skills across 8 departments, with the CTO executive.' <<< "$default_team"
+            grep -q 'Full canonical company active: 64 skills across 9 departments, with CTO and CAIO executives.' <<< "$default_team"
             missing_brief="$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" brief 'missing profile' --print)"
             ! grep -q 'ACTIVE TEAM PREFERENCES' <<< "$missing_brief"
             [ -z "$(CLAUDE_INC_GLOBAL_PROFILE="$test_root/missing-global.md" "$workspace/bin/company" profile-context)" ]
@@ -328,13 +332,19 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $departments = @('developers', 'designers', 'marketing', 'social-media', 'finance', 'small-business', 'legal', 'sales')
+          $departments = @('developers', 'designers', 'marketing', 'social-media', 'finance', 'small-business', 'legal', 'sales', 'growth')
           foreach ($department in $departments) {
             $output = & bash ./bin/company $department 'ci smoke test' --print
             if ($LASTEXITCODE -ne 0) { throw "CLI failed for $department" }
             $count = @($output | Select-String '^----- EMPLOYEE:').Count
             Write-Host "$department -> $count employees"
             if ($count -ne 6) { throw "$department composed $count employees, expected 6" }
+          }
+          foreach ($executive in @('cto', 'caio')) {
+            $output = & bash ./bin/company $executive 'ci smoke test' --print
+            if ($LASTEXITCODE -ne 0) { throw "CLI failed for $executive" }
+            $count = @($output | Select-String '^----- EMPLOYEE:').Count
+            if ($count -ne 4) { throw "$executive composed $count employees, expected 4" }
           }
           $brief = & bash ./bin/company brief 'ci smoke test' --print
           if ($LASTEXITCODE -ne 0) { throw 'CLI brief failed' }
@@ -482,8 +492,8 @@ jobs:
           mkdir -p "$HOME"
           bash "$workspace/install.sh"
           bash "$workspace/install.sh"
-          [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 54 ]
-          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 9 ]
+          [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 64 ]
+          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 11 ]
           [ -L "$HOME/.local/bin/company" ]
           [ "$("$HOME/.local/bin/company" version)" = "company v1.5.1" ]
 
@@ -491,8 +501,8 @@ jobs:
           project="$test_root/project with spaces"
           mkdir -p "$HOME" "$project"
           (cd "$project" && bash "$workspace/install.sh" --project)
-          [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 54 ]
-          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 9 ]
+          [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 64 ]
+          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 11 ]
 
           export HOME="$test_root/no cli home"
           mkdir -p "$HOME"
@@ -550,8 +560,8 @@ jobs:
             [ -f "$agent" ] || continue
             agent_count=$((agent_count + 1))
           done
-          [ "$skill_count" -eq 54 ]
-          [ "$agent_count" -eq 9 ]
+          [ "$skill_count" -eq 64 ]
+          [ "$agent_count" -eq 11 ]
 
       - name: Global, project and no-CLI installs work (Windows)
         if: runner.os == 'Windows'
@@ -564,8 +574,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
           & "$workspace/install.ps1"
           & "$workspace/install.ps1"
-          if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 54) { throw 'Global skill count is not 54' }
-          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 9) { throw 'Global agent count is not 9' }
+          if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 64) { throw 'Global skill count is not 64' }
+          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 11) { throw 'Global agent count is not 11' }
           $wrapper = Join-Path $env:HOME '.local/bin/company.exe'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
@@ -587,8 +597,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path $env:HOME, $project | Out-Null
           Push-Location $project
           try { & "$workspace/install.ps1" -Project } finally { Pop-Location }
-          if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 54) { throw 'Project skill count is not 54' }
-          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 9) { throw 'Project agent count is not 9' }
+          if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 64) { throw 'Project skill count is not 64' }
+          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 11) { throw 'Project agent count is not 11' }
 
           $env:HOME = Join-Path $testRoot 'no cli home'
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null
@@ -630,3 +640,18 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./tests/installers_safety.ps1
+
+  growth-extraction:
+    name: Optional offline Growth parser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify the pinned parser against saved HTML
+        shell: bash
+        run: |
+          python -m venv .venv-growth
+          .venv-growth/bin/python -m pip install -r skills/account-intelligence/scripts/requirements-optional.txt
+          .venv-growth/bin/python -m unittest discover -s tests -p test_growth_extract.py

@@ -26,9 +26,9 @@ class CompanyBuilderTests(unittest.TestCase):
         self.assertTrue(diagram.findtext("svg:desc", namespaces=namespace))
         labels = diagram.findall(".//svg:text", namespace)
         skills = [label.text for label in labels if "skill" in label.get("class", "").split()]
-        self.assertEqual(len(expected), 54)
+        self.assertEqual(len(expected), 64)
         self.assertCountEqual(skills, expected)
-        for executive in ("CEO", "CTO"):
+        for executive in ("CEO", "CTO", "CAIO"):
             self.assertEqual(sum(label.text == executive for label in labels), 1)
 
     def test_internal_headings_and_closing_fences_are_preserved(self):
@@ -56,11 +56,11 @@ class CompanyBuilderTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     builder.section(source, "Output format")
 
-    def test_all_fifty_four_examples_have_source_body_and_sales_qa_keep_the_whole_block(self):
+    def test_all_sixty_four_examples_have_source_body_and_sales_qa_keep_the_whole_block(self):
         generated = builder.generate().decode("ascii")
         data = json.loads(generated.split("window.CLAUDE_INC_COMPANY = ", 1)[1].removesuffix(";\n"))
         employees = [skill for department in data["departments"] for skill in department["skills"]] + data["staff"]
-        self.assertEqual(len(employees), 54)
+        self.assertEqual(len(employees), 64)
         for employee in employees:
             with self.subTest(employee=employee["id"]):
                 output = employee["output"]

@@ -62,6 +62,103 @@
         {"id":"adapt","title":"Adapt the idea to channel drafts","department":"social-media","skills":["post-writer"],"needs":["voice","anchor"],"deliverables":["content/channel-drafts.md","content/editorial-calendar.md"],"checks":["Three complete post drafts add distinct angles while preserving the anchor's facts, voice, and CTA; record actual character counts.","Calendar entries are proposed drafts with explicit channel and purpose. Do not imply they were posted, scheduled, or achieved any reach."],"review":false},
         {"id":"review","title":"Review claims and editorial coherence","department":"marketing","skills":["copywriting"],"needs":["voice","anchor","adapt"],"deliverables":["content/editorial-review.md"],"checks":["A distinct editor assignment verifies every draft against the source ledger, voice guide, platform constraints, and one consistent CTA; cite concrete corrections.","Record remaining evidence gaps and founder decisions. A complete verdict requires every required check PASS; nothing is automatically scheduled or published."],"review":true}
       ]
+    },
+    {
+      "id": "b2b-growth",
+      "title": "Design an evidence-led B2B growth loop",
+      "summary": "Turn account evidence into a bounded experiment, a reviewed asset and a Sales acceptance loop.",
+      "outcome": "A blueprint for sourced account qualification, an experiment contract, campaign copy and a measured handoff decision.",
+      "sampleBrief": "Prepare a B2B growth experiment for my reporting SaaS using the supplied synthetic account notes. Focus on one ICP and one business outcome. Separate account evidence from buying-intent hypotheses, use an account-level control, draft one campaign asset, and define how Sales accepts or rejects account candidates. Do not contact prospects, publish, export personal data or invent results.",
+      "stages": [
+        {
+          "id": "evidence",
+          "title": "Qualify accounts from inspected evidence",
+          "department": "growth",
+          "skills": [
+            "growth-strategy",
+            "account-intelligence",
+            "revenue-operations"
+          ],
+          "needs": [],
+          "deliverables": [
+            "b2b-growth/icp-brief.md",
+            "b2b-growth/account-evidence.md"
+          ],
+          "checks": [
+            "Name one ICP and business constraint; every account fact records a source, date, confidence and revalidation rule. Label synthetic fixtures and unknowns.",
+            "Separate observed signals from inferred buying intent. Exclude unneeded personal data and record qualification reasons without creating CRM deals or authorizing outreach.",
+            "Define stable account IDs and a reconciliation contract connecting candidates, Sales acceptance, opportunities and confirmed revenue; preserve missing observations."
+          ],
+          "review": false
+        },
+        {
+          "id": "experiment",
+          "title": "Define the growth experiment and event contract",
+          "department": "growth",
+          "skills": [
+            "growth-experiments",
+            "growth-engineering",
+            "lifecycle-growth"
+          ],
+          "needs": [
+            "evidence"
+          ],
+          "deliverables": [
+            "b2b-growth/experiment-plan.md",
+            "b2b-growth/event-contract.md"
+          ],
+          "checks": [
+            "Predeclare account-level assignment, control, one primary business metric, denominator, time window and decision rules for scale, iterate, stop or inconclusive.",
+            "Specify events, identity boundaries, consent requirements, missing-data treatment and contamination checks. Record implementation or measurement not run as NOT RUN.",
+            "Name an activation, retention or margin guardrail and the next learning owner; proposed thresholds are assumptions until supported by observed results."
+          ],
+          "review": false
+        },
+        {
+          "id": "asset",
+          "title": "Draft the sourced campaign asset",
+          "department": "marketing",
+          "skills": [
+            "copywriting"
+          ],
+          "needs": [
+            "evidence",
+            "experiment"
+          ],
+          "deliverables": [
+            "b2b-growth/campaign-draft.md",
+            "b2b-growth/claim-map.md"
+          ],
+          "checks": [
+            "Produce one complete asset for the selected ICP with one CTA; factual claims trace to inspected sources and unsupported performance promises are removed.",
+            "Version the asset against the experiment contract and explain treatment versus control. Keep the asset a draft; no publishing or outreach."
+          ],
+          "review": false
+        },
+        {
+          "id": "handoff",
+          "title": "Review the Sales acceptance contract",
+          "department": "sales",
+          "skills": [
+            "account-research",
+            "proposal-builder"
+          ],
+          "needs": [
+            "evidence",
+            "experiment",
+            "asset"
+          ],
+          "deliverables": [
+            "b2b-growth/sales-acceptance.md",
+            "b2b-growth/handoff-review.md"
+          ],
+          "checks": [
+            "A distinct Sales reviewer checks candidate evidence, exclusions and asset claims, then specifies acceptance or rejection reasons, next owner and follow-up evidence. No fabricated customer acceptance.",
+            "Define how accepted opportunities, rejected candidates and confirmed revenue return to Growth, including source IDs, denominator and reporting window. Missing observations stay NOT RUN; no prospect contact or commercial commitment."
+          ],
+          "review": true
+        }
+      ]
     }
   ]
 }

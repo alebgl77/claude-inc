@@ -4,7 +4,7 @@
 
 ### Bring a project. Put the company to work.
 
-**Peer CEO and CTO executives · 8 departments · 54 skill manuals.**
+**Peer CEO, CTO, and CAIO executives · 9 departments · 64 skill manuals.**
 
 [![compliance](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml/badge.svg)](https://github.com/alebgl77/claude-inc/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -20,13 +20,16 @@ review evidence, and resumes from a local project workspace next session. Your
 project can be a product, a business operation, a research effort, or something
 that spans several departments. You do not have to choose a template first.
 
-The 54 employees are **skill manuals**, not 54 processes running in the
+The 64 employees are **skill manuals**, not 64 processes running in the
 background. Claude Code supplies the active assistant session, native agent
 tools, configured model, and permissions. The company supplies its roles,
 operating instructions, and a local task-and-decision record.
 
 [Explore the company](https://alebgl77.github.io/claude-inc/) ·
 [Project workspace guide](docs/project-workspace.md) ·
+[Growth playbook](docs/growth-playbook.md) ·
+[Growth toolkit](docs/growth-toolkit.md) ·
+[CAIO operating model](docs/caio-operating-model.md) ·
 [Architecture and alternatives](docs/architecture.md) ·
 [Roadmap](ROADMAP.md)
 
@@ -42,7 +45,7 @@ operating instructions, and a local task-and-decision record.
 
 The CEO clarifies material unknowns and uses the packaged helper to initialize
 or resume project state when available. It selects the departments your project
-needs; all eight remain available.
+needs; all nine remain available for new projects.
 Plugin commands use the `claude-inc:` namespace. Directly installed commands
 use `/company` instead.
 
@@ -106,6 +109,9 @@ The CEO sets business priorities; the peer CTO sets technical direction across
 architecture, agent infrastructure, security, skills, and code. Their handoff is
 finding → business impact → options/tradeoffs → recommendation → decision needed,
 with technical acceptance criteria ready for the delivery team.
+The peer CAIO owns process effectiveness, shared context, handoffs, and adoption
+across teams. Consult it for a material operating problem; each VP keeps delivery
+ownership and the CTO retains technical and security acceptance.
 
 The CEO records task contracts, starts work after its dependencies are accepted,
 and delegates with the host's available agent tools. Departments produce actual
@@ -125,6 +131,13 @@ The [workspace guide](docs/project-workspace.md) covers task commands, blocked
 work, review, privacy, and using a different assistant. The structured project
 record remains the task source of truth. A Board Memo or Markdown ledger is a
 report derived from it.
+
+Existing schema-1 and schema-2 projects with the historical eight-department
+roster remain readable and resumable through their normal lifecycle. Their saved
+roster and frozen policies stay intact; no implicit migration adds Growth tasks.
+Use a new nine-department workspace when Growth must own tasks. Never edit the
+project JSON to change the roster. CAIO advice does not add a task-owner or
+reviewer enum; the CTO remains a supported reviewer where the schema allows it.
 
 ## Optional harnesses and bounded review loops
 
@@ -158,7 +171,10 @@ graph TD
     subgraph EXEC["Peer executives"]
         CEO["CEO / business direction"]
         CTO["CTO / technical direction"]
+        CAIO["CAIO / AI process effectiveness"]
         CEO <--> CTO
+        CEO <--> CAIO
+        CTO <--> CAIO
     end
     CEO --> DEV["Developers / 6 skills"]
     CEO --> DES["Designers / 6 skills"]
@@ -168,14 +184,16 @@ graph TD
     CEO --> SMB["Small Business / 6 skills"]
     CEO --> LEG["Legal / 6 skills"]
     CEO --> SAL["Sales / 6 skills"]
+    CEO --> GRO["Growth / 6 skills"]
     CEO -.-> COS["chief-of-staff"]
     FIN -.-> TOK["token-accountant"]
     CTO -.-> TECH["cto-advisor / skill-vetting / appsec-review / agent-evaluation"]
+    CAIO -.-> AI["ai-workflow-architect / agent-reliability / ai-data-steward / ai-adoption-lead"]
 ```
 
 The CEO owns business coordination and serializes project updates to prevent
-competing writes; that implementation rule does not subordinate the CTO.
-The CTO owns technical direction and fitness across the departments. Department agents
+competing writes; that implementation rule does not subordinate the CTO or CAIO.
+The CTO owns technical fitness; the CAIO owns cross-team AI operating effectiveness. Department agents
 apply the relevant employee manuals. Independent assignments can run in
 parallel when the host supports it; the company does not assume subagents can
 spawn nested subagents. A host without delegation can use explicit department
@@ -210,8 +228,8 @@ an existing profile still requires the existing explicit replacement option.
 
 ## Optional mission recipes
 
-[Mission Studio](https://alebgl77.github.io/claude-inc/missions.html) provides five
-starting recipes: `launch`, `validate`, `release`, `proposal`, and `content`.
+[Mission Studio](https://alebgl77.github.io/claude-inc/missions.html) provides six
+starting recipes: `launch`, `validate`, `release`, `proposal`, `content`, and `b2b-growth`.
 They are convenient examples inside the broader company, not its boundary.
 Open `studio/missions.html` locally or use the terminal:
 
@@ -234,6 +252,7 @@ For a focused request, use a department directly:
 company dev "my tests fail after the last refactor"
 company legal "review the NDA in nda.md"
 company marketing "draft ad variants using the supplied product facts"
+company growth "Qualify B2B accounts from supplied signals and prepare a Sales handoff" --print
 ```
 
 Skills can also be invoked directly. The CEO is useful when work needs
@@ -242,6 +261,25 @@ coordination, dependencies, decisions, or continuity across sessions.
 For a focused technical decision, use `company cto "review our integration plan" --print`.
 It includes the peer CTO charter and only its four staff manuals. CTO decisions
 and CEO business arbitration should unblock teams without unnecessary status ceremony.
+
+For an operating problem across teams, use
+`company caio "Repair the evidence handoff from Growth to Sales" --print`.
+It composes the CAIO charter and its four manuals; apply the specialists the task
+actually needs. `company growth` composes the Growth charter and six manuals.
+Both commands prepare scoped work through the available host, not a connected CRM.
+
+Growth starts with B2B account signals, qualification, experiments, and a usable
+Sales handoff. Marketing owns research, positioning, copy, and creative; Sales
+owns outreach and deals. The same Growth skills cover SaaS activation, services
+offers, and ecommerce retention when those are the founder's outcomes. See the
+[Growth playbook](docs/growth-playbook.md) and the
+[CAIO handoff example](docs/caio-operating-model.md#worked-b2b-example-signal-to-growth-to-sales-to-feedback).
+
+The [Growth toolkit](docs/growth-toolkit.md) documents optional tool choices.
+Its Scrapling helper extracts from saved local HTML offline and requires an
+optional Scrapling dependency with Python 3.10+; core project and mission commands
+remain Python 3.9+. Firecrawl, PostHog, GrowthBook, and Langfuse are evaluated
+options, not installed or connected services. No tool bundle is installed implicitly.
 
 ## Meet the company
 
@@ -358,6 +396,20 @@ and CEO business arbitration should unblock teams without unnecessary status cer
 </details>
 
 <details>
+<summary><b>📈 Growth</b> - VP of Growth</summary>
+
+| Employee | Role | Superpower |
+|---|---|---|
+| `growth-strategy` | Growth Strategist | Prioritized growth hypotheses and a measurable operating plan |
+| `account-intelligence` | Account Intelligence Analyst | Sourced account signals and qualification evidence |
+| `growth-engineering` | Growth Engineer | Bounded data and experiment tooling with explicit contracts |
+| `growth-experiments` | Experiment Designer | Test plans, decision thresholds, and honest result interpretation |
+| `lifecycle-growth` | Lifecycle Strategist | Activation, retention, and expansion workflows |
+| `revenue-operations` | Revenue Operations Lead | Funnel definitions, handoffs, and reconciled operating measures |
+
+</details>
+
+<details>
 <summary><b>🏛️ Executive staff</b> - attached to the C-suite <i>(Series A hires)</i></summary>
 
 | Employee | Reports to | Superpower |
@@ -368,6 +420,10 @@ and CEO business arbitration should unblock teams without unnecessary status cer
 | `skill-vetting` | CTO | Source/license/hash review, static risk, separate signature verification |
 | `appsec-review` | CTO | Defensive threat models, diffs, dependency and secrets hygiene |
 | `agent-evaluation` | CTO | Paired skill trials, measured results, uncertainty and costs |
+| `ai-workflow-architect` | CAIO | Cross-team stages, dependencies, and acceptance contracts |
+| `agent-reliability` | CAIO | Failure diagnosis, rework, and operating evidence |
+| `ai-data-steward` | CAIO | Minimal shared context, provenance, and freshness |
+| `ai-adoption-lead` | CAIO | Bounded pilots, usable runbooks, and adoption decisions |
 
 </details>
 
@@ -379,9 +435,10 @@ The company combines native host roles with a small local state helper:
 |---|---|---|
 | **CEO** | `commands/company.md`; `/claude-inc:company` in the plugin, `/company` in direct installs | Business direction, priorities, arbitration, and serialized state updates |
 | **CTO** | `agents/cto.md`; `company cto` | Peer executive: technical direction, architecture, infrastructure, security, skills, and code |
-| **8 departments** | Eight department charters in `agents/` | Native host agents; independent assignments may run in parallel |
-| **48 employees** | `skills/*/SKILL.md` | Skills with trigger-rich descriptions; VPs hire them per task, or they self-trigger |
-| **6 staff skills** | Two coordination/usage manuals and four CTO manuals | Skill packaging; this grouping does not define the CTO's executive authority |
+| **CAIO** | `agents/caio.md`; `company caio` | Peer executive: AI process effectiveness, handoffs, context quality, and adoption |
+| **9 departments** | Nine department charters in `agents/` | Native host agents; independent assignments may run in parallel |
+| **54 department manuals** | `skills/*/SKILL.md` | Six per department; VPs apply the relevant capabilities per task |
+| **10 staff skills** | Two coordination/usage manuals, four CTO manuals, and four CAIO manuals | Skill packaging; this grouping does not define executive authority |
 | **Project workspace** | `.claude/company/project.json` | Validated tasks, dependencies, artifact hashes, reviews, and decisions |
 | **Optional harness** | Local schema-2 task policies and loop guidance | Required review gates, lifetime submission caps, and explicit extensions |
 
@@ -389,17 +446,17 @@ The company combines native host roles with a small local state helper:
 you → project brief → CEO → department assignments → files + review → project state + Board Memo
 ```
 
-[![The full organization map: peer CEO and CTO, eight departments, and 54 skill manuals](assets/org-chart.svg)](assets/org-chart.svg)
+[![The full organization map: peer CEO, CTO, and CAIO, nine departments, and 64 skill manuals](assets/org-chart.svg)](assets/org-chart.svg)
 
 The roles and manuals available to your project. [Open the full organization map](assets/org-chart.svg).
 
-Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 54 manageable and PRs reviewable.
+Every employee follows the same contract: **When to use → Workflow → Output format → Quality bar → Example.** That's what makes all 64 manageable and PRs reviewable.
 
 And the company audits itself: `python3 scripts/validate.py` (run in CI on every push) checks every job description, cross-references the CLI roster against the departments, and fails the build if an employee is hired twice, orphaned, or missing from the docs.
 
 ## Works with any CLI
 
-The `company` CLI composes self-contained prompts: a department charter plus its six manuals, or the peer CTO charter plus its four manuals. If `claude` is installed it runs it; otherwise pipe it anywhere:
+The `company` CLI composes self-contained prompts: a department charter plus its six manuals, or a peer CTO/CAIO charter plus its four manuals. If `claude` is installed it runs it; otherwise pipe it anywhere:
 
 ```bash
 company roster                                   # meet the team
@@ -435,7 +492,7 @@ copied, installed or executed.
 The four CTO manuals are first-party procedures. `skill-vetting` also includes
 an unchanged, commit-pinned [NVIDIA Skill Inspector reference](skills/skill-vetting/references/nvidia-skill-inspector.md)
 with its Apache-2.0 license and [provenance](skills/skill-vetting/references/PROVENANCE.md).
-It is reference material inside one skill, not a 55th registered employee.
+It is reference material inside one skill, not an additional registered employee.
 The local wrapper's evidence format, permissions, and trust boundaries take precedence.
 
 NVIDIA SkillSpector and SkillEvaluator, Cisco's scanner, and linked Trail of Bits
@@ -459,8 +516,8 @@ founder can inspect. Four horizons set the order:
 - **Exploration:** [fork the company](ROADMAP.md#d-fork-the-company-compare-the-options) to compare isolated business scenarios before choosing a direction.
 
 These are future proposals with evidence gates, not shipped capabilities or
-release dates. The founder keeps the final mandate; CEO and CTO bring the
-business and technical tradeoffs together.
+release dates. The founder keeps the final mandate; CEO, CTO, and CAIO bring the
+business, technical, and operating tradeoffs together.
 
 ## FAQ
 

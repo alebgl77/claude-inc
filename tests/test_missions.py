@@ -57,9 +57,9 @@ class CompilerTests(unittest.TestCase):
     def setUpClass(cls):
         cls.company = mission.load_company()
 
-    def test_all_five_recipes_and_review_dependencies(self):
+    def test_all_six_recipes_and_review_dependencies(self):
         recipes = self.company["catalog"]["missions"]
-        self.assertEqual([recipe["id"] for recipe in recipes], ["launch", "validate", "release", "proposal", "content"])
+        self.assertEqual([recipe["id"] for recipe in recipes], ["launch", "validate", "release", "proposal", "content", "b2b-growth"])
         for recipe in recipes:
             with self.subTest(recipe=recipe["id"]):
                 compiled = mission.compile_mission(self.company, recipe["id"])
@@ -88,13 +88,13 @@ class CompilerTests(unittest.TestCase):
 
     def test_bytes_count_only_actual_unique_skill_files(self):
         all_bytes = sum((ROOT / "skills" / skill / "SKILL.md").stat().st_size for skill in self.company["manuals"])
-        self.assertEqual(len(self.company["manuals"]), 54)
+        self.assertEqual(len(self.company["manuals"]), 64)
         for recipe in self.company["catalog"]["missions"]:
             compiled = mission.compile_mission(self.company, recipe["id"])
             selected = [skill["id"] for skill in compiled["skills"]]
             selected_bytes = sum((ROOT / "skills" / skill / "SKILL.md").stat().st_size for skill in selected)
             self.assertEqual(compiled["metrics"], {"selectedSkillBytes": selected_bytes, "allSkillBytes": all_bytes,
-                                                 "selectedSkills": len(set(selected)), "totalSkills": 54})
+                                                 "selectedSkills": len(set(selected)), "totalSkills": 64})
             self.assertLess(selected_bytes, all_bytes)
 
     def test_first_use_order_and_determinism(self):
@@ -214,12 +214,12 @@ class CompilerTests(unittest.TestCase):
         with mock.patch.object(Path, "read_bytes", track), mock.patch.dict(os.environ, {"CLAUDE_INC_GLOBAL_PROFILE": "DO_NOT_READ/company-team.md"}):
             company = mission.load_company()
             mission.compile_mission(company, "launch")
-        self.assertEqual(len(touched), 65)  # registry + catalog + 54 manuals + 8 charters + CEO
+        self.assertEqual(len(touched), 76)  # registry + catalog + 64 manuals + 9 charters + CEO
 
 
 class OutputTests(unittest.TestCase):
     def test_all_direct_cli_formats_and_unknown_flags(self):
-        for recipe in ("launch", "validate", "release", "proposal", "content"):
+        for recipe in ("launch", "validate", "release", "proposal", "content", "b2b-growth"):
             for output_format in ("markdown", "json", "prompt"):
                 result = run_python(HELPER, "show", recipe, "--format", output_format, "--brief", "café 🚀")
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -248,7 +248,7 @@ class OutputTests(unittest.TestCase):
         self.assertNotIn(b"\r\n", first)
         data = json.loads(first.decode("ascii").split("window.CLAUDE_INC_MISSIONS = ", 1)[1][:-2])
         self.assertEqual(data["schemaVersion"], 1)
-        self.assertEqual(data["skillCount"], 54)
+        self.assertEqual(data["skillCount"], 64)
         for item in data["missions"]:
             brief = " \tUser's actual café brief\r\n<script>literal</script> "
             self.assertNotIn("brief", item)

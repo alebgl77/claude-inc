@@ -2,10 +2,10 @@
 (function (root) {
   'use strict';
 
-  const MISSION_IDS = Object.freeze(['launch', 'validate', 'release', 'proposal', 'content']);
+  const MISSION_IDS = Object.freeze(['launch', 'validate', 'release', 'proposal', 'content', 'b2b-growth']);
   const MAX_BRIEF_BYTES = 8000;
-  const CATEGORIES = Object.freeze({ launch: 'Go to market', validate: 'Discovery', release: 'Engineering', proposal: 'Sales', content: 'Editorial' });
-  const DEPARTMENTS = Object.freeze({ developers: 'Developers', designers: 'Designers', marketing: 'Marketing', 'social-media': 'Social media', finance: 'Finance', 'small-business': 'Small business', legal: 'Legal', sales: 'Sales' });
+  const CATEGORIES = Object.freeze({ launch: 'Go to market', validate: 'Discovery', release: 'Engineering', proposal: 'Sales', content: 'Editorial', 'b2b-growth': 'Growth' });
+  const DEPARTMENTS = Object.freeze({ developers: 'Developers', designers: 'Designers', marketing: 'Marketing', 'social-media': 'Social media', finance: 'Finance', 'small-business': 'Small business', legal: 'Legal', sales: 'Sales', growth: 'Growth' });
   const NUMBER = new Intl.NumberFormat('en-US');
 
   function byteLength(value) {
@@ -36,7 +36,7 @@
 
   function parseMissionHash(hash) {
     if (typeof hash !== 'string') return null;
-    const match = /^#mission=(launch|validate|release|proposal|content)$/.exec(hash);
+    const match = /^#mission=(launch|validate|release|proposal|content|b2b-growth)$/.exec(hash);
     return match ? match[1] : null;
   }
 
@@ -56,7 +56,7 @@
     const text = value => typeof value === 'string' && value.trim().length > 0;
     const texts = value => Array.isArray(value) && value.length > 0 && value.every(text);
     const unique = value => new Set(value).size === value.length;
-    if (!data || data.schemaVersion !== 1 || data.source !== 'alebgl77/claude-inc' || data.skillCount !== 54 || !Array.isArray(data.missions) || data.missions.length !== 5) return fail('The data is missing or uses an unsupported format.');
+    if (!data || data.schemaVersion !== 1 || data.source !== 'alebgl77/claude-inc' || data.skillCount !== 64 || !Array.isArray(data.missions) || data.missions.length !== MISSION_IDS.length) return fail('The data is missing or uses an unsupported format.');
     const seen = new Set();
     for (const mission of data.missions) {
       if (!mission || !MISSION_IDS.includes(mission.id) || seen.has(mission.id)) return fail('A preset is missing, duplicated, or unknown.');

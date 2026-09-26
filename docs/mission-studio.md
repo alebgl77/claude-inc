@@ -9,6 +9,13 @@ selected employees' full manuals. Each recipe names the handoffs, deliverables,
 requested evidence, and final reviewer. You run the resulting prompt in an
 assistant of your choice.
 
+The six recipes are `launch`, `validate`, `release`, `proposal`, `content`, and
+`b2b-growth`. The B2B recipe coordinates Growth, Marketing, and Sales from sourced
+account signals through qualification, a Sales handoff, and experiment/revenue
+feedback. It prepares work; it does not crawl websites, connect a CRM, or send
+outreach. See the [synthetic Growth playbook](growth-playbook.md). CAIO advice
+can improve a material handoff without becoming a recipe department or reviewer.
+
 ## Open the Studio
 
 [Try Mission Studio](https://alebgl77.github.io/claude-inc/missions.html)
@@ -23,7 +30,7 @@ Its assets and bundled manual content are local. You can also download the plan
 as Markdown or export a template-only SVG mission card.
 
 The context comparison counts unique selected employee manuals and their UTF-8
-byte size against all 54 unique skill manuals. Reusing an employee across stages does
+byte size against all 64 unique skill manuals. Reusing an employee across stages does
 not add another copy. Bytes are not tokens, prices, or a prediction of an
 assistant's total context use.
 
@@ -39,6 +46,7 @@ company missions
 company mission launch --brief "Launch my invoicing app for freelancers"
 company mission launch --brief "Launch my invoicing app for freelancers" --format json
 company mission launch --brief "Launch my invoicing app for freelancers" --format prompt
+company mission b2b-growth --brief "Qualify supplied account evidence for a bounded Sales-reviewed pilot" --format prompt
 ```
 
 `markdown` is the default format. Use it to inspect the plan, `json` for structured

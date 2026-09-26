@@ -11,7 +11,9 @@ The local compiler validates the plan and recorded transitions. It does not
 select an architecture by keyword, execute workers, run tests or scanners, or
 judge whether evidence proves a claim. Host sessions perform the work with
 their configured models, permissions, and available tools. The CEO serializes
-project writes to avoid competing updates; that rule does not subordinate the CTO.
+project writes to avoid competing updates; that rule does not subordinate the CTO
+or CAIO. Consult CAIO for a concrete process, reliability, context, or adoption
+problem; VPs retain delivery and CTO retains technical/security acceptance.
 
 ## Choose activation deliberately
 
@@ -37,9 +39,13 @@ must be revised and freshly submitted before controlled acceptance. Existing
 submission history counts toward the cap; enabling a harness does not reset it.
 Repeating the same generated policy is idempotent; a changed policy is refused.
 
-The eight department owners remain unchanged. Six staff skills are selectable
-alongside a task owner's six department skills. The CTO is a peer executive and
-an additional schema-2 reviewer identity, not a ninth task-owner department.
+New workspaces support nine department owners and ten selectable staff skills
+alongside an owner's six department skills. Historical eight-department
+workspaces retain their saved roster and frozen policies through the normal
+lifecycle; harness activation does not migrate their roster. Their historical
+staff selection remains intact. Use a new workspace for Growth-owned tasks.
+The CTO is a peer executive and a schema-2 reviewer, not a task-owner department.
+CAIO is advisory and is neither a department nor a reviewer enum.
 
 ## A complete work and review example
 
@@ -77,7 +83,8 @@ Each task retains its acceptance contract and two mandatory business checks.
 You may add zero to five criteria; you cannot replace the mandatory checks.
 An empty skills list leaves manual selection to the owner; it is not a claim
 that no skills are needed. Unknown skills and skills from another business
-department are rejected. The six canonical staff skills are available to any owner.
+department are rejected. Staff skills supported by the saved workspace roster are available to any owner;
+frozen policies are not expanded when new manuals are installed.
 
 Read the current revision immediately before each guarded mutation. In Bash:
 

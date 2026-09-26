@@ -24,6 +24,11 @@ No empirical defaults yet; fewer than three observations per class.
 | 2026-09-26 | extract-growth-evidence | T2 | T2 heavy-executor | PASS: 27 real-Scrapling tests; input, count and cumulative serialization limits enforced | 0 | none |
 | 2026-09-26 | review-growth-contracts | T3 | T3 oracle | PASS after bounded-serialization P2 correction; legacy fixtures, authority and publication preserved | 0 | none |
 | 2026-09-26 | verify-installed-cli | T1 | T3 orchestrator verification | PASS: Windows installation, native quote roundtrip, lifecycle and harness smoke checks | 0 | none |
+| 2026-09-26 | extend-regression-ci | T1 | T1 executor | PASS: explicit Growth saved-roster suite added to all three OS jobs; exact command passed eight tests | 0 | none |
+| 2026-09-26 | inspect-company-roster | T0 | T0 scout | PASS: complete current text/media audit; identified stale rasters and missing published hero asset | 0 | none |
+| 2026-09-26 | document-growth-caio | T1 | T1 executor | PASS: current standup/review docs corrected; 71 local links valid; historical records preserved | 0 | none |
+| 2026-09-26 | refresh-company-illustration | T1 | T1 executor | PASS: original robot style preserved; three peers, nine departments, matching 1774x887 consumers visually verified | 0 | none |
+| 2026-09-26 | extend-company-studio | T1 probe | T1 executor | PASS: eight builder and 68 browser-logic tests; staged assets load, desktop/mobile checked; export instructions verified on PowerShell 5.1 and 7 | 0 | PB-2 hit 1 |
 
 ## Active decisions
 

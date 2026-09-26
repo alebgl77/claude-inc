@@ -11,7 +11,7 @@ DO: Preserve saved profiles, digests and history; never migrate during a read or
 VERIFY: Frozen legacy fixtures stay byte-identical; new workspaces accept the new department and old ones reject it atomically.
 
 ### PB-2 · extend-company-studio
-provenance: T2 2026-09 · hits: 0
+provenance: T2 2026-09 · hits: 1
 WHEN: Extending the company directory, executive staff or mission catalog.
 DO: Update canonical registries, validators and manuals before generating company and mission data.
 DO: Generate both README and studio organization maps from the same source; check every destination without rewriting.

@@ -31,6 +31,7 @@ operating instructions, and a local task-and-decision record.
 [Growth toolkit](docs/growth-toolkit.md) ·
 [CAIO operating model](docs/caio-operating-model.md) ·
 [Architecture and alternatives](docs/architecture.md) ·
+[Visual asset guide](docs/visual-assets.md) ·
 [Roadmap](ROADMAP.md)
 
 ## Hire everyone in 60 seconds
@@ -116,9 +117,10 @@ ownership and the CTO retains technical and security acceptance.
 The CEO records task contracts, starts work after its dependencies are accepted,
 and delegates with the host's available agent tools. Departments produce actual
 files. Submission records the files' SHA-256 hashes and moves a task to review;
-an acceptance records a different department or CEO as reviewer and requires
-those files to be unchanged. **Hashes establish file identity, not correctness;
-reviewer labels are declarations, not authentication.** Review the evidence.
+an acceptance records a different department, CEO, or (in schema 2) CTO as
+reviewer and requires those files to be unchanged. **Hashes establish file
+identity, not correctness; reviewer labels are declarations, not authentication.**
+Review the evidence.
 
 ```bash
 company project status

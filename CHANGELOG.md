@@ -24,6 +24,13 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
   roster and frozen policies and remain resumable without implicit migration.
   Growth task ownership requires a new nine-department workspace; CAIO is advisory
   and is not a task department or reviewer enum.
+- Refreshed the company illustration and social preview for the nine-department
+  roster and peer CEO, CTO, and CAIO executives; aligned the standup and current
+  documentation with the department roster and supported reviewers.
+
+### Fixed
+- Included the homepage hero and social preview assets in the static Pages
+  artifact; social metadata uses the PNG preview for sharing.
 
 ## [1.5.1] - 2026-09-08
 

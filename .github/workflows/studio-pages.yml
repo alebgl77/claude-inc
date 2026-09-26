@@ -13,6 +13,7 @@ on:
       - 'scripts/**'
       - 'tests/test_project.py'
       - 'tests/test_company.js'
+      - 'tests/test_company_builder.py'
       - 'tests/test_harness.js'
       - 'tests/test_missions.py'
       - 'tests/test_studio.js'
@@ -49,6 +50,9 @@ jobs:
       - name: Company experience tests
         run: node --test tests/test_company.js tests/test_harness.js
 
+      - name: Company visual builder tests
+        run: python -m unittest discover -s tests -p test_company_builder.py
+
       - name: Studio tests
         run: node --test tests/test_studio.js
 
@@ -64,7 +68,7 @@ jobs:
           set -euo pipefail
           test ! -L studio
           mkdir _site
-          for file in index.html company.css company.js company-data.js company-team.png harness.js missions.html social-preview.png favicon.svg studio.css studio.js missions.js; do
+          for file in index.html company.css company.js company-data.js company-team.png company-preview.svg harness.js missions.html social-preview.svg social-preview.png favicon.svg studio.css studio.js missions.js; do
             test -f "studio/$file"
             test ! -L "studio/$file"
             cp "studio/$file" "_site/$file"

@@ -213,15 +213,17 @@ test('company generator is deterministic, current, profile-free, and check mode 
     fs.mkdirSync(path.join(temporary,'studio'));const target=path.join(temporary,'studio/company-data.js');
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.existsSync(target),false);
     assert.equal(run(['-B','scripts/build_company.py'],temporary).status,0);const before=fs.readFileSync(target);assert.deepEqual(before,fs.readFileSync(path.join(root,'studio/company-data.js')));
-    for(const name of ['org-chart.svg','company-preview.svg'])assert.deepEqual(fs.readFileSync(path.join(temporary,'studio',name)),fs.readFileSync(path.join(root,'studio',name)));
+    for(const name of ['org-chart.svg','company-preview.svg','social-preview.svg'])assert.deepEqual(fs.readFileSync(path.join(temporary,'studio',name)),fs.readFileSync(path.join(root,'studio',name)));
     const asset=path.join(temporary,'assets/org-chart.svg');assert.deepEqual(fs.readFileSync(asset),fs.readFileSync(path.join(temporary,'studio/org-chart.svg')));
     fs.writeFileSync(asset,'STALE README DIAGRAM');const assetStat=fs.statSync(asset).mtimeMs;
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.readFileSync(asset,'utf8'),'STALE README DIAGRAM');assert.equal(fs.statSync(asset).mtimeMs,assetStat);
     fs.copyFileSync(path.join(temporary,'studio/org-chart.svg'),asset);
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,0);const stat=fs.statSync(target).mtimeMs;
-    const preview=path.join(temporary,'studio/company-preview.svg'),previewStat=fs.statSync(preview).mtimeMs;fs.writeFileSync(preview,'STALE DIAGRAM');
-    const staleStat=fs.statSync(preview).mtimeMs;assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.readFileSync(preview,'utf8'),'STALE DIAGRAM');assert.equal(fs.statSync(preview).mtimeMs,staleStat);
-    fs.copyFileSync(path.join(root,'studio/company-preview.svg'),preview);
+    for(const name of ['company-preview.svg','social-preview.svg']){
+      const preview=path.join(temporary,'studio',name);fs.writeFileSync(preview,'STALE DIAGRAM');
+      const staleStat=fs.statSync(preview).mtimeMs;assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.equal(fs.readFileSync(preview,'utf8'),'STALE DIAGRAM');assert.equal(fs.statSync(preview).mtimeMs,staleStat);
+      fs.copyFileSync(path.join(root,'studio',name),preview);
+    }
     const manual=path.join(temporary,'skills',data.departments[0].skills[0].id,'SKILL.md');fs.writeFileSync(manual,fs.readFileSync(manual,'utf8').replace('## Output format','## Output format\n\nCANONICAL OUTPUT CHANGE'));
     assert.equal(run(['-B','scripts/build_company.py','--check'],temporary).status,1);assert.deepEqual(fs.readFileSync(target),before);assert.equal(fs.statSync(target).mtimeMs,stat);
     const generated=before.toString('ascii');assert.doesNotMatch(generated,/<|C:\\\\Users|company-team\.md|PRIVATE/);
@@ -307,10 +309,40 @@ test('generated diagrams and executive cards name the current company',()=>{
   const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8'),h=harness();
   assert.match(html,/alt="[^"]*Developers, Designers, Marketing, Social Media, Finance, Small Business, Legal, Sales, and Growth/);assert.match(html,/CEO, CTO and CAIO lead together/);
   for(const id of ['cto','caio'])assert.doesNotMatch(allText(h.get(id+'-skills')),/Catalog grouping|peer executive of the CEO/);
-  assert.match(html,/og:image:width" content="1200"/);assert.match(html,/og:image:height" content="630"/);assert.match(html,/twitter:image" content="https:\/\/alebgl77.github.io\/claude-inc\/company-preview.svg"/);
+  assert.match(html,/og:image:width" content="1200"/);assert.match(html,/og:image:height" content="630"/);assert.match(html,/twitter:image" content="https:\/\/alebgl77.github.io\/claude-inc\/social-preview.png"/);
   assert.doesNotMatch(html,/company-team\.png/);
   const diagram=fs.readFileSync(path.join(root,'studio/org-chart.svg'),'utf8');
   for(const skill of [...data.departments.flatMap(d=>d.skills),...data.staff])assert.ok(diagram.includes('>'+skill.id+'</text>'),skill.id);
   for(const name of ['CEO','CTO','CAIO'])assert.ok(diagram.includes('>'+name+'</text>'));
   assert.equal((diagram.match(/>PEER EXECUTIVE<\/text>/g)||[]).length,3);
+});
+
+test('Pages staging contains every local HTML resource and social image',()=>{
+  const workflow=fs.readFileSync(path.join(root,'.github/workflows/studio-pages.yml'),'utf8');
+  const files=workflow.match(/for file in ([^;\n]+); do/);assert.ok(files,'Pages public file allowlist is missing');
+  const copies=files[1].trim().split(/\s+/).map(name=>['studio/'+name,name]);
+  for(const match of workflow.matchAll(/^\s*cp ([\w./-]+) _site\/([\w.-]+)\s*$/gm))copies.push([match[1],match[2]]);
+  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'company-pages-test-')),base=new URL('https://alebgl77.github.io/claude-inc/');
+  try{
+    for(const [source,name] of copies){const file=path.join(root,source);assert.equal(fs.lstatSync(file).isFile(),true,source);fs.copyFileSync(file,path.join(temporary,name));}
+    for(const name of ['index.html','missions.html']){
+      const html=fs.readFileSync(path.join(temporary,name),'utf8'),metadata={};
+      for(const [tag] of html.matchAll(/<(?:a|img|script|link|meta)\b[^>]*>/g)){
+        const attributes=Object.fromEntries([...tag.matchAll(/([\w:-]+)="([^"]*)"/g)].map(match=>[match[1],match[2]]));
+        if(tag.startsWith('<meta'))metadata[attributes.property||attributes.name]=attributes.content;
+        const references=[attributes.src,attributes.href];
+        if(/^(?:og|twitter):image$/.test(attributes.property||attributes.name||''))references.push(attributes.content);
+        for(const reference of references.filter(Boolean)){
+          const url=new URL(reference,new URL(name,base));if(url.origin!==base.origin)continue;
+          assert.ok(url.pathname.startsWith(base.pathname),name+': '+reference);
+          const local=decodeURIComponent(url.pathname.slice(base.pathname.length))||'index.html';
+          assert.equal(fs.existsSync(path.join(temporary,local)),true,name+': unpublished '+reference);
+        }
+      }
+      assert.equal(metadata['og:image'],metadata['twitter:image']);assert.equal(metadata['og:image:type'],'image/png');
+      const preview=fs.readFileSync(path.join(temporary,new URL(metadata['og:image']).pathname.slice(base.pathname.length)));
+      assert.deepEqual([...preview.subarray(0,8)],[137,80,78,71,13,10,26,10]);
+      assert.equal(Number(metadata['og:image:width']),preview.readUInt32BE(16));assert.equal(Number(metadata['og:image:height']),preview.readUInt32BE(20));
+    }
+  }finally{assert.equal(path.dirname(path.resolve(temporary)),path.resolve(os.tmpdir()));assert.ok(path.basename(temporary).startsWith('company-pages-test-'));fs.rmSync(temporary,{recursive:true,force:true});}
 });

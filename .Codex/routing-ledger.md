@@ -24,6 +24,7 @@ No empirical defaults yet; fewer than three observations per class.
 | 2026-09-26 | extract-growth-evidence | T2 | T2 heavy-executor | PASS: 27 real-Scrapling tests; input, count and cumulative serialization limits enforced | 0 | none |
 | 2026-09-26 | review-growth-contracts | T3 | T3 oracle | PASS after bounded-serialization P2 correction; legacy fixtures, authority and publication preserved | 0 | none |
 | 2026-09-26 | verify-installed-cli | T1 | T3 orchestrator verification | PASS: Windows installation, native quote roundtrip, lifecycle and harness smoke checks | 0 | none |
+| 2026-09-26 | extend-regression-ci | T1 | T1 executor | PASS: explicit Growth saved-roster suite added to all three OS jobs; exact command passed eight tests | 0 | none |
 
 ## Active decisions
 

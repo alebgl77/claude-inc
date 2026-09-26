@@ -36,6 +36,9 @@ jobs:
       - name: CTO routing and canonical registry tests
         run: python -m unittest discover -s tests -p test_cto.py
 
+      - name: Growth saved-roster integration tests
+        run: python -m unittest discover -s tests -p test_growth_integration.py
+
       - name: Mission compiler tests
         run: python -m unittest discover -s tests -p test_missions.py
 

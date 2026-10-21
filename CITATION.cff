@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Claude, Inc."
+abstract: >-
+  Claude Code plugin that organizes a project as a virtual company, with peer
+  CEO, CTO and CAIO executives, nine departments, 64 skill manuals, bounded
+  review loops and SHA-256 records of submitted artifacts.
+authors:
+  - family-names: "Beguel"
+    given-names: "Alexandre"
+    alias: "alebgl77"
+    website: "https://beguel.com/"
+license: MIT
+repository-code: "https://github.com/alebgl77/claude-inc"
+url: "https://github.com/alebgl77/claude-inc"
+keywords:
+  - claude-code
+  - claude-code-plugin
+  - multi-agent
+  - agentic-ai
+  - ai-agents
+  - claude-skills

@@ -542,6 +542,10 @@ business, technical, and operating tradeoffs together.
 [MIT](LICENSE) for first-party content. The vendored NVIDIA reference retains
 its [Apache-2.0 license](skills/skill-vetting/references/LICENSE.nvidia).
 
+## Author
+
+Built and maintained by **[Alexandre Beguel](https://github.com/alebgl77)**, Agentic AI Architect and external CAIO based in Paris. He works on production GenAI, LLMOps, LLM FinOps and evidence-first AI governance. [beguel.com](https://beguel.com/) · [LinkedIn](https://www.linkedin.com/in/beguel/) · [Profile in English, French and Spanish](https://alebgl77.github.io/)
+
 ---
 
 <div align="center">

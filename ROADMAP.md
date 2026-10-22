@@ -15,7 +15,7 @@ CEO, CTO, and CAIO bring unresolved business, technical, and operating tradeoffs
 in one decision brief. The proposed result is consistent work across departments;
 it does not predict how the market will respond.
 
-## The foundation: v1.5.1 and unreleased additions
+## The foundation: v1.5.1 plus development source `1.6.0-dev.0`
 
 - Nine departments, 54 department manuals and ten staff manuals: 64 unique skill
   manuals, with eleven registered agents including CTO and CAIO. These are operating

@@ -2,8 +2,10 @@
 
 Status: accepted for version 1.4.0. Date: 2026-09-08.
 
-The counts in this decision describe that historical release. The current
-company has nine departments, 64 manuals, and peer CEO, CTO, and CAIO executives.
+The counts in this decision describe that historical release. The unreleased
+`1.6.0-dev.0` source on `main` has nine departments, 64 manuals, and peer CEO, CTO,
+and CAIO executives. The latest published v1.5.1 has eight departments and 54
+manuals with CEO and CTO.
 See the [workspace guide](project-workspace.md) for current behavior and the
 compatibility contract for historical eight-department workspaces.
 

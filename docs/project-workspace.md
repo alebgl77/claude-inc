@@ -1,5 +1,9 @@
 # A company around your project
 
+This guide describes the unreleased `1.6.0-dev.0` source on `main`. The published
+[v1.5.1 release](https://github.com/alebgl77/claude-inc/releases/tag/v1.5.1)
+contains eight departments and 54 manuals, without the Growth and CAIO additions.
+
 The CEO coordinates an arbitrary founder project across nine departments and
 64 skill manuals, with peer CEO, CTO, and CAIO executives. Start with your own brief, goals, and constraints.
 The company records real task contracts and evidence as work happens; it does

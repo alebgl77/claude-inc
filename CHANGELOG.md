@@ -4,6 +4,10 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
 
 ## [Unreleased]
 
+Development builds identify themselves as `1.6.0-dev.0`. The latest published
+release remains v1.5.1 (eight departments and 54 manuals); the additions below
+are available from `main` and have not been tagged as a release.
+
 ### Added
 - A Growth department with six manuals for strategy, account intelligence,
   engineering, experiments, lifecycle growth, and revenue operations; `company
@@ -29,6 +33,10 @@ Notable changes to Claude, Inc. Loosely follows [Keep a Changelog](https://keepa
   documentation with the department roster and supported reviewers.
 
 ### Fixed
+- Distinguished the development source from the published roster in package
+  versions, installation guidance and the public company page.
+- Updated security documentation for Python state helpers, host execution and
+  repository bootstrap downloads; third-party skill research remains separate.
 - Included the homepage hero and social preview assets in the static Pages
   artifact; social metadata uses the PNG preview for sharing.
 

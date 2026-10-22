@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "The Claude, Inc. marketplace: hire the whole company in one install.",
-    "version": "1.5.1"
+    "version": "1.6.0-dev.0"
   },
   "plugins": [
     {

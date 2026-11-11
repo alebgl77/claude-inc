@@ -21,6 +21,7 @@ CTO_SKILLS = {"cto-advisor", "skill-vetting", "appsec-review", "agent-evaluation
 CAIO_SKILLS = {"ai-workflow-architect", "agent-reliability", "ai-data-steward", "ai-adoption-lead"}
 STAFF = {"chief-of-staff", "token-accountant"} | CTO_SKILLS | CAIO_SKILLS
 EXECUTIVES = {"cto", "caio"}
+DESKS = {"router"}  # registered agents that own no task and have no employees
 EXPECTED_EMPLOYEES = 64
 EXPECTED_DEPARTMENTS = 9
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
@@ -177,9 +178,9 @@ def check_roster(cli, skills, agents):
         err(f"bin/company has {len(cli_depts)} departments, expected {EXPECTED_DEPARTMENTS}")
     if set(cli_depts) != CANONICAL_DEPARTMENTS:
         err("bin/company DEPTS must contain the nine canonical business departments")
-    if set(agents) != CANONICAL_DEPARTMENTS | EXECUTIVES:
-        err("agents/ must contain exactly the nine department agents and CTO/CAIO executives")
-    for label, expected in (("STAFF", STAFF), ("EXECUTIVES", EXECUTIVES), ("CTO_SKILLS", CTO_SKILLS), ("CAIO_SKILLS", CAIO_SKILLS)):
+    if set(agents) != CANONICAL_DEPARTMENTS | EXECUTIVES | DESKS:
+        err("agents/ must contain exactly the nine department agents, CTO/CAIO executives and the routing desk")
+    for label, expected in (("STAFF", STAFF), ("EXECUTIVES", EXECUTIVES), ("DESKS", DESKS), ("CTO_SKILLS", CTO_SKILLS), ("CAIO_SKILLS", CAIO_SKILLS)):
         entries = re.findall(rf"^{label}=\(([a-z0-9 -]+)\)$", cli, re.M)
         values = entries[0].split() if len(entries) == 1 else []
         if len(values) != len(expected) or set(values) != expected:
@@ -254,9 +255,18 @@ def check_docs(skills, agents):
     ]:
         if section not in manual:
             err(f"{company_path}: canonical CEO manual is missing {section!r}")
-    for dept in set(agents) - EXECUTIVES:
+    for dept in set(agents) - EXECUTIVES - DESKS:
         if f"`{dept}`" not in manual:
             err(f"{company_path} routing table is missing '{dept}'")
+    if "company route" not in manual or "`router`" not in manual:
+        err(f"{company_path} must tell the CEO how to consult the routing desk")
+    if os.path.exists("agents/router.md"):
+        desk = open("agents/router.md", encoding="utf-8").read()
+        for marker in ("route packet", "route check", "## Decision contract", "kbDigest"):
+            if marker not in desk:
+                err(f"agents/router.md is missing its {marker!r} contract marker")
+    if "company route" not in readme:
+        err("README.md does not explain the routing desk")
     for executive in EXECUTIVES:
         if f"company {executive}" not in manual:
             err(f"{company_path} is missing the {executive} advisory command")
@@ -526,8 +536,8 @@ def main():
 
     if len(skills) != EXPECTED_EMPLOYEES:
         err(f"skills/ has {len(skills)} employees, expected {EXPECTED_EMPLOYEES}")
-    if set(agents) != CANONICAL_DEPARTMENTS | EXECUTIVES:
-        err("agents/ must contain exactly 9 business departments and 2 executives")
+    if set(agents) != CANONICAL_DEPARTMENTS | EXECUTIVES | DESKS:
+        err("agents/ must contain exactly 9 business departments, 2 executives and the routing desk")
     missing_staff = STAFF - set(skills)
     if missing_staff:
         err(f"executive staff missing from skills/: {sorted(missing_staff)}")
@@ -542,7 +552,7 @@ def main():
     check_scripts()
 
     staff = len(STAFF & set(skills))
-    print(f"Claude, Inc.: {len(skills)} skills across {EXPECTED_DEPARTMENTS} departments and 2 executives "
+    print(f"Claude, Inc.: {len(skills)} skills across {EXPECTED_DEPARTMENTS} departments, 2 executives and a routing desk "
           f"({len(skills) - staff} staffed + {staff} executive staff)")
     print(f"Skill listing: {listing} of {SKILL_LISTING_BUDGET} budgeted characters "
           f"(Claude Code default {SKILL_LISTING_DEFAULT})")

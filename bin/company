@@ -37,6 +37,7 @@ outf() { printf "$@" 2>/dev/null || exit 141; }
 DEPTS=(developers designers marketing social-media finance small-business legal sales growth)
 STAFF=(chief-of-staff token-accountant cto-advisor skill-vetting appsec-review agent-evaluation ai-workflow-architect agent-reliability ai-data-steward ai-adoption-lead)
 EXECUTIVES=(cto caio)
+DESKS=(router)
 CTO_SKILLS=(cto-advisor skill-vetting appsec-review agent-evaluation)
 CAIO_SKILLS=(ai-workflow-architect agent-reliability ai-data-steward ai-adoption-lead)
 PROFILE_MAX_BYTES=32768
@@ -441,15 +442,42 @@ onboard() {
 }
 
 # ------------------------------------------------------------------ composers
-compose_dept() { # $1=dept $2=task -> full self-contained prompt on stdout
-  local dept="$1" task="$2" s
+selected_skills() { # $1=dept $2=comma list -> validated manuals, one per line
+  local dept="$1" list="$2" slug seen=""
+  local -a items
+  [[ "$list" =~ ^[a-z0-9-]+(,[a-z0-9-]+)*$ ]] || { echo "company: --skills needs a comma-separated list of manuals" >&2; return 1; }
+  IFS=',' read -r -a items <<< "$list"
+  for slug in "${items[@]}"; do
+    case " $(skills_of "$dept") ${STAFF[*]} " in
+      *" $slug "*) : ;;
+      *) echo "company: '$slug' is neither a $dept manual nor a staff manual" >&2; return 1 ;;
+    esac
+    case " $seen " in
+      *" $slug "*) echo "company: duplicate manual '$slug' in --skills" >&2; return 1 ;;
+    esac
+    seen="$seen $slug"
+    printf '%s\n' "$slug"
+  done
+}
+
+compose_dept() { # $1=dept $2=task $3=optional comma list of manuals -> self-contained prompt on stdout
+  local dept="$1" task="$2" selection="${3:-}" s loaded
+  if [ -n "$selection" ]; then
+    loaded="$(selected_skills "$dept" "$selection")" || return $?
+  else
+    loaded="$(skills_of "$dept" | tr ' ' '\n')"
+  fi
   echo "# Claude, Inc. - ${dept} department"
   echo
-  echo "You are the head of the ${dept} department. Your charter follows, then the full instruction manual of each employee (skill) on your team. Use them."
+  if [ -n "$selection" ]; then
+    echo "You are the head of the ${dept} department. Your charter follows, then the instruction manuals a routing decision selected for this task. The charter describes your other employees; say so if the task needs one that is not loaded."
+  else
+    echo "You are the head of the ${dept} department. Your charter follows, then the full instruction manual of each employee (skill) on your team. Use them."
+  fi
   echo
   echo "----- DEPARTMENT CHARTER -----"
   cat "$ROOT/agents/${dept}.md"
-  for s in $(skills_of "$dept"); do
+  for s in $loaded; do
     echo
     echo "----- EMPLOYEE: ${s} -----"
     cat "$ROOT/skills/${s}/SKILL.md"
@@ -497,6 +525,29 @@ compose_executive() { # $1=executive $2=task -> charter and four staff manuals
   echo "----- TASK FROM THE CEO -----"
   printf '%s\n' "$task"
   echo "Apply the relevant manuals and exchange your decision packet with the peer CEO: finding, business impact, options/tradeoffs, recommendation, decision needed. The CEO serializes project updates to prevent competing writes."
+}
+
+compose_route() { # $1=request -> routing desk charter and the packet compiled for this request
+  local request="$1" candidate interpreter="" packet
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 &&
+       "$candidate" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      interpreter="$candidate"
+      break
+    fi
+  done
+  [ -n "$interpreter" ] || { echo "company route: Python 3.9 or newer is required (install python3 or python)." >&2; return 1; }
+  # The request travels on standard input as literal data, never as shell or argument text.
+  packet="$(printf '%s' "$request" | "$interpreter" "$ROOT/skills/chief-of-staff/scripts/route.py" packet)" || return $?
+  echo "# Claude, Inc. - routing desk"
+  echo
+  echo "----- ROUTING DESK CHARTER -----"
+  cat "$ROOT/agents/router.md" || return $?
+  echo
+  echo "----- ROUTING PACKET (already compiled for this request) -----"
+  printf '%s\n' "$packet"
+  echo
+  echo "Decide from the packet above and reply with the decision JSON only. If you can run commands, check it first with: company route check (decision on standard input)."
 }
 
 compose_brief() { # $1=mission
@@ -558,6 +609,18 @@ run_mission() { # local compiler only; Python is optional for all other commands
   return 1
 }
 
+run_route() { # local knowledge base and decision checks; never calls an AI engine
+  local interpreter
+  for interpreter in python3 python; do
+    if command -v "$interpreter" >/dev/null 2>&1 &&
+       "$interpreter" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1; then
+      exec "$interpreter" "$ROOT/skills/chief-of-staff/scripts/route.py" "$@"
+    fi
+  done
+  echo "company route: Python 3.9 or newer is required (install python3 or python)." >&2
+  return 1
+}
+
 run_prompt() { # $1=prompt $2=print_only
   local prompt="$1" print_only="$2"
   if [ "$print_only" = "yes" ]; then
@@ -583,11 +646,13 @@ roster() {
   outf '  %s%-15s%s %s\n' "$DIM" "staff (CEO)" "$R" "chief-of-staff · token-accountant"
   outf '  %s%-15s%s %s\n' "$B" "cto (executive)" "$R" "${CTO_SKILLS[*]}"
   outf '  %s%-15s%s %s\n' "$B" "caio (executive)" "$R" "${CAIO_SKILLS[*]}"
+  outf '  %s%-15s%s %s\n' "$DIM" "router (desk)" "$R" "routing knowledge base · checked decisions"
   out
   out "  ${DIM}company brief \"<mission>\"    → CEO routes across departments${R}"
   out "  ${DIM}company <dept> \"<task>\"      → talk to one department directly${R}"
   out "  ${DIM}company cto \"<task>\"         → technical decisions and review${R}"
   out "  ${DIM}company caio \"<task>\"        → AI operating model and adoption${R}"
+  out "  ${DIM}company route \"<request>\"    → who should handle it, as a checked decision${R}"
 }
 
 usage() {
@@ -599,6 +664,8 @@ USAGE
   company <dept> "<task>"            Task one department directly
   company cto "<technical brief>"    Consult the CTO with four staff manuals
   company caio "<AI operating brief>" Consult the CAIO with four staff manuals
+  company route "<request>"          Ask the routing desk who should handle a request
+  company route check                Check a routing decision read from standard input
   company roster                     Show the org chart
   company project init [options]     Create a private persistent company project
   company project status             Inspect the saved project and task board
@@ -621,6 +688,8 @@ DEPARTMENTS (aliases)
 OPTIONS
   -p, --print                        Print the composed prompt instead of running it
                                      (pipe it into ANY AI CLI: gemini, codex, llm, ...)
+  --skills a,b                       Load only these manuals in a department prompt
+                                     (the manuals a routing decision selected)
 
 MISSION OPTIONS (Python 3.9+; always stdout, no team profile access)
   --brief TEXT                       Founder brief (max 8000 UTF-8 bytes)
@@ -645,14 +714,27 @@ if [ "$1" = "project" ]; then
   shift
   run_project "$@"
 fi
+# Routing desk helper operations keep their original argument boundaries as well.
+if [ "$1" = "route" ]; then
+  case "${2:-}" in
+    packet|check|record|memory|kb|eval) shift; run_route "$@" ;;
+  esac
+fi
 
 PRINT_ONLY="no"
 ARGS=()
 MISSION_BRIEF_VALUE="no"
+SELECTED_SKILLS=""
+SKILLS_VALUE="no"
 for a in "$@"; do
   if [ "$MISSION_BRIEF_VALUE" = "yes" ]; then
     ARGS+=("--brief=$a")
     MISSION_BRIEF_VALUE="no"
+    continue
+  fi
+  if [ "$SKILLS_VALUE" = "yes" ]; then
+    SELECTED_SKILLS="$a"
+    SKILLS_VALUE="no"
     continue
   fi
   if [ "${ARGS[0]:-}" = "mission" ] && [ "$a" = "--brief" ]; then
@@ -661,15 +743,22 @@ for a in "$@"; do
   fi
   case "$a" in
     -p|--print) PRINT_ONLY="yes" ;;
+    --skills) SKILLS_VALUE="yes" ;;
+    --skills=*) SELECTED_SKILLS="${a#--skills=}" ;;
     *) ARGS+=("$a") ;;
   esac
 done
 [ "$MISSION_BRIEF_VALUE" = "no" ] || ARGS+=("--brief")
+[ "$SKILLS_VALUE" = "no" ] || { echo "company: --skills needs a comma-separated list of manuals" >&2; exit 1; }
 # Bash 3.2 treats an empty array as unset under nounset; guard before expansion.
 [ "${ARGS[0]+present}" = "present" ] || { usage; exit 1; }
 set -- "${ARGS[@]}"
 
 CMD="$1"; shift || true
+if [ -n "$SELECTED_SKILLS" ] && [ -z "$(dept_of "$CMD")" ]; then
+  echo "company: --skills applies to a department prompt, for example: company legal --skills triage-nda \"<task>\"" >&2
+  exit 1
+fi
 
 case "$CMD" in
   missions)       run_mission list "$@" ;;
@@ -689,6 +778,13 @@ case "$CMD" in
     [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
     run_prompt "$PROMPT" "$PRINT_ONLY"
     ;;
+  route)
+    [ $# -ge 1 ] || { echo "usage: company route \"<request>\"" >&2; exit 1; }
+    PROMPT=""; COMPOSE_STATUS=0
+    PROMPT="$(compose_route "$*")" || COMPOSE_STATUS=$?
+    [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
+    run_prompt "$PROMPT" "$PRINT_ONLY"
+    ;;
   cto|caio)
     [ $# -ge 1 ] || { echo "usage: company $CMD \"<executive brief>\"" >&2; exit 1; }
     PROMPT=""; COMPOSE_STATUS=0
@@ -701,7 +797,7 @@ case "$CMD" in
     if [ -n "$DEPT" ]; then
       [ $# -ge 1 ] || { echo "usage: company $CMD \"<task>\"" >&2; exit 1; }
       PROMPT=""; COMPOSE_STATUS=0
-      PROMPT="$(compose_dept "$DEPT" "$*")" || COMPOSE_STATUS=$?
+      PROMPT="$(compose_dept "$DEPT" "$*" "$SELECTED_SKILLS")" || COMPOSE_STATUS=$?
       [ "$COMPOSE_STATUS" -eq 0 ] || exit "$COMPOSE_STATUS"
       run_prompt "$PROMPT" "$PRINT_ONLY"
     else

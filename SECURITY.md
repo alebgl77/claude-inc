@@ -32,6 +32,23 @@ rather than a public issue for anything exploitable.
 - Prompt-injection payloads hidden in instructions ("ignore previous instructions")
 - Anything in `install.sh` or `bin/company` that fetches and executes remote code
 
+## Routing desk boundary
+
+`company route` compiles its knowledge base from the installed manuals and
+charters and never calls a model. A request reaches the helper on standard
+input as literal data, limited to 8,000 UTF-8 bytes without control characters,
+and is printed between explicit delimiters. A routing decision is untrusted
+output: the helper accepts it only when its departments, manuals, mode and
+knowledge base digest fit the canonical roster, and an accepted route is a
+staffing proposal that grants no permission.
+
+Routing memory is the local file `.claude/company-routing.json`. It holds
+request class names, routes and counters, with no request text. Class names are
+written by the assistant, so the charter forbids names of people, companies or
+products; review the file before sharing a folder. Writes take a fail-fast
+lock, refuse symbolic links and replace the file atomically. The file is not
+signed and is not an audit trail.
+
 ## Onboarding research boundary
 
 Optional onboarding can propose research after it has shown an initial team proposal. It must receive separate, explicit consent before using an engine's network research tools. The CLI does not implement that research or automatically retrieve candidate skills. Installer downloads of this repository, described above, are separate from onboarding research.

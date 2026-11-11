@@ -132,7 +132,7 @@ exit $LASTEXITCODE
                 return run([str(wrapper), *arguments], project, env, expected_error)
 
         assert len(list((home / ".claude/skills").iterdir())) == 64
-        assert len(list((home / ".claude/agents").glob("*.md"))) == 11
+        assert len(list((home / ".claude/agents").glob("*.md"))) == 12
         assert (home / ".claude/commands/company.md").read_bytes() == (ROOT / "commands/company.md").read_bytes()
         profiles = json.loads(company("project", "harness", "profiles", "--format", "json"))
         assert profiles["version"] == 1 and set(profiles["profiles"]) == {"developers", "designers", "marketing", "social-media", "finance", "small-business", "legal", "sales", "growth"}

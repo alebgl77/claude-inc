@@ -29,7 +29,8 @@ description: <What it does, then one "Use for ..." or "Use when ..." cue. Third 
    descriptions of the least-used skills beyond it. `python3 scripts/validate.py`
    fails when the whole company needs more than 7,200 characters. End
    `## When to use` with a `- Typical requests: "...", "..."` line quoting real
-   phrasings: that is where the detail belongs, and it loads only when needed.
+   phrasings: that is where the detail belongs, it loads only when needed, and the
+   [routing desk](docs/routing-desk.md) reads it from there.
 
 2. Put them on a team: add the slug to the VP roster in `agents/<department>.md`, to `skills_of()` in `bin/company`, and to the department table in `README.md`.
 3. That's it. Departments stay at whatever size makes sense — 6 was the founding class, not a law.

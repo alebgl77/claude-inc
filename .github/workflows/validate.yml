@@ -493,7 +493,7 @@ jobs:
           bash "$workspace/install.sh"
           bash "$workspace/install.sh"
           [ "$(ls -1 "$HOME/.claude/skills" | wc -l | tr -d ' ')" -eq 64 ]
-          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 11 ]
+          [ "$(ls -1 "$HOME/.claude/agents" | wc -l | tr -d ' ')" -eq 12 ]
           [ -L "$HOME/.local/bin/company" ]
           [ "$("$HOME/.local/bin/company" version)" = "company v1.6.0-dev.0" ]
 
@@ -502,7 +502,7 @@ jobs:
           mkdir -p "$HOME" "$project"
           (cd "$project" && bash "$workspace/install.sh" --project)
           [ "$(ls -1 "$project/.claude/skills" | wc -l | tr -d ' ')" -eq 64 ]
-          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 11 ]
+          [ "$(ls -1 "$project/.claude/agents" | wc -l | tr -d ' ')" -eq 12 ]
 
           export HOME="$test_root/no cli home"
           mkdir -p "$HOME"
@@ -561,7 +561,7 @@ jobs:
             agent_count=$((agent_count + 1))
           done
           [ "$skill_count" -eq 64 ]
-          [ "$agent_count" -eq 11 ]
+          [ "$agent_count" -eq 12 ]
 
       - name: Global, project and no-CLI installs work (Windows)
         if: runner.os == 'Windows'
@@ -575,7 +575,7 @@ jobs:
           & "$workspace/install.ps1"
           & "$workspace/install.ps1"
           if ((Get-ChildItem "$env:HOME/.claude/skills" -Directory).Count -ne 64) { throw 'Global skill count is not 64' }
-          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 11) { throw 'Global agent count is not 11' }
+          if ((Get-ChildItem "$env:HOME/.claude/agents" -File).Count -ne 12) { throw 'Global agent count is not 12' }
           $wrapper = Join-Path $env:HOME '.local/bin/company.exe'
           if (-not (Test-Path -LiteralPath $wrapper)) { throw 'CLI wrapper was not installed' }
           $version = & $wrapper version
@@ -598,7 +598,7 @@ jobs:
           Push-Location $project
           try { & "$workspace/install.ps1" -Project } finally { Pop-Location }
           if ((Get-ChildItem "$project/.claude/skills" -Directory).Count -ne 64) { throw 'Project skill count is not 64' }
-          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 11) { throw 'Project agent count is not 11' }
+          if ((Get-ChildItem "$project/.claude/agents" -File).Count -ne 12) { throw 'Project agent count is not 12' }
 
           $env:HOME = Join-Path $testRoot 'no cli home'
           New-Item -ItemType Directory -Force -Path $env:HOME | Out-Null

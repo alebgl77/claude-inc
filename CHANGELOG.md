@@ -9,6 +9,18 @@ release remains v1.5.1 (eight departments and 54 manuals); the additions below
 are available from `main` and have not been tagged as a release.
 
 ### Added
+- A routing desk. `company route "<request>"` asks an assistant who should handle
+  a request, from a knowledge base compiled at each call from the installed
+  manuals, charters and CEO manual: a lexical shortlist, the complete index of all
+  64 manuals, department playbooks, boundaries and local routing memory. The
+  helper never calls a model. `company route check` accepts a decision only if its
+  departments, manuals, mode and knowledge base digest fit the roster and the
+  contract, and returns the staffing. The `router` agent runs the same procedure in
+  Claude Code. `company route record` keeps accepted and rerouted counts per
+  request class in `.claude/company-routing.json`, with no request text, and
+  `company route eval` self-checks the shortlist, exports labelled requests, and
+  scores recorded decisions with exact binomial intervals.
+- `--skills a,b` on a department prompt loads only the manuals a route selected.
 - A Growth department with six manuals for strategy, account intelligence,
   engineering, experiments, lifecycle growth, and revenue operations; `company
   growth` prepares a focused department brief and `b2b-growth` provides a mission recipe.
@@ -30,7 +42,8 @@ are available from `main` and have not been tagged as a release.
 
 ### Changed
 - The current company has nine departments, 54 department manuals, and ten staff
-  manuals: 64 capabilities, with eleven registered agents including CTO and CAIO.
+  manuals: 64 capabilities, with twelve registered agents: nine departments, CTO,
+  CAIO and the routing desk.
 - CEO routing distinguishes Growth from Marketing and Sales, and uses CAIO advice
   for material process needs. VPs retain delivery; CTO retains technical/security
   acceptance; CEO remains the sole project-state writer.

@@ -36,6 +36,9 @@ jobs:
       - name: Evidence freshness and recertification tests
         run: python -m unittest discover -s tests -p test_impact.py
 
+      - name: Routing desk knowledge base, decision and memory tests
+        run: python -m unittest discover -s tests -p test_route.py
+
       - name: CTO routing and canonical registry tests
         run: python -m unittest discover -s tests -p test_cto.py
 

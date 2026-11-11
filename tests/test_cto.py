@@ -34,7 +34,7 @@ class RegistryTests(unittest.TestCase):
         self.assertTrue(all(len(skills) == 6 for skills in roster.values()))
         self.assertEqual(set(staff), STAFF)
         self.assertEqual(len(staff), 10)
-        self.assertEqual({path.stem for path in (ROOT / "agents").glob("*.md")}, set(roster) | {"cto", "caio"})
+        self.assertEqual({path.stem for path in (ROOT / "agents").glob("*.md")}, set(roster) | {"cto", "caio", "router"})
         self.assertEqual(len(list((ROOT / "skills").glob("*/SKILL.md"))), 64)
 
     def test_malformed_staff_and_executive_registries_are_rejected(self):

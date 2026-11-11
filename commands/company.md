@@ -20,7 +20,7 @@ Staff: chief-of-staff, token-accountant, cto-advisor, skill-vetting,
 ```
 
 Every department has a native host agent definition in `agents/`. Every employee has a manual in `skills/`. All nine departments are available in new projects; existing projects retain their saved roster. Activate the capabilities the work needs.
-The plugin registers `/claude-inc:company`, nine department agents such as `claude-inc:developers`, the peer executives `claude-inc:cto` and `claude-inc:caio`, and skills such as `claude-inc:chief-of-staff`. A directly installed command uses `/company`. Use the host's discovered registered names rather than inventing agent types.
+The plugin registers `/claude-inc:company`, nine department agents such as `claude-inc:developers`, the peer executives `claude-inc:cto` and `claude-inc:caio`, the routing desk `claude-inc:router`, and skills such as `claude-inc:chief-of-staff`. A directly installed command uses `/company`. Use the host's discovered registered names rather than inventing agent types.
 
 ## Routing table
 
@@ -56,6 +56,16 @@ The `cto` agent in `agents/cto.md` is a peer executive, not a staff employee or 
 `company cto "technical brief" --print` composes the CTO charter and its four manuals. `company caio "operating brief" --print` composes the CAIO charter and its four manuals. `company brief` includes both executive charters and the two coordination/usage manuals; load specialist manuals only when relevant. Optional external scanners and plugins require their own available tools and existing authorization; neither the manuals nor a clean scan confer NVIDIA certification.
 
 The CAIO advises on material handoff failures, inconsistent shared context, unreliable workflows, or adoption friction. It coordinates process criteria with the relevant VPs and CTO; VPs retain delivery and the CTO retains technical/security acceptance. Use [caio operating model](https://github.com/alebgl77/claude-inc/blob/main/docs/caio-operating-model.md) for bounded comparison and feedback. CAIO is neither a task department nor a reviewer enum. Do not add four standing staff agents or require CAIO review of simple tasks.
+
+## Routing desk
+
+The routing table above is your quick reference. When the owner or the right manuals are not obvious, or work may span several departments, consult the routing desk before planning. It is the `router` agent (`claude-inc:router` in the plugin) backed by `company route`: a knowledge base compiled at each call from the installed manuals and charters, plus the outcomes of earlier routes recorded in this folder. `company route ...` means the same helper you selected during invocation.
+
+- Delegate the literal request to `router` and name the helper you selected, or run `company route packet` yourself with the request on standard input and decide from the packet. Pass request text as literal data, never on a command line.
+- Only `company route check` accepts a decision. It names departments, manuals, order, confidence, alternatives, and open questions. Use its departments and manuals for task contracts and for a harness plan's skill selection; `company DEPARTMENT --skills a,b "task"` loads only the selected manuals.
+- A route is a staffing proposal, not authority. Founder instructions, the saved workspace roster, and your arbitration win. When the desk returns `clarify`, put its questions to the founder.
+- After the founder accepts routed work or sends it elsewhere, record that with `company route record --decision-file PATH --outcome accepted|rerouted`. Three accepted uses and no reroute make a route `established` for that kind of request.
+- Skip the desk for a request that plainly belongs to one department. Without a helper, route from the table and say the decision was not checked.
 
 ## Optional active team
 

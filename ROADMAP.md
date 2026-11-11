@@ -18,13 +18,16 @@ it does not predict how the market will respond.
 ## The foundation: v1.5.1 plus development source `1.6.0-dev.0`
 
 - Nine departments, 54 department manuals and ten staff manuals: 64 unique skill
-  manuals, with eleven registered agents including CTO and CAIO. These are operating
+  manuals, with twelve registered agents: nine departments, CTO, CAIO, and the routing desk. These are operating
   instructions, not 64 continuously running workers. Growth and CAIO are described
   in the [Unreleased changelog](CHANGELOG.md#unreleased).
 - Native Claude Code execution with local projects, dependencies, artifacts, and
   recorded reviews. See the [project workspace guide](docs/project-workspace.md).
 - Optional business harnesses with task policies, lifetime submission budgets,
   revision checks, and explicit extensions. See [harness loops](docs/harness-loops.md).
+- A [routing desk](docs/routing-desk.md): an assistant routes a request from a knowledge
+  base compiled from the installed manuals, a local helper checks the decision
+  against the roster, and a small local memory records how routes ended.
 - A read-only [evidence freshness report](docs/project-workspace.md#evidence-freshness-and-recertification):
   accepted work made stale by a later accepted version, project files that drifted
   from their accepted hashes, and recertification waves, from declared dependencies.
@@ -97,6 +100,11 @@ review incomplete links, and measure human arbitration. Missing links must remai
 visible uncertainty; the company cannot assume it sees every consequence.
 
 ## C. Teams that earn their place
+
+**In the development source:** the routing desk records whether a routed request
+was accepted or rerouted, and treats a route as established after three accepted
+uses and no reroute. That is local evidence for one folder. It is not a held-out
+comparison, and routing quality has not been measured.
 
 **Planned after A/B:** propose staffing and business harness updates from the
 goal, project phase, risk, and previous failures. Stage changes separately from

@@ -35,6 +35,7 @@ operating instructions, and a local task-and-decision record.
 [Growth playbook](docs/growth-playbook.md) ·
 [Growth toolkit](docs/growth-toolkit.md) ·
 [CAIO operating model](docs/caio-operating-model.md) ·
+[Routing desk](docs/routing-desk.md) ·
 [Architecture and alternatives](docs/architecture.md) ·
 [Visual asset guide](docs/visual-assets.md) ·
 [Roadmap](ROADMAP.md)
@@ -207,6 +208,7 @@ graph TD
     CEO --> SAL["Sales / 6 skills"]
     CEO --> GRO["Growth / 6 skills"]
     CEO -.-> COS["chief-of-staff"]
+    CEO -.-> DESK["routing desk"]
     FIN -.-> TOK["token-accountant"]
     CTO -.-> TECH["cto-advisor / skill-vetting / appsec-review / agent-evaluation"]
     CAIO -.-> AI["ai-workflow-architect / agent-reliability / ai-data-steward / ai-adoption-lead"]
@@ -301,6 +303,31 @@ Its Scrapling helper extracts from saved local HTML offline and requires an
 optional Scrapling dependency with Python 3.10+; core project and mission commands
 remain Python 3.9+. Firecrawl, PostHog, GrowthBook, and Langfuse are evaluated
 options, not installed or connected services. No tool bundle is installed implicitly.
+
+## Ask the routing desk who should handle it
+
+When the owner of a request is not obvious, ask before staffing it:
+
+```bash
+company route "Our trial page converts at 1.8% and the new pricing needs a legal check"
+company route check < decision.json
+company marketing --skills cro,copywriting "Audit the trial page and rewrite what the audit flags"
+company route record --decision-file decision.json --outcome accepted
+```
+
+An assistant decides, from a knowledge base compiled at each call from the
+installed manuals and charters: a shortlist of matching manuals, the complete
+index of all 64, each department's own playbooks, and how earlier routes in
+this folder ended. The helper never calls a model. It checks the decision
+against the roster and rejects an unknown department, a manual from the wrong
+team, or a route that does not match the packet it was decided from. In Claude
+Code the same desk is the `router` agent, which reads its packet outside the
+CEO's context and returns only the decision.
+
+`--skills` loads only the manuals a route selected instead of all six. A route
+is a staffing proposal, not authority, and how well an assistant routes has not
+been measured: the [routing desk guide](docs/routing-desk.md) explains how to
+measure it.
 
 ## Meet the company
 
@@ -461,6 +488,7 @@ The company combines native host roles with a small local state helper:
 | **54 department manuals** | `skills/*/SKILL.md` | Six per department; VPs apply the relevant capabilities per task |
 | **10 staff skills** | Two coordination/usage manuals, four CTO manuals, and four CAIO manuals | Skill packaging; this grouping does not define executive authority |
 | **Project workspace** | `.claude/company/project.json` | Validated tasks, dependencies, artifact hashes, reviews, and decisions |
+| **Routing desk** | `agents/router.md`; `company route` | An assistant routes from a knowledge base compiled from the installed manuals; the helper checks the decision against the roster |
 | **Optional harness** | Local schema-2 task policies and loop guidance | Required review gates, lifetime submission caps, and explicit extensions |
 | **Evidence freshness** | `company project impact` | Stale, drifted, and conditional work from recorded hashes and declared dependencies, in recertification waves |
 
@@ -485,6 +513,7 @@ company roster                                   # meet the team
 company team                                     # show active routing preferences
 company onboard --print                          # inspect the onboarding prompt
 company brief "launch my product"                # CEO mode
+company route "who should handle this?"          # routing desk: a checked staffing decision
 company finance "reconcile bank.csv vs ledger.csv"
 company design "critique screenshot.png" --print | gemini   # any engine
 CLAUDE_INC_ENGINE=codex company dev "add tests"              # or set an engine

@@ -24,8 +24,9 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          npm install --global @anthropic-ai/claude-code@2.1.252
+          npm install --global @anthropic-ai/claude-code@2.1.322
           claude plugin validate --strict .claude-plugin/plugin.json
+          claude plugin validate --strict .
 
       - name: Every employee has a valid job description (macOS and Linux)
         if: runner.os != 'Windows'
@@ -513,7 +514,7 @@ jobs:
           onboard_project="$test_root/onboard project"
           mkdir -p "$HOME" "$onboard_project"
           onboard_output="$(cd "$onboard_project" && CLAUDE_INC_ENGINE=missing-company-engine bash "$workspace/install.sh" --project --no-bin --onboard)"
-          grep -q '^Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard$' <<< "$onboard_output"
+          grep -q '^Onboarding deferred. Install the Claude Code plugin, then run: /orgware:onboard$' <<< "$onboard_output"
           ! grep -q 'Run: company onboard' <<< "$onboard_output"
           [ ! -e "$onboard_project/.claude/company-team.md" ]
 
@@ -613,7 +614,7 @@ jobs:
           try { $onboardOutput = & "$workspace/install.ps1" -Project -NoBin -Onboard | Out-String } finally { Pop-Location }
           if (-not $onboardOutput.Contains('Onboarding deferred.')) { throw 'Project onboarding did not defer safely' }
           if ($onboardOutput.Contains('Run: company onboard')) { throw 'NoBin advised an unavailable company command' }
-          if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /claude-inc:onboard')) { throw 'NoBin deferred guidance is not actionable' }
+          if (-not $onboardOutput.Contains('Install the Claude Code plugin, then run: /orgware:onboard')) { throw 'NoBin deferred guidance is not actionable' }
           if (Test-Path -LiteralPath (Join-Path $onboardProject '.claude/company-team.md')) { throw 'Deferred onboarding created a profile' }
 
       - name: Real installed company project lifecycle (macOS and Linux)

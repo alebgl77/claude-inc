@@ -9,7 +9,7 @@ the canonical roster. The helper never calls a model.
 
 | Part | Where | Role |
 |---|---|---|
-| Routing desk | `agents/router.md`, registered as `router` (`claude-inc:router` in the plugin) | The assistant's charter: how to route and the decision contract |
+| Routing desk | `agents/router.md`, registered as `router` (`orgware:router` in the plugin) | The assistant's charter: how to route and the decision contract |
 | Knowledge base | compiled by `skills/chief-of-staff/scripts/route.py` | What the desk knows about departments, manuals, playbooks and boundaries |
 | Decision check | `company route check` | Accepts or rejects a decision against the roster |
 | Local memory | `.claude/company-routing.json` in the working folder | How earlier routes in this folder ended |

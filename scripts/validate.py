@@ -26,6 +26,9 @@ EXPECTED_EMPLOYEES = 64
 EXPECTED_DEPARTMENTS = 9
 EXPECTED_EMPLOYEES_PER_DEPARTMENT = 6
 EXPECTED_VERSION = "1.6.0-dev.0"
+PLUGIN_NAME = "orgware"
+FORMER_PLUGIN_NAMES = ("claude-inc",)  # the marketplace's renames map migrates installs made under these
+MARKETPLACE_NAME = "claude-inc"  # unchanged, so marketplaces that users already added keep working
 CANONICAL_DEPARTMENTS = {
     "developers", "designers", "marketing", "social-media", "finance",
     "small-business", "legal", "sales", "growth",
@@ -48,7 +51,7 @@ REQUIRED_SECTIONS = ["When to use", "Workflow", "Output format", "Quality bar", 
 SKILL_LISTING_DEFAULT = 8000
 SKILL_LISTING_BUDGET = 7200  # the whole company stays under 90% of that default
 SKILL_DESCRIPTION_MAX = 100
-SKILL_LISTING_PREFIX = "claude-inc:"  # plugin skills are listed with their namespace
+SKILL_LISTING_PREFIX = PLUGIN_NAME + ":"  # plugin skills are listed with their namespace
 SKILL_LISTING_ENTRY = 5  # "- ", ": " and the line break around each entry
 ALLOWED_SKILL_KEYS = {"name", "description", "allowed-tools", "license", "metadata", "model"}
 ALLOWED_AGENT_KEYS = {"name", "description", "tools", "model", "color"}
@@ -281,6 +284,24 @@ def check_docs(skills, agents):
             warn(f"commands/{cmd}: no $ARGUMENTS placeholder")
 
 
+def plugin_name_problem(name):
+    """Why Claude Code's validator refuses or warns about a third-party plugin name, or None.
+
+    Documented rule, checked 2026-11-11 and enforced since Claude Code 2.1.287:
+    https://code.claude.com/docs/en/plugins-reference#name
+    Case is ignored and any run of separators counts as one.
+    """
+    words = [word for word in re.split(r"[^a-z0-9]+", name.lower()) if word]
+    joined = "-".join(words)
+    beside_official = any("official" in pair and {"claude", "anthropic"} & set(pair) for pair in zip(words, words[1:]))
+    if (joined.startswith(("claude-", "anthropic-", "anthropics-", "cc-plugin-")) or beside_official
+            or joined in ("claude", "anthropic", "anthropics", "claude-code", "claude-mods")):
+        return "is reserved: it passes as one of Anthropic's own"
+    if {"claude", "anthropic", "anthropics"} & set(words):
+        return "reads as one of Anthropic's own"
+    return None
+
+
 def check_packaging(cli):
     try:
         plugin = json.load(open(".claude-plugin/plugin.json"))
@@ -288,6 +309,18 @@ def check_packaging(cli):
     except (json.JSONDecodeError, OSError) as exc:
         err(f"invalid plugin manifest: {exc}")
         return
+    entries = market.get("plugins") if isinstance(market.get("plugins"), list) else []
+    if plugin.get("name") != PLUGIN_NAME or [entry.get("name") for entry in entries if isinstance(entry, dict)] != [PLUGIN_NAME]:
+        err(f"plugin.json and the marketplace entry must both name the plugin {PLUGIN_NAME!r}")
+    if market.get("name") != MARKETPLACE_NAME:
+        err(f"marketplace.json must keep the marketplace name {MARKETPLACE_NAME!r}: renaming it strands users who already added it")
+    renames = market.get("renames") if isinstance(market.get("renames"), dict) else {}
+    for former in FORMER_PLUGIN_NAMES:
+        if renames.get(former) != PLUGIN_NAME:
+            err(f"marketplace.json renames must map {former!r} to {PLUGIN_NAME!r} so existing installs migrate")
+    problem = plugin_name_problem(PLUGIN_NAME)
+    if problem:
+        err(f"plugin name {PLUGIN_NAME!r} {problem}; `claude plugin validate` refuses it")
     plugin_version = plugin.get("version")
     market_version = market.get("metadata", {}).get("version")
     if plugin_version != EXPECTED_VERSION:
@@ -458,9 +491,9 @@ def check_onboarding(cli, skills):
         err("bin/company must validate profile skills against its canonical registry")
     if "if ! bash \"$SRC/bin/company\" onboard" not in installer_sh:
         err("install.sh must catch onboarding engine failures under set -e")
-    if 'Install the Claude Code plugin, then run: /claude-inc:onboard' not in installer_sh:
+    if 'Install the Claude Code plugin, then run: /orgware:onboard' not in installer_sh:
         err("install.sh NoBin onboarding guidance must use the plugin helper")
-    if 'Install the Claude Code plugin, then run: /claude-inc:onboard' not in installer_ps:
+    if 'Install the Claude Code plugin, then run: /orgware:onboard' not in installer_ps:
         err("install.ps1 NoBin onboarding guidance must use the plugin helper")
     workflow_ci = open(".github/workflows/validate.yml", encoding="utf-8").read()
     for marker in [

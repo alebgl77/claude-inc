@@ -50,15 +50,29 @@ checked out at `v1.5.1`; its eight-department roster differs from this guide.
 
 ```text
 /plugin marketplace add alebgl77/claude-inc
-/plugin install claude-inc@claude-inc
-/claude-inc:company Build the first version of my appointment-booking business for tutors
+/plugin install orgware@claude-inc
+/orgware:company Build the first version of my appointment-booking business for tutors
 ```
 
 The CEO clarifies material unknowns and uses the packaged helper to initialize
 or resume project state when available. It selects the departments your project
 needs; all nine remain available for new projects.
-Plugin commands use the `claude-inc:` namespace. Directly installed commands
-use `/company` instead.
+Plugin commands use the `orgware:` namespace. Directly installed commands
+use `/company` instead. The plugin is named for the organizational layer a
+technology needs beside its hardware and software; the marketplace and the
+repository keep the name `claude-inc`.
+
+**Already installed as `claude-inc@claude-inc`?** The plugin identifier changed
+because Claude Code 2.1.287 and later reserve plugin names that start with
+`claude-`. The marketplace declares the rename, so Claude Code moves your
+settings to the new identifier when the marketplace refreshes. Run these once:
+
+```text
+/plugin marketplace update claude-inc
+/plugin install orgware@claude-inc
+```
+
+Commands, agents, and skills move from `claude-inc:` to `orgware:`.
 
 **CLI and local files**: install the company, including the `company` command:
 
@@ -228,8 +242,8 @@ Onboarding chooses preferred departments and skills; it does not remove the
 rest of the company or create project tasks:
 
 ```text
-/claude-inc:onboard          # plugin, project profile
-/claude-inc:onboard --global # plugin, global profile
+/orgware:onboard          # plugin, project profile
+/orgware:onboard --global # plugin, global profile
 company onboard             # CLI onboarding
 company team                # inspect active routing preferences
 ```
@@ -241,8 +255,8 @@ scope, departments, and skills from the profile validator, never its free-form
 body or research status. An invalid project profile blocks global fallback.
 Stored preferences do not authorize network access.
 Both commands never read profile files directly.
-The plugin form of the CEO command is `/claude-inc:company`; its onboarding and
-standup commands are `/claude-inc:onboard` and `/claude-inc:standup`.
+The plugin form of the CEO command is `/orgware:company`; its onboarding and
+standup commands are `/orgware:onboard` and `/orgware:standup`.
 
 Profiles remain separate from `.claude/company/project.json`; project commands
 leave `company-team.md` untouched. Saving profiles uses the existing strict
@@ -481,7 +495,7 @@ The company combines native host roles with a small local state helper:
 
 | On the org chart | In this repo | Mechanism |
 |---|---|---|
-| **CEO** | `commands/company.md`; `/claude-inc:company` in the plugin, `/company` in direct installs | Business direction, priorities, arbitration, and serialized state updates |
+| **CEO** | `commands/company.md`; `/orgware:company` in the plugin, `/company` in direct installs | Business direction, priorities, arbitration, and serialized state updates |
 | **CTO** | `agents/cto.md`; `company cto` | Peer executive: technical direction, architecture, infrastructure, security, skills, and code |
 | **CAIO** | `agents/caio.md`; `company caio` | Peer executive: AI process effectiveness, handoffs, context quality, and adoption |
 | **9 departments** | Nine department charters in `agents/` | Native host agents; independent assignments may run in parallel |

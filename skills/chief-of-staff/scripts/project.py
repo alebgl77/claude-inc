@@ -702,7 +702,7 @@ def start(workspace, state):
     prompt = ("Resume this founder's persistent Claude, Inc. project. First run the local helper using the exact argument array below "
               "in the given working directory and read its complete output. It validates the saved project and supplies the CEO execution contract, "
               "absolute packaged references and current tasks, decisions and evidence. Stop if it fails; do not invent a fallback or read team-profile bodies. "
-              "Then execute that project through applicable claude-inc department subagents using their plugin namespace (for example claude-inc:developers). "
+              "Then execute that project through applicable company department subagents using their plugin namespace (for example orgware:developers). "
               "The CEO serializes state mutations and delegates named artifacts and acceptance checks. Preserve current model and permission settings.\n" +
               json.dumps({"cwd": str(workspace.project), "argv": [sys.executable, str(ROOT / "skills/chief-of-staff/scripts/project.py"), "prompt"],
                           "validatedRevisionAtLaunch": state["revision"]}, ensure_ascii=False))

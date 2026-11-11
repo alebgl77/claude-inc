@@ -198,7 +198,7 @@ function boot(window) {
   });
   get('copy-ceo').addEventListener('click',async()=>{
     const epoch=clearExport();let output;
-    try{const commands={plugin:'/claude-inc:company',direct:'/company'},kind=get('installation-kind').value;if(!Object.prototype.hasOwnProperty.call(commands,kind))throw new Error('Choose Plugin or Direct installation before copying.');output=commands[kind]+'\n\n'+composeBrief(data,fields(),preferred());}catch(error){status(error.message);return;}
+    try{const commands={plugin:'/orgware:company',direct:'/company'},kind=get('installation-kind').value;if(!Object.prototype.hasOwnProperty.call(commands,kind))throw new Error('Choose Plugin or Direct installation before copying.');output=commands[kind]+'\n\n'+composeBrief(data,fields(),preferred());}catch(error){status(error.message);return;}
     try{if(!window.navigator.clipboard||typeof window.navigator.clipboard.writeText!=='function')throw new Error('Unavailable');await window.navigator.clipboard.writeText(output);if(epoch===exportEpoch)status('CEO brief copied. Paste it into Claude Code in your installed company project.');}
     catch(_){if(epoch!==exportEpoch)return;status('Clipboard access is unavailable. Copy the CEO brief manually below.');get('manual-copy').value=output;get('copy-fallback').hidden=false;get('manual-copy').focus();get('manual-copy').select();}
   });

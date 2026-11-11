@@ -1,6 +1,7 @@
 """The company's share of Claude Code's per-turn skill listing stays inside its budget."""
 
 import importlib.util
+import json
 import os
 from pathlib import Path
 import re
@@ -40,7 +41,8 @@ class ListingBudgetTests(unittest.TestCase):
         self.assertEqual(len(descriptions), 64)
         self.assertLessEqual(total, validate.SKILL_LISTING_BUDGET)
         self.assertLess(validate.SKILL_LISTING_BUDGET, validate.SKILL_LISTING_DEFAULT)
-        self.assertEqual(total, sum(len("claude-inc:" + slug) + len(text) + 5 for slug, text in descriptions.items()))
+        self.assertEqual(validate.SKILL_LISTING_PREFIX, "orgware:")
+        self.assertEqual(total, sum(len("orgware:" + slug) + len(text) + 5 for slug, text in descriptions.items()))
         for slug, text in descriptions.items():
             self.assertRegex(text, r"\bUse (when|for)\b", slug)
             self.assertLessEqual(len(text), validate.SKILL_DESCRIPTION_MAX, slug)
@@ -52,16 +54,46 @@ class ListingBudgetTests(unittest.TestCase):
 
     def test_gate_reports_an_overgrown_or_unsafe_listing(self):
         descriptions = self.descriptions()
-        grown = dict(descriptions, **{"new-hire": "Use for " + "x" * 200})
+        long_text = "Use for " + "x" * 200
+        self.assertEqual(validate.listing_problems(dict(descriptions, **{"new-hire": long_text}))[1][0],
+                         "new-hire: description is 208 chars (max 100); keep the capability and one 'Use for ...' cue, "
+                         "and put example requests under '## When to use'")
+        hires = 1 + (validate.SKILL_LISTING_BUDGET - validate.listing_footprint(descriptions)) // 100
+        grown = dict(descriptions, **{"hire-%03d" % number: "Use for " + "y" * 92 for number in range(hires)})
         total, problems = validate.listing_problems(grown)
         self.assertGreater(total, validate.SKILL_LISTING_BUDGET)
-        self.assertEqual(len(problems), 2)
-        self.assertIn("new-hire: description is 208 chars (max 100)", problems[0])
-        self.assertIn("over the 7200-char company budget", problems[1])
+        self.assertEqual(len(problems), 1)
+        self.assertIn("over the 7200-char company budget", problems[0])
         for unsafe in ('"Quoted. Use for x."', "Tools: a and b. Use for x.", "Notes #1. Use for x.", "[list] Use for x."):
             self.assertEqual(validate.listing_problems({"sample": unsafe})[1],
                              ["sample: description must be a plain YAML scalar (no quotes, ': ' or ' #')"])
-        self.assertEqual(validate.listing_problems({"sample": "Books costs. Use for budgets."}), (len("claude-inc:sample") + 29 + 5, []))
+        self.assertEqual(validate.listing_problems({"sample": "Books costs. Use for budgets."}), (len("orgware:sample") + 29 + 5, []))
+
+
+class PluginNameTests(unittest.TestCase):
+    def test_manifests_use_an_accepted_name_and_migrate_the_former_one(self):
+        plugin = json.loads((ROOT / ".claude-plugin/plugin.json").read_text(encoding="utf-8"))
+        market = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8"))
+        self.assertEqual(plugin["name"], validate.PLUGIN_NAME)
+        self.assertEqual([entry["name"] for entry in market["plugins"]], [validate.PLUGIN_NAME])
+        self.assertEqual(market["name"], validate.MARKETPLACE_NAME)
+        self.assertEqual(market["renames"], {former: validate.PLUGIN_NAME for former in validate.FORMER_PLUGIN_NAMES})
+        self.assertIsNone(validate.plugin_name_problem(validate.PLUGIN_NAME))
+        self.assertNotIn(validate.PLUGIN_NAME, validate.FORMER_PLUGIN_NAMES)
+
+    def test_naming_rule_matches_the_documented_cases(self):
+        reserved = ("claude-inc", "Claude_Inc", "claude--inc", "anthropic-tools", "anthropics-kit", "cc-plugin-notes", "claude", "Anthropic",
+                    "claude-code", "claude-mods", "official-claude-tools", "tools-claude-official", "anthropic.official")
+        warned = ("mcp-for-claude", "company-by-claude", "kit_for_anthropic")
+        accepted = ("orgware", "company", "claudeinc", "cc-company", "official-tools", "inc")
+        for name in reserved:
+            self.assertEqual(validate.plugin_name_problem(name), "is reserved: it passes as one of Anthropic's own", name)
+        for name in warned:
+            self.assertEqual(validate.plugin_name_problem(name), "reads as one of Anthropic's own", name)
+        for name in accepted:
+            self.assertIsNone(validate.plugin_name_problem(name), name)
+        for former in validate.FORMER_PLUGIN_NAMES:
+            self.assertIsNotNone(validate.plugin_name_problem(former), former)
 
 
 if __name__ == "__main__":

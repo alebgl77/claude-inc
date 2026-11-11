@@ -134,14 +134,14 @@ test('download errors are visible and release any allocated URL',()=>{
   assert.match(h.get('action-status').textContent,/could not start/);assert.equal(h.window.revoked,'blob:test');
 });
 test('clipboard absence or rejection has a visible exact manual-copy fallback',async()=>{
-  for(const [kind,command] of [['plugin','/claude-inc:company'],['direct','/company']])for(const clipboard of [undefined,{writeText:()=>Promise.reject(new Error('Denied'))}]){
+  for(const [kind,command] of [['plugin','/orgware:company'],['direct','/company']])for(const clipboard of [undefined,{writeText:()=>Promise.reject(new Error('Denied'))}]){
     const h=harness({clipboard});assert.equal(h.get('installation-kind').value,'plugin');h.get('installation-kind').value=kind;h.get('installation-kind').listeners.change();h.edit();await h.get('copy-ceo').click();assert.equal(h.get('copy-fallback').hidden,false);assert.equal(h.get('manual-copy').value,command+'\n\n'+app.composeBrief(data,fields,[]));assert.equal(h.get('manual-copy').selected,true);assert.match(h.get('action-status').textContent,/unavailable/);
   }
 });
 
 test('copy selects the explicit installation namespace and never changes downloaded brief content',async()=>{
   const html=fs.readFileSync(path.join(root,'studio/index.html'),'utf8');assert.match(html,/<label for="installation-kind">Claude Code installation<\/label>/);assert.match(html,/<option value="plugin" selected>Plugin<\/option>/);assert.match(html,/<option value="direct">Direct installation<\/option>/);
-  let copied;const h=harness({clipboard:{writeText:async value=>{copied=value;}}});h.edit();await h.get('copy-ceo').click();assert.equal(copied,'/claude-inc:company\n\n'+app.composeBrief(data,fields,[]));
+  let copied;const h=harness({clipboard:{writeText:async value=>{copied=value;}}});h.edit();await h.get('copy-ceo').click();assert.equal(copied,'/orgware:company\n\n'+app.composeBrief(data,fields,[]));
   h.get('installation-kind').value='direct';h.get('installation-kind').listeners.change();await h.get('copy-ceo').click();assert.equal(copied,'/company\n\n'+app.composeBrief(data,fields,[]));h.get('download-brief').click();assert.equal(await h.window.blob.text(),app.composeBrief(data,fields,[]));
   h.get('installation-kind').value='plugin; malicious';await h.get('copy-ceo').click();assert.match(h.get('action-status').textContent,/Choose Plugin or Direct/);assert.equal(h.get('copy-fallback').hidden,true);
 });

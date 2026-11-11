@@ -41,6 +41,18 @@ are available from `main` and have not been tagged as a release.
   the assistant to compare hashes by hand.
 
 ### Changed
+- Renamed the Claude Code plugin from `claude-inc` to `orgware`. Claude Code 2.1.287
+  and later refuse a third-party plugin name that starts with `claude-` in `claude
+  plugin validate`, `claude plugin tag` and the plugin directory, although such a
+  plugin still installs and loads. The marketplace keeps the name `claude-inc` and
+  declares the rename, so an existing install migrates when the marketplace
+  refreshes: run `/plugin marketplace update claude-inc`, then `/plugin install
+  orgware@claude-inc` once. Plugin commands, agents and skills move from the
+  `claude-inc:` namespace to `orgware:`. The product name, the repository, the
+  installers and the `company` CLI are unchanged.
+- CI validates the plugin and marketplace manifests with Claude Code 2.1.322
+  instead of 2.1.252, and `scripts/validate.py` applies the same naming rule on
+  every platform.
 - The current company has nine departments, 54 department manuals, and ten staff
   manuals: 64 capabilities, with twelve registered agents: nine departments, CTO,
   CAIO and the routing desk.

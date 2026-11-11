@@ -35,7 +35,7 @@ The optional `--departments` list contains canonical IDs: `developers`,
 `sales`, and `growth`. These are routing preferences. New projects have all nine
 departments and all 64 skill manuals available. Repeat `--goal` and `--constraint` as needed.
 
-Plugin users can describe the project through `/claude-inc:company`; the
+Plugin users can describe the project through `/orgware:company`; the
 directly installed command is `/company`. The CEO first uses
 the existing profile validator, then a read-only project context bridge. It
 clarifies material unknowns and initializes through the packaged helper when
@@ -94,7 +94,7 @@ company introduction also prepares a project brief, but does not start work
 or write to your project folder from the browser.
 
 The browser's **Claude Code installation** selector defaults to **Plugin** and
-copies `/claude-inc:company` with your brief. Choose **Direct installation** for
+copies `/orgware:company` with your brief. Choose **Direct installation** for
 `/company`. Downloading the brief produces the same plain-text file either way.
 
 ## Tasks and review

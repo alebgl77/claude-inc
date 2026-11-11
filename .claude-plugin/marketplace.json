@@ -10,9 +10,12 @@
   },
   "plugins": [
     {
-      "name": "claude-inc",
+      "name": "orgware",
       "source": "./",
       "description": "Peer CEO, CTO, and CAIO executives, 9 departments, 64 skill manuals, and bounded project review loops."
     }
-  ]
+  ],
+  "renames": {
+    "claude-inc": "orgware"
+  }
 }

@@ -616,10 +616,10 @@ echo; say "${G}hired ${n_agents} agents and ${n_skills} skills${R} -> $TARGET"; 
 echo "  ${B}Next:${R}"
 if [ "$NO_BIN" = "no" ]; then echo "    company roster                       # meet the team"; echo "    company brief \"launch my product\"    # brief the CEO"; fi
 echo "    claude                               # skills + agents + /company are live in Claude Code"; echo
-echo "  ${B}Claude Code plugin route (alternative):${R}"; echo "    /plugin marketplace add alebgl77/claude-inc"; echo "    /plugin install claude-inc@claude-inc"
+echo "  ${B}Claude Code plugin route (alternative):${R}"; echo "    /plugin marketplace add alebgl77/claude-inc"; echo "    /plugin install orgware@claude-inc"
 
 defer_install_onboarding() {
-  if [ "$NO_BIN" = "yes" ]; then if [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard"; else echo "Onboarding deferred. Install the Claude Code plugin, then run: /claude-inc:onboard --global"; fi
+  if [ "$NO_BIN" = "yes" ]; then if [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Install the Claude Code plugin, then run: /orgware:onboard"; else echo "Onboarding deferred. Install the Claude Code plugin, then run: /orgware:onboard --global"; fi
   elif [ "$PROJECT" = "yes" ]; then echo "Onboarding deferred. Run: company onboard"; else echo "Onboarding deferred. Run: company onboard --global"; fi
 }
 if [ "$ONBOARD" = "yes" ]; then

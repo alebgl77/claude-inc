@@ -517,7 +517,7 @@ if (-not $NoBin) { Write-Host "    company roster"; Write-Host '    company brie
 Write-Host "    claude"
 
 if ($Onboard) {
-    if ($NoBin) { $DeferredCommand = if ($Project) { "Install the Claude Code plugin, then run: /claude-inc:onboard" } else { "Install the Claude Code plugin, then run: /claude-inc:onboard --global" } }
+    if ($NoBin) { $DeferredCommand = if ($Project) { "Install the Claude Code plugin, then run: /orgware:onboard" } else { "Install the Claude Code plugin, then run: /orgware:onboard --global" } }
     elseif ($Project) { $DeferredCommand = "company onboard" } else { $DeferredCommand = "company onboard --global" }
     $EngineName = if ([string]::IsNullOrWhiteSpace($env:CLAUDE_INC_ENGINE)) { "claude" } else { $env:CLAUDE_INC_ENGINE }
     $Engine = Get-Application $EngineName

@@ -606,6 +606,7 @@ USAGE
   company project prompt             Print the validated CEO project handoff
   company project harness profiles  List optional task harness profiles
   company project loop next         Inspect the next bounded work/review action
+  company project impact            Show accepted work made stale by a later change
   company project --help             Project initialization and lifecycle commands
   company missions                   List six local mission blueprints
   company mission <id> [options]      Print a staged blueprint; never calls an AI engine

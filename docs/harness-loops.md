@@ -189,6 +189,13 @@ Refresh `revision` first. The total must increase and cannot exceed 10; extensio
 does not reset used attempts. If no authorized extension resolves the blocker,
 report it and stop the affected loop. Do not turn exhaustion into unbounded retries.
 
+Harness and schema-1 projects share one freshness report. `company project impact`
+shows accepted work made stale by a later accepted version and files that no
+longer match their accepted hashes; read it before starting a task that reuses
+accepted artifacts. A recertification is a new task with its own policy, gates,
+and submission allowance. See
+[evidence freshness](project-workspace.md#evidence-freshness-and-recertification).
+
 When adding a new task under an enabled harness, `task add --harness-file PATH`
 accepts `{"version":1,"skills":["superpowers"],"criteria":["A task-specific check"]}`.
 It uses the same selection/criteria limits and retains the baseline gates.

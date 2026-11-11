@@ -18,6 +18,16 @@ are available from `main` and have not been tagged as a release.
   SaaS, services, and ecommerce. Optional Scrapling extraction uses saved HTML
   offline and requires Python 3.10+ independently of the core Python 3.9+ helper.
 
+- `company project impact`, a read-only evidence freshness report computed from
+  declared dependencies, recorded artifact hashes and the event history. It names
+  accepted work that consumed a version a later accepted task replaced (`stale`),
+  accepted files that no longer match the project (`drifted`), their `at-risk`
+  consumers, and `conditional` downstream work that stays valid when recertified
+  files are byte-identical. It orders recertification in waves and offers a
+  `--what-if TASK` view, JSON output and a `--check` exit status. There is no
+  schema change, and resume prompts carry the computed result instead of asking
+  the assistant to compare hashes by hand.
+
 ### Changed
 - The current company has nine departments, 54 department manuals, and ten staff
   manuals: 64 capabilities, with eleven registered agents including CTO and CAIO.

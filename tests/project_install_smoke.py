@@ -163,6 +163,18 @@ exit $LASTEXITCODE
         assert state["tasks"][0]["artifacts"][0]["sha256"] == hashlib.sha256(artifact.read_bytes()).hexdigest()
         print("PASS: actual installed helper task add/start/submit/review/status lifecycle")
 
+        accepted_bytes = artifact.read_bytes()
+        fresh = json.loads(company("project", "impact", "--format", "json"))
+        assert fresh["attention"] is False and fresh["summary"]["accepted"] == {"fresh": 1} and fresh["paths"] == []
+        artifact.write_text("Edited after acceptance: café 空白\n", encoding="utf-8")
+        drifted = json.loads(company("project", "impact", "--format", "json"))
+        assert drifted["attention"] is True and drifted["tasks"][0]["evidence"] == "drifted"
+        assert drifted["paths"] == [{"path": artifact.name, "owner": "installed-check", "acceptedRevision": state["revision"], "versions": 1, "disk": "changed"}]
+        assert "What if installed-check changed?" in company("project", "impact", "--what-if", "installed-check")
+        artifact.write_bytes(accepted_bytes)
+        assert json.loads(company("project", "impact", "--format", "json")) == fresh
+        print("PASS: installed helper reports drifted accepted evidence read-only and clears once the file is restored")
+
         record = recording_host(sandbox, env)
         company("project", "start")
         launched = json.loads(record.read_text(encoding="utf-8"))

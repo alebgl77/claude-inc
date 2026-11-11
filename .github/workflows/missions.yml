@@ -33,6 +33,9 @@ jobs:
       - name: Harness policy and bounded loop tests
         run: python -m unittest discover -s tests -p test_harness.py
 
+      - name: Evidence freshness and recertification tests
+        run: python -m unittest discover -s tests -p test_impact.py
+
       - name: CTO routing and canonical registry tests
         run: python -m unittest discover -s tests -p test_cto.py
 

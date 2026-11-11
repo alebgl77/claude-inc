@@ -4,7 +4,9 @@ Claude, Inc. packages Markdown roles and skills, a Bash CLI, Bash and PowerShell
 installers, Python helpers for local project state and mission composition, and
 a static browser interface. On Windows, the installer compiles a local launcher.
 The project helper validates state and artifact hashes; those records do not
-authenticate reviewers or establish output quality.
+authenticate reviewers or establish output quality. Its freshness report rereads
+accepted artifact files inside the project without following links, within a
+bounded read allowance, and writes nothing.
 
 Model execution uses the configured assistant host and its permissions, network
 access and data policies. The local helpers do not provide a separate sandbox,

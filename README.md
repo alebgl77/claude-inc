@@ -134,9 +134,19 @@ Review the evidence.
 ```bash
 company project status
 company project status --format json
+company project impact                 # accepted work made stale by a later change
 company project start                  # resume from the same folder
 company project prompt                 # inspect or copy the resume instructions
 ```
+
+When a decision changes after other teams have built on it, `company project
+impact` lists the accepted work that consumed the old version, the downstream
+work that stays valid if recertified files are byte-identical, and the project
+files that no longer match their accepted hashes. `--what-if TASK` sizes a
+change before anyone makes it. The report is computed locally from declared
+dependencies and recorded hashes, with no model call. It does not judge content
+or see undeclared reuse. See
+[evidence freshness](docs/project-workspace.md#evidence-freshness-and-recertification).
 
 The [workspace guide](docs/project-workspace.md) covers task commands, blocked
 work, review, privacy, and using a different assistant. The structured project
@@ -452,6 +462,7 @@ The company combines native host roles with a small local state helper:
 | **10 staff skills** | Two coordination/usage manuals, four CTO manuals, and four CAIO manuals | Skill packaging; this grouping does not define executive authority |
 | **Project workspace** | `.claude/company/project.json` | Validated tasks, dependencies, artifact hashes, reviews, and decisions |
 | **Optional harness** | Local schema-2 task policies and loop guidance | Required review gates, lifetime submission caps, and explicit extensions |
+| **Evidence freshness** | `company project impact` | Stale, drifted, and conditional work from recorded hashes and declared dependencies, in recertification waves |
 
 ```
 you → project brief → CEO → department assignments → files + review → project state + Board Memo
@@ -522,7 +533,7 @@ business decision to reach every affected department, with useful results the
 founder can inspect. Four horizons set the order:
 
 - **Next:** [prove a real company delivery](ROADMAP.md#a-the-first-real-company-delivery) through repeated local pilots and human review.
-- **After that:** [connect decisions across teams](ROADMAP.md#b-one-decision-every-affected-team), preserving accepted history while proposing affected rework.
+- **After that:** [connect decisions across teams](ROADMAP.md#b-one-decision-every-affected-team), preserving accepted history while proposing affected rework. A first read-only slice, `company project impact`, is in the development source.
 - **Then:** [let teams earn their place](ROADMAP.md#c-teams-that-earn-their-place) through measured staffing and skill trials.
 - **Exploration:** [fork the company](ROADMAP.md#d-fork-the-company-compare-the-options) to compare isolated business scenarios before choosing a direction.
 

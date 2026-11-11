@@ -25,6 +25,9 @@ it does not predict how the market will respond.
   recorded reviews. See the [project workspace guide](docs/project-workspace.md).
 - Optional business harnesses with task policies, lifetime submission budgets,
   revision checks, and explicit extensions. See [harness loops](docs/harness-loops.md).
+- A read-only [evidence freshness report](docs/project-workspace.md#evidence-freshness-and-recertification):
+  accepted work made stale by a later accepted version, project files that drifted
+  from their accepted hashes, and recertification waves, from declared dependencies.
 - A website directory, brief preparation, and read-only project snapshots, plus
   optional focused [Mission Studio recipes](docs/mission-studio.md).
 - A [Growth playbook](docs/growth-playbook.md), [optional toolkit](docs/growth-toolkit.md),
@@ -42,7 +45,7 @@ Each milestone must earn the next through the evidence below.
 | Milestone | Status | Founder-visible benefit | Required proof |
 |---|---|---|---|
 | A. First delivery | NEXT | A useful result with visible handoffs | Repeated pilots against baselines |
-| B. Shared decisions | PLANNED AFTER A | Change direction without rebuilding everything | Traced changes across departments |
+| B. Shared decisions | FIRST SLICE IN SOURCE, REST AFTER A | Change direction without rebuilding everything | Traced changes across departments |
 | C. Earned staffing | PLANNED AFTER A/B | Teams suited to the actual work | Held-out comparisons under equal budgets |
 | D. Company forks | EXPLORATION, DEPENDS ON A–C | Compare alternatives before committing | Isolated, reproducible scenarios |
 
@@ -71,6 +74,12 @@ comparison. Include at least one case outside a software business before
 generalizing beyond software.
 
 ## B. One decision, every affected team
+
+**In the development source:** `company project impact` already derives stale,
+drifted, and conditional work from declared task dependencies and artifact
+hashes, orders recertification in waves, and answers what-if questions before a
+change. It sees a decision only when that decision is a task with a file, and
+it has not been measured in a pilot.
 
 **Planned after A:** explicitly link business assumptions and decisions to tasks,
 artifacts, and their consumers. A changed decision would compute impact from

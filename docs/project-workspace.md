@@ -127,8 +127,9 @@ company project task start booking-prototype
 Dependencies must refer to existing tasks. Starting a planned or blocked task
 requires its dependencies to be done. A dependent task remains unavailable
 until its prerequisites have been accepted.
-This is a stored-state check: acceptance is historical. Inspect the current
-files again before reusing accepted artifacts that may have changed afterward.
+This is a stored-state check: acceptance is historical. Run `company project
+impact` before reusing accepted artifacts that may have changed afterward; see
+[evidence freshness](#evidence-freshness-and-recertification).
 
 After actual work and checks have run, submit the real artifact paths. The
 following paths and summary are examples; replace them with your evidence:
@@ -188,6 +189,63 @@ independent assistant. Disclose single-assistant review limitations and retain
 the founder's decision where approval is required. A task marked `done` is a
 recorded acceptance; it is not automatic publication, deployment, or approval
 by a client or professional adviser.
+
+## Evidence freshness and recertification
+
+A price, a requirement, or a file can change after other teams have built on
+it. `company project impact` compares what each task consumed with the latest
+accepted versions and with the files in the project folder. It is read-only,
+runs locally, and uses no model:
+
+```bash
+company project impact
+company project impact --format json
+company project impact --what-if pricing   # what would changing this accepted task touch?
+company project impact --check             # exit status 2 when evidence needs attention
+```
+
+| Evidence | Meaning | What to do |
+|---|---|---|
+| `fresh` | Every declared input is still the accepted version and matches the project files | Nothing |
+| `stale` | The task consumed a version that a later accepted task replaced with different content | Recertify it |
+| `drifted` | A file this task had accepted no longer matches the project files | Accept the change through a new task, or restore the file |
+| `at-risk` | The task consumed a file that drifted, is missing, cannot be read safely, or has an unreviewed submission | Settle the producer first |
+| `conditional` | Something upstream is affected; the task stays valid if recertification leaves the files byte-identical | Recheck only if an upstream file changes |
+| `superseded` | Later accepted tasks now provide every path this task produced | Nothing: it is history |
+
+Accepted tasks never reopen. To change a decision, add a task that submits the
+same path with the new content, for example `pricing-2` writing `pricing.md`
+again. Its acceptance supersedes that path, and each task that consumed the old
+version becomes `stale`. Recertify a stale task with a new task that depends on
+the current producers and submits its own path again:
+
+```bash
+company project task add --id offer-2 --department marketing \
+  --title "Recertify the offer against the new price" \
+  --acceptance "The offer is consistent with the accepted pricing file" \
+  --depends-on pricing-2
+```
+
+If the reviewer finds that nothing needs to change, the new task submits the
+unchanged file and everything downstream stays `fresh`. The report orders the
+work in waves so that no task is recertified before its affected producers have
+settled. `--what-if TASK` applies the same rules to a change nobody has made
+yet, and writes nothing.
+
+A task is assumed to work from the accepted versions that were current when it
+last became active: its latest start or revision request. A task started after
+a new version was accepted is therefore fresh, while work already in flight is
+reported.
+
+The report follows declared `--depends-on` links, recorded SHA-256 values, and
+the event history. It cannot see a file that a task reused without declaring
+the dependency, judge whether a change matters, or show that recertified work
+is correct. Record a decision that other work relies on as a task with a file,
+so that dependents can declare it. Paths are compared exactly as recorded and
+read without following links. An unreadable file is reported as such, and
+files beyond the cumulative 512 MiB read allowance are `unchecked`, not assumed
+current. Each recertification is an ordinary task and counts toward the
+128-task and 2,048-event limits.
 
 ## Project state and reports
 
@@ -269,6 +327,7 @@ From the repository root:
 ```bash
 python -m unittest discover -s tests -p test_project.py
 python -m unittest discover -s tests -p test_harness.py
+python -m unittest discover -s tests -p test_impact.py
 python -m unittest discover -s tests -p test_cto.py
 python -m unittest discover -s tests -p test_missions.py
 python scripts/build_company.py --check

@@ -40,6 +40,15 @@ PUBLIC_ONBOARDING_FILES = [
     "onboarding/PROFILE_TEMPLATE.md", "README.md", "CHANGELOG.md", "SECURITY.md",
 ]
 REQUIRED_SECTIONS = ["When to use", "Workflow", "Output format", "Quality bar", "Example"]
+# Claude Code shows every installed skill's name and description on each turn, inside one
+# budget shared by all skills: 1% of the context window, 8,000 characters by default. Past
+# it, the least-used skills lose their descriptions. Documented behavior checked 2026-11-11:
+# https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short
+SKILL_LISTING_DEFAULT = 8000
+SKILL_LISTING_BUDGET = 7200  # the whole company stays under 90% of that default
+SKILL_DESCRIPTION_MAX = 100
+SKILL_LISTING_PREFIX = "claude-inc:"  # plugin skills are listed with their namespace
+SKILL_LISTING_ENTRY = 5  # "- ", ": " and the line break around each entry
 ALLOWED_SKILL_KEYS = {"name", "description", "allowed-tools", "license", "metadata", "model"}
 ALLOWED_AGENT_KEYS = {"name", "description", "tools", "model", "color"}
 
@@ -80,6 +89,41 @@ def frontmatter(path):
     return fm, text[m.end():]
 
 
+def listing_footprint(descriptions):
+    """Estimated characters the company adds to the per-turn skill listing."""
+    return sum(len(SKILL_LISTING_PREFIX + slug) + len(text) + SKILL_LISTING_ENTRY for slug, text in descriptions.items())
+
+
+def listing_problems(descriptions):
+    """Return the footprint and every reason the listing would crowd out other skills."""
+    problems = []
+    for slug, text in sorted(descriptions.items()):
+        if len(text) > SKILL_DESCRIPTION_MAX:
+            problems.append(f"{slug}: description is {len(text)} chars (max {SKILL_DESCRIPTION_MAX}); "
+                            "keep the capability and one 'Use for ...' cue, and put example requests under '## When to use'")
+        if text[:1] in tuple("\"'[{>|*&!%@`#") or ": " in text or " #" in text:
+            problems.append(f"{slug}: description must be a plain YAML scalar (no quotes, ': ' or ' #')")
+    total = listing_footprint(descriptions)
+    if total > SKILL_LISTING_BUDGET:
+        problems.append(f"skill listing needs {total} chars, over the {SKILL_LISTING_BUDGET}-char company budget "
+                        f"(Claude Code's default listing budget is {SKILL_LISTING_DEFAULT}); shorten descriptions before hiring")
+    return total, problems
+
+
+def check_listing(skills):
+    descriptions = {}
+    for slug in skills:
+        path = f"skills/{slug}/SKILL.md"
+        if os.path.exists(path):
+            line = re.search(r"^description:[ \t]*(.*)$", open(path, encoding="utf-8").read(), re.M)
+            if line:
+                descriptions[slug] = line.group(1).strip()
+    total, problems = listing_problems(descriptions)
+    for problem in problems:
+        err(problem)
+    return total
+
+
 def check_employees(skills):
     for slug in skills:
         path = f"skills/{slug}/SKILL.md"
@@ -97,8 +141,6 @@ def check_employees(skills):
         desc = fm.get("description", "")
         if not desc:
             err(f"{slug}: missing description")
-        elif len(desc) > 1024:
-            err(f"{slug}: description is {len(desc)} chars (max 1024)")
         elif not re.search(r"\bUse (when|for)\b|\bTrigger\b|Utilise", desc, re.I):
             warn(f"{slug}: description has no trigger phrase ('Use when ...')")
         for extra in set(fm) - ALLOWED_SKILL_KEYS:
@@ -491,6 +533,7 @@ def main():
         err(f"executive staff missing from skills/: {sorted(missing_staff)}")
 
     check_employees(skills)
+    listing = check_listing(skills)
     check_departments(agents)
     check_roster(cli, skills, agents)
     check_docs(skills, agents)
@@ -501,6 +544,8 @@ def main():
     staff = len(STAFF & set(skills))
     print(f"Claude, Inc.: {len(skills)} skills across {EXPECTED_DEPARTMENTS} departments and 2 executives "
           f"({len(skills) - staff} staffed + {staff} executive staff)")
+    print(f"Skill listing: {listing} of {SKILL_LISTING_BUDGET} budgeted characters "
+          f"(Claude Code default {SKILL_LISTING_DEFAULT})")
     ci = os.getenv("GITHUB_ACTIONS")
     for w in warnings:
         print(f"::warning::{w}" if ci else f"  warning: {w}")

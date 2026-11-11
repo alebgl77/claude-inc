@@ -1,6 +1,6 @@
 ---
 name: reels-scripting
-description: Scripts 15–60 second short videos (Reels, TikTok, Shorts) in a timestamped two-column VISUAL | AUDIO/VO format — verbal + visual hook in the first two seconds, a retention beat every 3–5 seconds, pattern interrupts at drop points, on-screen captions, a loop-friendly ending, and a CTA — two script variants per idea. Use when the user says "script a Reel about...", "turn this post into a TikTok", "I need a 30-second Short", or "people drop off my videos — fix the script".
+description: Timestamped scripts for Reels, TikTok and Shorts. Use for short-video scripts.
 ---
 
 # Reels Scripting — Reel Writer
@@ -13,6 +13,7 @@ description: Scripts 15–60 second short videos (Reels, TikTok, Shorts) in a ti
 - Repurposing a post, thread, or newsletter into vertical video.
 - "People drop off after three seconds" — retention surgery on an existing idea.
 - Batch-scripting a week of shorts from one pillar piece.
+- Typical requests: "script a Reel about...", "turn this post into a TikTok", "I need a 30-second Short", or "people drop off my videos — fix the script".
 
 ## Workflow
 

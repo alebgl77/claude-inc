@@ -1,6 +1,6 @@
 ---
 name: tax-prep
-description: Organizes tax season — an organizer, not tax advice: a document checklist by category (income, expenses, assets, payroll, prior filings), an expense-category sweep that flags plausibly missed deductions in generic jurisdiction-agnostic categories, a quarterly-estimate calendar template, a clean handoff pack for the accountant, and an open-questions list. Use when the user says "tax season is coming", "what does my accountant need", "am I missing deductions", or pastes an expense ledger.
+description: Tax document checklist and accountant handoff pack. Use for tax season prep.
 ---
 
 # Tax Prep — Tax Prepper
@@ -16,6 +16,7 @@ This skill is the organizer, not the adviser: it collects, categorizes, and flag
 - "Am I missing deductions?" — the sweep hunts categories with suspicious zeros.
 - "Set up my quarterly estimate reminders."
 - Any time an expense ledger or bank export needs to become an accountant-ready pack.
+- Typical requests: "tax season is coming", "what does my accountant need", "am I missing deductions", or pastes an expense ledger.
 
 ## Workflow
 

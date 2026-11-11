@@ -1,6 +1,6 @@
 ---
 name: ad-creative
-description: Generates batches of ad concepts — headlines, primary text, and visual briefs — organised by angle and awareness level, with per-platform specs for Meta, LinkedIn, X and TikTok. Use when the user asks to "write ads", "give me ad headlines", "create ad variations", "make a visual brief", or needs creative for a paid campaign.
+description: Ad headlines, copy and visual briefs per platform. Use for paid campaign creative.
 ---
 
 # Ad Creative — Ad Maker
@@ -14,6 +14,7 @@ description: Generates batches of ad concepts — headlines, primary text, and v
 - "Give me a visual brief for this ad concept"
 - Launching or refreshing any paid campaign where creative volume and angle diversity decide performance
 - Creative fatigue: CTR dropping and the account needs new concepts, not new budgets
+- Typical requests: "write ads", "give me ad headlines", "create ad variations", "make a visual brief", or needs creative for a paid campaign.
 
 ## Workflow
 

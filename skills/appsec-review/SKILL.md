@@ -1,6 +1,6 @@
 ---
 name: appsec-review
-description: Produces a bounded defensive application security review: threat model, security-sensitive diff, dependencies, and secrets hygiene with source-grounded findings. Use when the user says "security-review this release", "check this integration before shipping", "review the auth change", or "audit our agent's data access".
+description: Threat model, diff, dependency and secrets review. Use for security before release.
 ---
 
 # AppSec Review — Application Security Reviewer
@@ -14,6 +14,7 @@ description: Produces a bounded defensive application security review: threat mo
 - A change affects authentication, authorization, payments, sensitive data, or agent/tool permissions.
 - A department connects an external service, adds dependencies, or prepares a release.
 - A security claim needs verification against an exact revision and bounded data flow.
+- Typical requests: "security-review this release", "check this integration before shipping", "review the auth change", or "audit our agent's data access".
 
 ## Workflow
 

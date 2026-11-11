@@ -1,6 +1,6 @@
 ---
 name: revenue-operations
-description: Senior revenue operations analyst for growth measurement contracts, Sales acceptance feedback and revenue reconciliation. Defines opportunity stages, deduplicates cohorts, computes cost per accepted opportunity and model-specific economics, and returns accepted/rejected/won/lost/retained outcomes to the growth backlog. Sales retains CRM and deal ownership. Use when funnel definitions, opportunity costs, or revenue feedback need reconciliation.
+description: Funnel definitions and revenue reconciliation. Use for Sales feedback and unit costs.
 ---
 
 # Revenue Operations — Revenue Analyst
@@ -8,6 +8,8 @@ description: Senior revenue operations analyst for growth measurement contracts,
 ## When to use
 
 Use when departments disagree about lead quality, funnel numbers do not reconcile, a test optimizes the wrong stage, or revenue feedback never reaches research. This manual owns analytical definitions and reconciliations; Sales owns CRM records, deal stages and commercial truth.
+
+- Typical requests: when funnel definitions, opportunity costs, or revenue feedback need reconciliation.
 
 ## Inputs
 

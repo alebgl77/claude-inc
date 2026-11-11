@@ -1,6 +1,6 @@
 ---
 name: triage-nda
-description: "Ten-minute NDA triage — classifies an incoming NDA as GREEN (sign under standard delegation), YELLOW (targeted fixes, listed), or RED (full review). Screens mutuality, term and survival, definition breadth, embedded non-solicits or non-competes, missing standard carve-outs, residuals clauses, and IP assignment smuggling. Use when the user says 'can I sign this NDA', 'quick look at this NDA', or forwards any confidentiality agreement."
+description: NDA triage to GREEN, YELLOW or RED with fixes. Use for incoming NDAs.
 ---
 
 # Triage NDA — NDA Triage
@@ -16,6 +16,7 @@ Built for speed: seven screens, one verdict, ten minutes. Works on pasted NDA te
 - "Is this NDA actually mutual?" — direction check
 - Screening a batch of inbound NDAs before a partner event
 - Confidentiality terms embedded in a larger agreement belong to `review-contract`, not here
+- Typical requests: "can I sign this NDA", "quick look at this NDA", or forwards any confidentiality agreement.
 
 ## Workflow
 

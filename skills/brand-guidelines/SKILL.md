@@ -1,6 +1,6 @@
 ---
 name: brand-guidelines
-description: Generates a brand kit from a company one-liner — positioning adjectives, a palette with hex codes, usage ratios and do/don'ts, a display+text type pairing with fallback stacks, a voice & tone table (say / never say), a logo brief, and a one-page BRAND.md brandbook other skills consume. Use when the user says "we need a brand", "create our visual identity", "pick our colors and fonts", "define our voice", or before designing anything for a company with no identity yet.
+description: Brand kit with palette, type, voice and logo brief. Use for a new visual identity.
 ---
 
 # Brand Guidelines — Brand Keeper
@@ -13,6 +13,7 @@ description: Generates a brand kit from a company one-liner — positioning adje
 - Visuals exist but are incoherent — "our colors and fonts differ on every page; fix the source".
 - Copy has no consistent voice — "define how we sound in the product and in emails".
 - Upstream of sibling skills — run before `ui-ux-pro-max` or `frontend-design` for a new venture.
+- Typical requests: "we need a brand", "create our visual identity", "pick our colors and fonts", "define our voice", or before designing anything for a company with no identity yet.
 
 ## Workflow
 

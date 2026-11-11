@@ -1,6 +1,6 @@
 ---
 name: taste
-description: Delivers a ruthless, structured critique of any screen, mockup or site — scores hierarchy, spacing rhythm, contrast, typography pairing and color discipline /10 with evidence, detects clichés (purple gradients, glassmorphism-by-default, emoji soup, cookie-cutter heroes), and ranks the top 5 highest-leverage fixes with before/after directions. Use when the user says "critique this design", "why does my site look cheap", "roast my landing page", or "does this look AI-generated?".
+description: Scored design critique with the top five fixes. Use for reviewing a screen or site.
 ---
 
 # Taste — Taste Maker
@@ -14,6 +14,7 @@ description: Delivers a ruthless, structured critique of any screen, mockup or s
 - Pre-ship gate — "last look before launch"; run on every sibling skill's output.
 - AI-slop suspicion — "does this look like every other AI-generated site?"
 - Two directions compete — "which of these headers is stronger, and why?"
+- Typical requests: "critique this design", "why does my site look cheap", "roast my landing page", or "does this look AI-generated?".
 
 ## Workflow
 

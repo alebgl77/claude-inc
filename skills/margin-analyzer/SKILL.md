@@ -1,6 +1,6 @@
 ---
 name: margin-analyzer
-description: Breaks unit economics down per product, service, or client: revenue minus direct costs into a contribution-margin ranking, allocated overhead into net margin, a price floor per unit, a push/fix/kill mix analysis, and three pricing moves with quantified margin impact. Use when the user says "revenue is up but profit isn't", "which clients actually make us money", "should we raise prices", "what should we stop selling", or pastes a sales and cost export.
+description: Margin by product, service or client with pricing moves. Use for profitability.
 ---
 
 # Margin Analyzer — Margin Analyst
@@ -16,6 +16,7 @@ Revenue is vanity, margin is sanity: this skill finds where the profit actually 
 - "Should we raise prices, and on what?"
 - "A client is pushing for a discount — where's my floor?"
 - Before adding a product line or killing one: run the mix first.
+- Typical requests: "revenue is up but profit isn't", "which clients actually make us money", "should we raise prices", "what should we stop selling", or pastes a sales and cost export.
 
 ## Workflow
 

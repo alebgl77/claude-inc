@@ -54,6 +54,9 @@ jobs:
       - name: Studio tests
         run: node --test tests/test_studio.js
 
+      - name: Skill listing budget tests
+        run: python -m unittest discover -s tests -p test_listing.py
+
       - name: Company dataset is current
         run: python scripts/build_company.py --check
 

@@ -1,6 +1,6 @@
 ---
 name: agent-reliability
-description: Diagnoses AI workflow failures from reproducible evidence, defines operational measures, and prepares a bounded baseline/candidate review with the CTO's agent-evaluation manual. Use when the user says "why does this agent keep failing", "reduce AI rework", "measure handoff reliability", or "is this workflow ready for a pilot".
+description: Diagnoses AI workflow failures and rework. Use when an agent keeps failing.
 ---
 
 # Agent Reliability — Senior Agent Reliability Engineer
@@ -14,6 +14,7 @@ description: Diagnoses AI workflow failures from reproducible evidence, defines 
 - A workflow loses information, repeats actions, produces rejected artifacts, or fails intermittently.
 - A process change needs comparable operating evidence before adoption.
 - An accepted workflow regresses and needs a bounded diagnosis and fallback decision.
+- Typical requests: "why does this agent keep failing", "reduce AI rework", "measure handoff reliability", or "is this workflow ready for a pilot".
 
 ## Inputs
 

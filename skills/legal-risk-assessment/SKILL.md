@@ -1,6 +1,6 @@
 ---
 name: legal-risk-assessment
-description: "Severity-by-likelihood legal risk register for a situation or deal — enumerates concrete risks, scores each one impact 1-5 × likelihood 1-5, renders a heat-map table, attaches mitigations to every risk at or above threshold, defines escalation criteria for immediate human counsel, and sets monitoring triggers. Use when the user says 'what's our exposure', 'how risky is this deal', 'assess the legal risk of this', or before committing to anything with real downside."
+description: Scored legal risk register with mitigations. Use for deal or situation exposure.
 ---
 
 # Legal Risk Assessment — Risk Assessor
@@ -16,6 +16,7 @@ Turns "this feels risky" into a scored, sorted register with owners and tripwire
 - "Rank the legal risks of this expansion plan"
 - Before an exec or board commit on a contested move
 - Clause-level contract surgery belongs to `review-contract`; this skill scores the whole situation
+- Typical requests: "what's our exposure", "how risky is this deal", "assess the legal risk of this", or before committing to anything with real downside.
 
 ## Workflow
 

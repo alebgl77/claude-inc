@@ -549,6 +549,8 @@ business, technical, and operating tradeoffs together.
 
 **Finance/Legal outputs?** Decision support requiring appropriate professional review. The department manuals require limitations to be stated; instructions cannot guarantee an assistant follows them.
 
+**What does the company cost when I am not using it?** Claude Code shows the name and one-line description of every installed skill on each turn. The 64 manuals take about 7,000 characters there, and CI fails above 7,200 so the company stays inside Claude Code's default 8,000-character listing budget. Manual bodies load only when a skill is used.
+
 **Can I hire more employees?** Yes: [we're hiring](CONTRIBUTING.md). One PR = one new employee.
 
 ## Credits

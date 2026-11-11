@@ -1,6 +1,6 @@
 ---
 name: customer-research
-description: Mines reviews, interviews, support tickets and forum threads for voice-of-customer insight — verbatim pains, desires, objections and triggers, clustered into themes with JTBD statements and a message-market map. Use when the user says "analyze these reviews", "what do customers actually want", "synthesize this feedback", or before writing any positioning or copy.
+description: Voice-of-customer themes from reviews and interviews. Use for feedback analysis.
 ---
 
 # Customer Research — Voice of Customer
@@ -14,6 +14,7 @@ description: Mines reviews, interviews, support tickets and forum threads for vo
 - "What objections keep coming up?"
 - Before positioning, landing copy, or ads — copy written without voice-of-customer is guessing
 - Works on pasted text or files; optional upgrade: web search to mine public reviews and Reddit threads
+- Typical requests: "analyze these reviews", "what do customers actually want", "synthesize this feedback", or before writing any positioning or copy.
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 ---
 name: web-artifacts
-description: Turns any idea into a live single-file HTML prototype in minutes — inline CSS/JS, CDN-only dependencies (cdnjs), mobile-first, seeded with believable fake data, interactive states wired — ready to open in a browser or paste as a Claude artifact. Use when the user says "prototype this", "show me a working demo", "make this idea clickable", "can we test this flow before building it", or needs to feel an interaction instead of reading a spec.
+description: Single-file interactive HTML prototype. Use for demoing an idea before building.
 ---
 
 # Web Artifacts — Prototyper
@@ -13,6 +13,7 @@ description: Turns any idea into a live single-file HTML prototype in minutes �
 - A stakeholder demo is imminent — "I need something to show in an hour".
 - A flow is contested — "would users even get this? build it and let's see".
 - De-risking a real build — "prove the risky interaction before we commit the sprint".
+- Typical requests: "prototype this", "show me a working demo", "make this idea clickable", "can we test this flow before building it", or needs to feel an interaction instead of reading a spec.
 
 ## Workflow
 

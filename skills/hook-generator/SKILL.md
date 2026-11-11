@@ -1,6 +1,6 @@
 ---
 name: hook-generator
-description: Generates 20-hook batches for any topic across eight proven patterns — curiosity gap, contrarian, specific number, mistake/warning, transformation, insider secret, question, call-out-the-reader — each tagged with pattern and platform fit, plus a top-3 pick with rationale. Refuses clickbait the content can't cash. Use when the user says "give me hooks for...", "punch up this opening line", "my posts get no traction", or "title options for this video".
+description: Twenty hooks across eight proven patterns. Use for opening lines and video titles.
 ---
 
 # Hook Generator — Hook Smith
@@ -13,6 +13,7 @@ description: Generates 20-hook batches for any topic across eight proven pattern
 - A finished draft with a flat first line: "punch up this opener."
 - Titles and opening lines for a video or Reel, before scripting starts.
 - "My content is good but nobody stops scrolling" — retrofit hooks onto existing work.
+- Typical requests: "give me hooks for...", "punch up this opening line", "my posts get no traction", or "title options for this video".
 
 ## Workflow
 

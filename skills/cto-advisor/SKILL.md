@@ -1,6 +1,6 @@
 ---
 name: cto-advisor
-description: Records technical decisions that serve a business outcome: constraints, architecture options, build-or-buy tradeoffs, and a justified skill selection. Use when the CEO asks "which architecture fits", "should we build or buy", "which skill should this department use", or "review our technical plan".
+description: Technical decision records with options and tradeoffs. Use for architecture choices.
 ---
 
 # CTO Advisor — Technical Strategist
@@ -14,6 +14,7 @@ description: Records technical decisions that serve a business outcome: constrai
 - A department's project has a material architecture, integration, or build-or-buy choice.
 - A proposed skill duplicates existing capabilities or introduces new access, cost, or maintenance.
 - A technical decision needs explicit constraints and a reversible rollout before delivery begins.
+- Typical requests: the CEO asks "which architecture fits", "should we build or buy", "which skill should this department use", or "review our technical plan".
 
 ## Workflow
 

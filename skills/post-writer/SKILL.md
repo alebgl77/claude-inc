@@ -1,6 +1,6 @@
 ---
 name: post-writer
-description: Writes LinkedIn and X posts that read human — a hook line drawn from proven patterns, whitespace rhythm, story or insight structure, a soft CTA — and delivers three full variants per ask (story, contrarian, list). Applies the project's voice profile when one exists and enforces platform length rules. Use when the user says "write a LinkedIn post about...", "turn this into an X post", "draft the launch announcement", or "this sounds corporate — make it human".
+description: LinkedIn and X posts in three human variants. Use for drafting or rewriting a post.
 ---
 
 # Post Writer — Ghostwriter
@@ -14,6 +14,7 @@ description: Writes LinkedIn and X posts that read human — a hook line drawn f
 - "Turn this blog post into an X post that isn't just a summary."
 - "Draft my new-role announcement" / "announce our funding round".
 - Rescuing a stiff draft: "make this sound like a person wrote it."
+- Typical requests: "write a LinkedIn post about...", "turn this into an X post", "draft the launch announcement", or "this sounds corporate — make it human".
 
 ## Workflow
 

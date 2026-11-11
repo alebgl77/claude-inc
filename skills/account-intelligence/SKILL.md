@@ -1,6 +1,6 @@
 ---
 name: account-intelligence
-description: Senior account intelligence analyst for B2B ICP research, explainable account qualification and signal validation. Builds source-linked evidence with event, observation and extraction dates, confidence, decay and next checks; hands qualified-account candidates to Marketing and Sales without inventing buying intent. Includes an optional offline saved-HTML extractor using Scrapling. Use when a B2B cohort needs sourced signals, explicit qualification, and a Sales handoff.
+description: Sourced B2B account signals and qualification. Use for ICP cohorts and Sales handoff.
 ---
 
 # Account Intelligence — Signal Analyst
@@ -8,6 +8,8 @@ description: Senior account intelligence analyst for B2B ICP research, explainab
 ## When to use
 
 Build an account cohort, validate a growth trigger, support ABM or investigate product-led sales readiness. For a single active deal's call preparation and personal outreach, hand the accepted account to Sales and its `account-research` manual.
+
+- Typical requests: when a B2B cohort needs sourced signals, explicit qualification, and a Sales handoff.
 
 ## Inputs
 

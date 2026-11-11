@@ -1,6 +1,6 @@
 ---
 name: close-management
-description: "Runs the month-end close: generates a day-by-day runbook from D-2 to D+5 as CLOSE-<month>.md with an owner matrix, dependency-ordered tasks (subledgers → accruals → reconciliations → flux → lock), numeric flux thresholds, a preparer/reviewer sign-off log, and close metrics such as days-to-close and reopened entries. Use when the user says 'set up our month-end close', 'kick off the June close', or 'our close takes two weeks — fix it'."
+description: Day-by-day month-end close runbook with sign-offs. Use for running the close.
 ---
 
 # Close Management — The Closer
@@ -14,6 +14,7 @@ description: "Runs the month-end close: generates a day-by-day runbook from D-2 
 - The close drags — "we lock on D+12, get us to D+5".
 - Mid-close status — "where are we, what's blocking the lock?".
 - Post-close review — "how did this close go vs last month?".
+- Typical requests: "set up our month-end close", "kick off the June close", or "our close takes two weeks — fix it".
 
 ## Workflow
 

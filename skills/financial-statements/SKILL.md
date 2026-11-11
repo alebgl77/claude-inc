@@ -1,6 +1,6 @@
 ---
 name: financial-statements
-description: "Builds a full statement set — P&L, balance sheet, and indirect cash flow — from a trial balance or transaction export, mapping accounts to a standard chart and proving every tie-out in code. Use when the user says 'build a P&L from this trial balance', 'turn this export into financials', 'I need a balance sheet for the board', or 'my statements don't tie'. Works on pasted data or CSV/XLSX files."
+description: P&L, balance sheet and cash flow from a trial balance. Use for financial statements.
 ---
 
 # Financial Statements — Statement Builder
@@ -14,6 +14,7 @@ description: "Builds a full statement set — P&L, balance sheet, and indirect c
 - Statements exist but fail internal checks — "my balance sheet is off by 3,412 — find it".
 - Someone external asked for financials — "the investor wants Q2 statements by Friday".
 - You need a statement-level base before deeper work — flux commentary, audit prep, a close pack.
+- Typical requests: "build a P&L from this trial balance", "turn this export into financials", "I need a balance sheet for the board", or "my statements don't tie".
 
 ## Workflow
 

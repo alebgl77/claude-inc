@@ -1,6 +1,6 @@
 ---
 name: run-campaign
-description: Builds a 7-day SMB campaign kit: one offer with value, deadline, and an honest reason-why; channels picked from what the owner already has (email list, socials, storefront, partners); a day-by-day calendar; every asset drafted (three emails, three social posts, flyer copy); a simple spend/leads/sales tracking sheet; and a day-8 debrief template. Use when the user says "we need sales this month", "run a promo for the shop", or "I've got an email list and an Instagram — do something with them".
+description: Seven-day promo kit with offer, calendar and assets. Use for a quick sales campaign.
 ---
 
 # Run Campaign — Campaign Runner
@@ -16,6 +16,7 @@ Seven days, one offer, channels the owner already controls. No ad account requir
 - "I have 900 emails and an Instagram — do something with them."
 - Launching a new product or service to the existing customer base.
 - Overstock, expiring inventory, or unbooked capacity that needs a deadline.
+- Typical requests: "we need sales this month", "run a promo for the shop", or "I've got an email list and an Instagram — do something with them".
 
 ## Workflow
 

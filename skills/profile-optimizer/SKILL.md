@@ -1,6 +1,6 @@
 ---
 name: profile-optimizer
-description: Audits and rewrites LinkedIn/X profiles element by element — a headline built on who-you-help + outcome + proof, an About section with a three-line hook and scannable body, a banner brief, featured-section picks, and a keyword pass for search — delivering a before/after for every element. Use when the user says "roast my LinkedIn profile", "my profile gets views but no DMs", "rewrite my headline", or "optimise my X bio before this launch".
+description: Audits and rewrites a LinkedIn or X profile. Use for headline and bio improvements.
 ---
 
 # Profile Optimizer — Profile Doctor
@@ -14,6 +14,7 @@ description: Audits and rewrites LinkedIn/X profiles element by element — a he
 - "Rewrite my headline — I'm repositioning from freelancer to agency."
 - Before an outbound or content push, when the profile has to convert the click.
 - New role, new niche — and the profile still sells the old you.
+- Typical requests: "roast my LinkedIn profile", "my profile gets views but no DMs", "rewrite my headline", or "optimise my X bio before this launch".
 
 ## Workflow
 

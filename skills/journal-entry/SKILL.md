@@ -1,6 +1,6 @@
 ---
 name: journal-entry
-description: "Drafts correct double-entry journal entries from described business events, with templates for accruals, deferrals, depreciation, payroll, prepaids, and corrections. Every entry carries a date, memo, and support reference; reversals are drafted where due; a running debits-equal-credits check covers each entry and the batch. Use when the user says 'what is the journal entry for this', 'book this accrual', 'record June payroll', or 'fix this posting error'."
+description: Double-entry journal entries with support. Use for booking accruals and corrections.
 ---
 
 # Journal Entry — Journal Keeper
@@ -14,6 +14,7 @@ description: "Drafts correct double-entry journal entries from described busines
 - Payroll needs recording from a register — "record the June 30 payroll run from this file".
 - A posting was wrong — "we hit expense instead of prepaid, fix it".
 - Next period's open needs reversing entries set up in advance.
+- Typical requests: "what is the journal entry for this", "book this accrual", "record June payroll", or "fix this posting error".
 
 ## Workflow
 

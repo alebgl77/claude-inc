@@ -1,6 +1,6 @@
 ---
 name: variance-analysis
-description: "Explains budget-vs-actual or period-over-period variances: sets a materiality threshold first, builds the variance table in dollars and percent, decomposes drivers (price, volume, mix, timing, one-offs), draws a bridge waterfall, and writes the so-what per material line with forecast impact. Use when the user says 'why are we over budget', 'explain the miss vs plan', 'build the monthly flux commentary', or 'what drove the revenue variance'."
+description: Budget-vs-actual variances by driver with a bridge. Use for flux commentary.
 ---
 
 # Variance Analysis — Variance Analyst
@@ -14,6 +14,7 @@ description: "Explains budget-vs-actual or period-over-period variances: sets a 
 - One line moved hard — "what drove the gross margin drop?".
 - Leadership wants the story — "the board asks: are we beating plan, and why?".
 - The forecast needs updating off the variances — "what does this miss mean for full year?".
+- Typical requests: "why are we over budget", "explain the miss vs plan", "build the monthly flux commentary", or "what drove the revenue variance".
 
 ## Workflow
 

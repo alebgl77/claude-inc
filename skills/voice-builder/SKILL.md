@@ -1,6 +1,6 @@
 ---
 name: voice-builder
-description: Ingests 5–20 of the user's writing samples and distils a reusable voice-profile.md — signature phrases, sentence-length distribution, opener/closer habits, punctuation quirks, vocabulary do/don't lists, tone sliders, and three calibration paragraphs with self-checks. Other skills load this file so every post sounds like the user, not like AI. Use when the user says "make it sound like me", "clone my writing voice", "everything you write sounds like AI", or "build my voice profile".
+description: Voice profile from writing samples. Use when writing should sound like the user.
 ---
 
 # Voice Builder — Voice Coach
@@ -14,6 +14,7 @@ description: Ingests 5–20 of the user's writing samples and distils a reusable
 - "Clone my voice from these posts." / "Here are my last 15 newsletters."
 - Ghostwriting for a founder whose voice must survive the ghostwriter.
 - Recalibrating after feedback: "that draft didn't sound like me."
+- Typical requests: "make it sound like me", "clone my writing voice", "everything you write sounds like AI", or "build my voice profile".
 
 ## Workflow
 

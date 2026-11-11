@@ -1,6 +1,6 @@
 ---
 name: webapp-testing
-description: Browser-tests a local webapp end to end — starts the app, installs Playwright if missing, writes a spec for the critical path plus edge cases, runs headless, captures screenshots, console and network logs on failure, and reports a pass/fail table with repro steps. Degrades to curl smoke tests when no browser is available. Use when the user says "test my app", "does signup still work", "check the site before I deploy", or "this page is blank".
+description: Playwright browser tests for a local web app. Use for checking flows before deploy.
 ---
 
 # Webapp Testing — QA Engineer
@@ -16,6 +16,7 @@ If a human can click it, it can break. Prove the critical path in a real browser
 - "This page is blank" / "the button does nothing" — reproduce with evidence, not vibes
 - Regression pass after a dependency bump, refactor, or CSS overhaul
 - The project has zero e2e coverage and needs a first spec to seed CI
+- Typical requests: "test my app", "does signup still work", "check the site before I deploy", or "this page is blank".
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 ---
 name: ai-seo
-description: Optimizes content to get cited by AI assistants (ChatGPT, Perplexity, Google AI Overviews) and rank in classic SERPs — entity-rich intros, question-shaped H2s, 40-60 word extractable answers, schema.org JSON-LD, llms.txt, internal links, and E-E-A-T signals. Runs in audit or rewrite mode. Use when the user says "optimize this for SEO", "why doesn't ChatGPT cite us", "make this page rank", or "audit our content for AI search".
+description: Optimizes content for AI search citations and SEO. Use for audits or rewrites.
 ---
 
 # AI SEO — Search Whisperer
@@ -14,6 +14,7 @@ description: Optimizes content to get cited by AI assistants (ChatGPT, Perplexit
 - Pre-publish optimization pass — "SEO-check this post before it ships"
 - Site-level AI readiness — "do we need an llms.txt? Set it up"
 - Not for net-new persuasion copy — that's `copywriting`
+- Typical requests: "optimize this for SEO", "why doesn't ChatGPT cite us", "make this page rank", or "audit our content for AI search".
 
 ## Workflow
 

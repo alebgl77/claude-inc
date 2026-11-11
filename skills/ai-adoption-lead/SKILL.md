@@ -1,6 +1,6 @@
 ---
 name: ai-adoption-lead
-description: Turns a reviewed AI workflow into a bounded team pilot with practical instructions, acceptance evidence, feedback, and a keep, revise, or stop decision. Use when the user says "roll this workflow out to the team", "prove people can use it", "measure AI adoption", or "turn the pilot into a repeatable process".
+description: Bounded team pilot with runbook and decision. Use for rolling out an AI workflow.
 ---
 
 # AI Adoption Lead — Senior AI Adoption Lead
@@ -14,6 +14,7 @@ description: Turns a reviewed AI workflow into a bounded team pilot with practic
 - A reviewed workflow needs a limited pilot with a real business owner and an end date.
 - Teams have access to AI capabilities but cannot reliably use the outputs in their work.
 - A pilot needs a decision based on accepted outcomes, operating cost, and user feedback.
+- Typical requests: "roll this workflow out to the team", "prove people can use it", "measure AI adoption", or "turn the pilot into a repeatable process".
 
 ## Inputs
 

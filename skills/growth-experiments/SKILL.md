@@ -1,6 +1,6 @@
 ---
 name: growth-experiments
-description: Senior experimentation lead for growth hypotheses, controlled tests and defensible decisions. Defines business metrics, account-level B2B randomization, holdouts, sample and duration rules, guardrails and inconclusive outcomes. Use for ABM tests, product-led sales, activation or lifecycle experiments and honest interpretation of small or delayed revenue samples.
+description: Experiment design with holdouts and decision rules. Use for growth tests.
 ---
 
 # Growth Experiments — Experiment Lead
@@ -8,6 +8,8 @@ description: Senior experimentation lead for growth hypotheses, controlled tests
 ## When to use
 
 Use before an intervention goes live and when interpreting its result. Own the experiment record and decision quality; Marketing creates assets, Sales handles outreach and qualification, and Developers implement production exposure.
+
+- Typical requests: ABM tests, product-led sales, activation or lifecycle experiments and honest interpretation of small or delayed revenue samples.
 
 ## Inputs
 

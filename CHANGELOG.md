@@ -38,6 +38,15 @@ are available from `main` and have not been tagged as a release.
   roster and frozen policies and remain resumable without implicit migration.
   Growth task ownership requires a new nine-department workspace; CAIO is advisory
   and is not a task department or reviewer enum.
+- Rewrote the 64 skill descriptions as one-line capability statements: 5,144
+  characters instead of 26,625. Claude Code lists every installed skill inside
+  one budget (1% of the context window, 8,000 characters by default) and drops
+  the descriptions of the least-used skills beyond it, so at most 19 of the 64
+  could keep theirs. The example requests moved to a `Typical requests` line
+  under each manual's `When to use`. `scripts/validate.py` now fails when the
+  company's listing exceeds 7,200 characters, a description exceeds 100, or a
+  description is not a plain YAML scalar. The effect on how often skills
+  trigger by themselves has not been measured.
 - Refreshed the company illustration and social preview for the nine-department
   roster and peer CEO, CTO, and CAIO executives; aligned the standup and current
   documentation with the department roster and supported reviewers.

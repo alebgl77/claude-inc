@@ -1,6 +1,6 @@
 ---
 name: superpowers
-description: Runs 14 numbered engineering protocols in one pack — brainstorm, spec, plan, scaffold, TDD red-green-refactor, systematic debugging, refactoring, code review, performance, security, docs, git hygiene, release checklist, postmortem. Use when the user says "build this feature properly", "debug this systematically", "review my diff", "run a security pass", "ship the release", "write the postmortem", or names any engineering phase from idea to retrospective.
+description: Spec, TDD, debugging, review and release protocols. Use for any coding work.
 ---
 
 # Superpowers — Skill Forge
@@ -14,6 +14,7 @@ description: Runs 14 numbered engineering protocols in one pack — brainstorm, 
 - Pre-merge and pre-ship gates — "review my diff", "run a security pass", "are we ready to release?"
 - After an incident — "write the postmortem"
 - Any single phase named outright — spec it, plan it, refactor it, profile it, document it
+- Typical requests: "build this feature properly", "debug this systematically", "review my diff", "run a security pass", "ship the release", "write the postmortem", or names any engineering phase from idea to retrospective.
 
 ## The 14 protocols
 

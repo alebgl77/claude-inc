@@ -1,6 +1,6 @@
 ---
 name: audit-support
-description: "Gets the books audit-ready: builds the PBC (prepared-by-client) list by area, drafts walkthrough narratives for key cycles (revenue, purchases, payroll), matches auditor samples to support, prepares tie-out schedules, tracks open items with owners and due dates, and drafts responses to findings. Use when the user says 'auditors start next month', 'build our PBC list', 'they sampled 25 invoices — check our support', or 'draft a response to this finding'."
+description: PBC list, walkthroughs, sample support and responses. Use for audit preparation.
 ---
 
 # Audit Support — Auditor
@@ -14,6 +14,7 @@ description: "Gets the books audit-ready: builds the PBC (prepared-by-client) li
 - Samples arrived — "they picked 25 invoices, do we have support for each?".
 - Findings need answers — "draft management responses to these three findings".
 - Balances must be provable — "build tie-outs for cash, AR, and fixed assets".
+- Typical requests: "auditors start next month", "build our PBC list", "they sampled 25 invoices — check our support", or "draft a response to this finding".
 
 ## Workflow
 

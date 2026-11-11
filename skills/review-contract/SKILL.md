@@ -1,6 +1,6 @@
 ---
 name: review-contract
-description: "Clause-by-clause contract review — inventories key clauses (term, termination, liability cap, indemnity, IP, payment, confidentiality, governing law, auto-renewal), flags deviations from market-standard positions with RED/YELLOW/GREEN severity and verbatim quotes, drafts redline language, and sets negotiation priority. Use when the user says 'review this contract', 'what's wrong with this MSA', 'can we sign this as-is', or pastes any agreement for analysis."
+description: Clause-by-clause contract review with flags and redlines. Use for any agreement.
 ---
 
 # Review Contract — Contract Reviewer
@@ -16,6 +16,7 @@ Works on pasted contract text or a file. No playbook required: deviations are me
 - "What would you push back on here?" — building a negotiation position from scratch
 - "They sent their redline back — does it hurt?" — re-review of a revised draft
 - Standalone NDAs move faster through `triage-nda`; use this skill when confidentiality terms sit inside a bigger deal
+- Typical requests: "review this contract", "what's wrong with this MSA", "can we sign this as-is", or pastes any agreement for analysis.
 
 ## Workflow
 

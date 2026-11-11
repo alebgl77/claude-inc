@@ -1,6 +1,6 @@
 ---
 name: cro
-description: Conversion audit for funnels and pages — a section-by-section friction log (clarity, anxiety, distraction, motivation), heuristic checks (message match, above-the-fold value prop, form cost), an ICE-scored hypothesis backlog, and top-3 A/B test designs with success metrics and minimum-sample notes. Use when the user says "why isn't this page converting", "audit our signup flow", "conversion dropped after the redesign", or "what should we A/B test next".
+description: Conversion audit with friction log and A/B tests. Use for underperforming pages.
 ---
 
 # CRO — Conversion Lead
@@ -14,6 +14,7 @@ description: Conversion audit for funnels and pages — a section-by-section fri
 - Pre-launch conversion review — "sanity-check this pricing page before we ship"
 - Post-change regression — "signups dropped 20% after the redesign"
 - Not for writing the new copy itself — findings hand off to `copywriting`
+- Typical requests: "why isn't this page converting", "audit our signup flow", "conversion dropped after the redesign", or "what should we A/B test next".
 
 ## Workflow
 

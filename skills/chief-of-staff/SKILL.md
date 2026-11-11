@@ -1,6 +1,6 @@
 ---
 name: chief-of-staff
-description: The CEO's right hand — maintains validated project context, prepares task contracts, logs cross-department decisions, and runs the weekly review. Use when the user says "what's in flight", "resume the project", "log this decision", "weekly review", "turn this idea into a brief", or when multi-department work needs memory and follow-through across sessions.
+description: Project context, task contracts, decision log, weekly review. Use for resuming work.
 ---
 
 # Chief of Staff — The Right Hand
@@ -16,6 +16,7 @@ description: The CEO's right hand — maintains validated project context, prepa
 - "Run my weekly review"
 - "Turn this vague idea into a proper brief for /company"
 - Automatically valuable at the START of a session (load context) and the END (persist it)
+- Typical requests: "what's in flight", "resume the project", "log this decision", "weekly review", "turn this idea into a brief", or when multi-department work needs memory and follow-through across sessions.
 
 ## Workflow
 

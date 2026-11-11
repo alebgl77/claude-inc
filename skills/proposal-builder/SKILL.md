@@ -1,6 +1,6 @@
 ---
 name: proposal-builder
-description: Builds proposals, quotes and offers that close — problem restatement in the client's words, scoped options, anchored pricing, timeline, terms and next step. Use when the user says "write a proposal", "send them a quote", "build an offer for X", or after a successful discovery or demo call.
+description: Proposals and quotes with scoped options and pricing. Use for writing an offer.
 ---
 
 # Proposal Builder — Rainmaker
@@ -13,6 +13,7 @@ description: Builds proposals, quotes and offers that close — problem restatem
 - "They asked for a quote"
 - "Turn these call notes into an offer"
 - After `call-prep` + the call itself; hand the notes over — the proposal should contain zero new ideas
+- Typical requests: "write a proposal", "send them a quote", "build an offer for X", or after a successful discovery or demo call.
 
 ## Workflow
 

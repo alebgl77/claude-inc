@@ -1,6 +1,6 @@
 ---
 name: vendor-check
-description: "Vendor agreement status check — inventories what exists versus what is needed (MSA, DPA, SOW, SLA, insurance certs, security review), builds a gap analysis table, runs an expiration and renewal radar with dates and notice windows, notes surviving obligations, and delivers an onboarding go/no-go checklist. Use when the user says 'are we set up with this vendor', 'what do we have signed with them', 'can we onboard them', or ahead of a renewal or offboarding."
+description: Vendor agreement inventory, gaps and renewal radar. Use for onboarding a vendor.
 ---
 
 # Vendor Check — Vendor Vetter
@@ -16,6 +16,7 @@ Answers one question fast: can we safely start (or keep) working with this vendo
 - "What renews with them this quarter?" — expiration radar
 - "We're dropping this vendor — what survives termination?" — offboarding read
 - A found agreement with ugly clauses goes deeper via `review-contract`
+- Typical requests: "are we set up with this vendor", "what do we have signed with them", "can we onboard them", or ahead of a renewal or offboarding.
 
 ## Workflow
 

@@ -1,6 +1,6 @@
 ---
 name: copywriting
-description: Direct-response copywriting for landing pages, emails, and ads. Picks the right framework (AIDA, PAS, 4U headlines), loads brand voice if a profile exists, builds a 10-variant headline matrix, writes proof-backed body copy toward a single CTA, and pressure-tests every line. Use when the user says "write the landing page", "draft this launch email", "I need headlines for this offer", "punch up this copy", or any request for words that must convert.
+description: Conversion copy for landing pages, emails and ads. Use for headlines and rewrites.
 ---
 
 # Copywriting — Word Smith
@@ -14,6 +14,7 @@ description: Direct-response copywriting for landing pages, emails, and ads. Pic
 - Short-form promo or ad copy blocks — "I need 10 headlines for this offer"
 - Rewrites of flat, underperforming copy — "punch up this hero section"
 - Not for long-form SEO content — hand that to `ai-seo`
+- Typical requests: "write the landing page", "draft this launch email", "I need headlines for this offer", "punch up this copy", or any request for words that must convert.
 
 ## Workflow
 

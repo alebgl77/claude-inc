@@ -1,6 +1,6 @@
 ---
 name: pipeline-review
-description: Audits pipeline health from a deal list (CSV, table or plain notes) — prioritises deals, flags zombies and single-threaded risks, checks close-date realism and outputs a weekly action plan. Use when the user says "review my pipeline", "which deals should I focus on", "why is nothing closing", or shares a list of open deals.
+description: Pipeline audit with deal priorities and weekly plan. Use for reviewing open deals.
 ---
 
 # Pipeline Review — Pipeline Doctor
@@ -14,6 +14,7 @@ description: Audits pipeline health from a deal list (CSV, table or plain notes)
 - "My forecast feels fake"
 - Weekly ritual; also before any forecast conversation
 - Works from a CSV, a markdown table, or messy notes — it will structure them first
+- Typical requests: "review my pipeline", "which deals should I focus on", "why is nothing closing", or shares a list of open deals.
 
 ## Workflow
 

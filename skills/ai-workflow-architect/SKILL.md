@@ -1,6 +1,6 @@
 ---
 name: ai-workflow-architect
-description: Designs a bounded AI-assisted process across departments with explicit inputs, ownership, handoff contracts, acceptance checks, and fallback. Use when the user says "connect these teams", "fix the handoff", "map this AI workflow", or "stop duplicate work across agents".
+description: Cross-team AI workflow with handoff contracts. Use for fixing handoffs between teams.
 ---
 
 # AI Workflow Architect — Senior AI Workflow Architect
@@ -14,6 +14,7 @@ description: Designs a bounded AI-assisted process across departments with expli
 - A business outcome depends on several teams and the dependency or receiving owner is unclear.
 - Teams repeatedly duplicate research, lose evidence, or reject otherwise complete work.
 - A proposed agent workflow needs a practical operating map before a limited pilot.
+- Typical requests: "connect these teams", "fix the handoff", "map this AI workflow", or "stop duplicate work across agents".
 
 ## Inputs
 

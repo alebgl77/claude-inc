@@ -1,6 +1,6 @@
 ---
 name: draft-outreach
-description: Writes personalised cold outreach — first-touch email or DM plus a 3-step follow-up sequence — grounded in real research, with subject-line variants. Use when the user says "write a cold email", "reach out to this prospect", "draft outreach to X", or after account-research produces a PURSUE verdict.
+description: Personalised cold email or DM with follow-ups. Use for prospect outreach.
 ---
 
 # Draft Outreach — Cold Emailer
@@ -14,6 +14,7 @@ description: Writes personalised cold outreach — first-touch email or DM plus 
 - "Follow up, they never answered"
 - Right after `account-research` — never write outreach to a stranger you haven't researched
 - LinkedIn DMs, X DMs and short-form intros included
+- Typical requests: "write a cold email", "reach out to this prospect", "draft outreach to X", or after account-research produces a PURSUE verdict.
 
 ## Workflow
 

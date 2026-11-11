@@ -1,6 +1,6 @@
 ---
 name: youtube-thumbnail
-description: Designs and tests YouTube thumbnails — 3–5 concept briefs covering composition, face or object, a 3-word-max overlay, and colour contrast against YouTube's UI, each run through a curiosity check, a mobile legibility test at 168×94 px, and a /10 scoring rubric, ending in a verdict and an A/B rotation plan. Generates mockups when an image tool is available. Use when the user says "thumbnail ideas for this video", "which cover wins?", "my CTR is stuck at 3%", or "test these two thumbnails".
+description: YouTube thumbnail concepts, legibility tests and scoring. Use for covers or low CTR.
 ---
 
 # YouTube Thumbnail — Cover Tester
@@ -13,6 +13,7 @@ description: Designs and tests YouTube thumbnails — 3–5 concept briefs cover
 - "Which of these two covers should I use?" — a scored verdict, not a shrug.
 - CTR is flat and packaging is the suspect: "my CTR is stuck at 3%."
 - Pre-production: designing title + thumbnail as one package before filming.
+- Typical requests: "thumbnail ideas for this video", "which cover wins?", "my CTR is stuck at 3%", or "test these two thumbnails".
 
 ## Workflow
 

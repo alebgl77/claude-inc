@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: Builds an end-to-end UI system for a product — design tokens (color scale, type scale, spacing, radii, shadows), a component inventory covering every interaction state, a layout grid, and WCAG contrast checks — emitted as CSS variables plus a component spec doc. Use when the user says "set up a design system", "create design tokens", "make my app consistent", "define the visual foundation", or before any build that spans more than one screen.
+description: Design tokens, component states, grid and contrast checks. Use for a design system.
 ---
 
 # UI UX Pro Max — Design Lead
@@ -15,6 +15,7 @@ description: Builds an end-to-end UI system for a product — design tokens (col
 - Tokens are requested explicitly — "give me design tokens / CSS variables for this brand".
 - A component library is planned — "spec our buttons, inputs and cards with all their states".
 - Downstream skills (`frontend-design`, `web-artifacts`) need a system to consume.
+- Typical requests: "set up a design system", "create design tokens", "make my app consistent", "define the visual foundation", or before any build that spans more than one screen.
 
 ## Workflow
 

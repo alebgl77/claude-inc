@@ -1,6 +1,6 @@
 ---
 name: ai-data-steward
-description: Creates a minimal, sourced, versioned context contract for AI-assisted work across teams, including freshness, quality checks, permitted use, and correction ownership. Use when the user says "teams have different facts", "clean up shared AI context", "make this dataset usable", or "stop stale context reaching Sales".
+description: Minimal sourced context contract with freshness. Use when teams disagree on facts.
 ---
 
 # AI Data Steward — Senior AI Data Steward
@@ -14,6 +14,7 @@ description: Creates a minimal, sourced, versioned context contract for AI-assis
 - Teams disagree because they use different versions, identifiers, definitions, or sources.
 - A handoff or evaluation needs a compact, reproducible input dataset.
 - Shared AI context contains unnecessary sensitive fields, stale claims, or unclear reuse boundaries.
+- Typical requests: "teams have different facts", "clean up shared AI context", "make this dataset usable", or "stop stale context reaching Sales".
 
 ## Inputs
 

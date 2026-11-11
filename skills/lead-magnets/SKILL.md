@@ -1,6 +1,6 @@
 ---
 name: lead-magnets
-description: Designs and fully produces a lead magnet — checklist, template, calculator, swipe file or mini-guide — plus the landing section, delivery email and a 3-email nurture starter. Use when the user asks to "create a lead magnet", "build something to grow my email list", "make a freebie/opt-in", or needs a top-of-funnel asset that converts visitors into subscribers.
+description: Lead magnet with landing section and nurture emails. Use for growing an email list.
 ---
 
 # Lead Magnets — Bait Master
@@ -14,6 +14,7 @@ description: Designs and fully produces a lead magnet — checklist, template, c
 - "What should I offer in exchange for emails?"
 - Top-of-funnel is dry: traffic exists but nothing converts it into a list
 - A launch needs an opt-in asset this week, not a someday ebook
+- Typical requests: "create a lead magnet", "build something to grow my email list", "make a freebie/opt-in", or needs a top-of-funnel asset that converts visitors into subscribers.
 
 ## Workflow
 

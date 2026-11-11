@@ -1,6 +1,6 @@
 ---
 name: signature-request
-description: "Pre-signature gate and routing plan for a finalized document — verifies exact legal entity names, signatory authority, attached exhibits, filled blanks, consistent dates, and counterparty details, then sets the signing order (sequential vs. parallel, with reasons), writes envelope instructions for any e-sign tool, and creates post-signature filing and obligations-calendar entries. Use when the user says 'send this for signature', 'get this signed', or 'set up the envelope'."
+description: Pre-signature checks and signing order. Use for sending a document for signature.
 ---
 
 # Signature Request — Signature Wrangler
@@ -16,6 +16,7 @@ The last gate before ink: nothing routes until the document proves it is actuall
 - "Who signs first, us or them?" — signing-order call
 - "It's signed — now what?" — filing and obligations follow-through
 - Terms still moving? Back to `review-contract` — nothing unfinalized enters this gate
+- Typical requests: "send this for signature", "get this signed", or "set up the envelope".
 
 ## Workflow
 

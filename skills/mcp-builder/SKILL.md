@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: Scaffolds and ships MCP servers in Python (FastMCP) or TypeScript (@modelcontextprotocol/sdk) — tools designed around workflows rather than raw endpoints, with model-guiding schemas and error messages, pagination, a direct-call test harness, and wiring into .mcp.json or claude mcp add. Use when the user says "build an MCP server for X", "wrap this API so Claude can call it", "add a tool to our server", or "connect Claude to our internal service".
+description: Builds MCP servers in Python or TypeScript. Use for exposing an API as Claude tools.
 ---
 
 # MCP Builder — Tool Wright
@@ -16,6 +16,7 @@ A tool is UX for a model: obvious names, forgiving inputs, errors that say what 
 - Adding, renaming, or hardening tools on an existing server
 - A server's tools confuse the model — vague names, loose schemas, cryptic errors
 - Choosing Python vs TypeScript for a new integration
+- Typical requests: "build an MCP server for X", "wrap this API so Claude can call it", "add a tool to our server", or "connect Claude to our internal service".
 
 ## Workflow
 

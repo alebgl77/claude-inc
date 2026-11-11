@@ -1,6 +1,6 @@
 ---
 name: agent-evaluation
-description: Measures a skill's practical value with fixed business tasks, paired with-skill and without-skill trials, explicit scoring, and honest uncertainty and cost reporting. Use when the user says "does this skill help", "benchmark our agent workflow", "compare this skill to the baseline", or "prove the new workflow works".
+description: Paired with-skill and without-skill trials. Use for proving a skill or workflow helps.
 ---
 
 # Agent Evaluation — Evaluation Designer
@@ -14,6 +14,7 @@ description: Measures a skill's practical value with fixed business tasks, paire
 - A department wants proof that a new skill improves its actual work.
 - A changed skill needs regression trials against the current baseline.
 - A workflow claims better quality, speed, reliability, or cost without comparable evidence.
+- Typical requests: "does this skill help", "benchmark our agent workflow", "compare this skill to the baseline", or "prove the new workflow works".
 
 ## Workflow
 

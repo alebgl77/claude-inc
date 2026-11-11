@@ -1,6 +1,6 @@
 ---
 name: invoice-chase
-description: Runs collections on late invoices: builds an aging ladder (current/30/60/90+), assigns each invoice a rung on an escalation sequence with ready-to-send emails — friendly nudge, firm reminder with late-fee mention, final notice — plus a phone script, tone rules that preserve the relationship, a chase log, and when-to-write-off guidance. Use when the user says "clients haven't paid", "this invoice is 45 days overdue", "write a payment reminder", or pastes an invoice list or AR aging.
+description: Aging ladder and escalating payment reminders. Use for overdue invoices.
 ---
 
 # Invoice Chase — Debt Chaser
@@ -16,6 +16,7 @@ Unpaid invoices are interest-free loans you never agreed to make. This skill get
 - "Here's my invoice export / AR aging — who do I chase first?"
 - Receivables creeping past 30 days while the owner "doesn't want to be annoying."
 - Standing up a weekly collections routine so lateness stops compounding.
+- Typical requests: "clients haven't paid", "this invoice is 45 days overdue", "write a payment reminder", or pastes an invoice list or AR aging.
 
 ## Workflow
 

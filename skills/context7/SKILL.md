@@ -1,6 +1,6 @@
 ---
 name: context7
-description: Anti-hallucination protocol for library APIs — resolves the exact installed version from the lockfile, fetches current official docs (Context7 MCP if installed, web fetch otherwise), quotes the doc before writing any code, and pins the version in output. Use when code touches a fast-moving library (Next.js, React, LangChain, Prisma, Tailwind), when the user says "check the actual docs" or "what's the current API for X", or after any deprecation or breaking-change error.
+description: Current official library docs before coding. Use when an API may have changed.
 ---
 
 # Context7 — Docs Fetcher
@@ -16,6 +16,7 @@ Trained knowledge ages; your dependencies don't wait. The docs are the source of
 - "This worked in v4 but breaks in v5" — any deprecation warning or breaking-change error
 - Choosing between API generations — "app router or pages router way?"
 - Before adding a dependency — verify the current install command and quickstart, not remembered ones
+- Typical requests: when code touches a fast-moving library (Next.js, React, LangChain, Prisma, Tailwind), when the user says "check the actual docs" or "what's the current API for X", or after any deprecation or breaking-change error.
 
 ## Workflow
 

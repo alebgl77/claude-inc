@@ -1,6 +1,6 @@
 ---
 name: cash-flow-snapshot
-description: Builds a 13-week rolling cash forecast from a bank export, receivables, and payables: opening balance, weekly inflows tagged committed/likely/hopeful, fixed and variable outflows, a lowest-point alert, and runway in weeks — plus three levers (collect faster, cut, delay) whenever runway falls under 8 weeks. Use when the user asks "how much cash do we have", "how many weeks can we last", "will we make payroll next month", or drops a bank CSV and wants to know what's coming.
+description: 13-week cash forecast with runway and levers. Use for cash and payroll coverage.
 ---
 
 # Cash Flow Snapshot — Cash Watcher
@@ -16,6 +16,7 @@ Thirteen weeks is the horizon a small business actually lives in: long enough to
 - "Here's our bank export and open invoices — what's coming?"
 - Before any decision that moves real money: a hire, a bulk order, new equipment, a lease.
 - On a schedule: monthly when healthy, weekly when tight.
+- Typical requests: "how much cash do we have", "how many weeks can we last", "will we make payroll next month", or drops a bank CSV and wants to know what's coming.
 
 ## Workflow
 

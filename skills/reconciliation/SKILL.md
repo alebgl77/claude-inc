@@ -1,6 +1,6 @@
 ---
 name: reconciliation
-description: "Matches two datasets — bank vs ledger, subledger vs GL — via exact matching, fuzzy matching (amount tolerance, date window, reference similarity), and split detection; buckets exceptions (timing, missing, duplicate, amount mismatch), ages unmatched items, proposes adjusting entries, and proves the bridge between the two balances. Use when the user says 'reconcile the bank statement', 'these two reports don't agree', or 'the AR subledger is off from the GL'."
+description: Matches bank to ledger or subledger to GL. Use for reconciling balances that differ.
 ---
 
 # Reconciliation — Reconciler
@@ -14,6 +14,7 @@ description: "Matches two datasets — bank vs ledger, subledger vs GL — via e
 - Processor vs books — "match Stripe payouts to booked revenue".
 - Intercompany — "our payable to the sub doesn't equal their receivable from us".
 - Any two lists that should agree and don't.
+- Typical requests: "reconcile the bank statement", "these two reports don't agree", or "the AR subledger is off from the GL".
 
 ## Workflow
 

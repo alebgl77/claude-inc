@@ -1,6 +1,6 @@
 ---
 name: transitions
-description: Builds a complete CSS motion system — duration and easing tokens (fast 120ms micro-feedback, base 200ms, slow 320ms entrances; standard, decelerate and spring curves), enter/exit/emphasis patterns, stagger rules, and prefers-reduced-motion fallbacks — delivered as a copy-paste CSS/JS snippet library. Use when the user says "add animations", "make this feel smooth", "the transitions are janky", or "animate this modal / dropdown / list without making it feel like a template".
+description: CSS motion tokens, patterns and reduced-motion fallbacks. Use for animations.
 ---
 
 # Transitions — Motion Artist
@@ -13,6 +13,7 @@ description: Builds a complete CSS motion system — duration and easing tokens 
 - Motion exists but is chaotic — "every component animates differently, unify it".
 - Specific effects are requested — "animate this modal / dropdown / list / page load".
 - Accessibility review flagged motion — "we need prefers-reduced-motion support".
+- Typical requests: "add animations", "make this feel smooth", "the transitions are janky", or "animate this modal / dropdown / list without making it feel like a template".
 
 ## Workflow
 

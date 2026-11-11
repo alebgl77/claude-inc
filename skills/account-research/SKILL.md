@@ -1,6 +1,6 @@
 ---
 name: account-research
-description: Researches a company or person and returns actionable sales intel — what they do, recent signals, likely pains, entry angle and talk tracks. Use when the user says "research this company", "who is this prospect", "intel on X before I reach out", or before any outreach, call or proposal targeting a specific account.
+description: Sales intel on a company or person. Use for research before outreach or a call.
 ---
 
 # Account Research — Prospector
@@ -14,6 +14,7 @@ description: Researches a company or person and returns actionable sales intel �
 - "Why would {company} buy {my product}?"
 - Always before `draft-outreach` or `call-prep` — research is their fuel
 - Works from public web (search + site + LinkedIn-style signals); upgrades with any CRM/enrichment MCP if connected
+- Typical requests: "research this company", "who is this prospect", "intel on X before I reach out", or before any outreach, call or proposal targeting a specific account.
 
 ## Workflow
 

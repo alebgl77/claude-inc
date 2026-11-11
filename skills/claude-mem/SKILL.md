@@ -1,6 +1,6 @@
 ---
 name: claude-mem
-description: Persistent filesystem memory across sessions — maintains memory/ with decisions.md, context.md, glossary.md and sessions/YYYY-MM-DD.md, loads and summarizes state at session start, appends decisions and open threads at session end, compacts monthly, and refuses secrets and transient noise. Use when the user says "remember this", "what did we decide about X", "pick up where we left off", or when starting or closing a session on a long-running project.
+description: File memory of decisions and context. Use for remembering or resuming a project.
 ---
 
 # Claude-Mem — Memory Keeper
@@ -16,6 +16,7 @@ Chat context evaporates; files don't. Give every project a paper trail the next 
 - "What did we decide about <topic>, and why?"
 - "What does <codename/acronym> mean again?" — glossary lookups
 - "Wrap up" / "save state before we stop" — session end
+- Typical requests: "remember this", "what did we decide about X", "pick up where we left off", or when starting or closing a session on a long-running project.
 
 ## Workflow
 

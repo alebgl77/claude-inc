@@ -1,6 +1,6 @@
 ---
 name: lifecycle-growth
-description: Senior lifecycle growth specialist for activation, time to value, retention, product-led sales and expansion. Builds account or customer lifecycle states, evidence-based interventions, holdouts, suppression rules and measurable retained-value outcomes across B2B SaaS, services and ecommerce. Use for stalled onboarding, churn, adoption gaps, repeat purchase or responsible expansion signals.
+description: Activation, retention and expansion interventions. Use for onboarding or churn.
 ---
 
 # Lifecycle Growth — Lifecycle Lead
@@ -8,6 +8,8 @@ description: Senior lifecycle growth specialist for activation, time to value, r
 ## When to use
 
 Use when acquired accounts fail to reach value, stop returning, miss a useful next capability, or may be ready for a sales-assisted conversation. The goal is retained customer value and healthy economics, not more messages or artificial activity.
+
+- Typical requests: stalled onboarding, churn, adoption gaps, repeat purchase or responsible expansion signals.
 
 ## Inputs
 

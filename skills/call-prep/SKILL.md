@@ -1,6 +1,6 @@
 ---
 name: call-prep
-description: Prepares a sales call end-to-end — account context, attendee angles, discovery questions, demo focus, pricing guardrails and a one-page cheat sheet. Use when the user says "prep me for my call with X", "I have a demo tomorrow", "meeting with a prospect", or any time a discovery, demo or negotiation conversation is scheduled.
+description: Call cheat sheet with context and discovery questions. Use for sales call prep.
 ---
 
 # Call Prep — Deal Prepper
@@ -13,6 +13,7 @@ description: Prepares a sales call end-to-end — account context, attendee angl
 - "Demo tomorrow — what should I focus on?"
 - "Negotiation call, they want a discount"
 - Feeds on `account-research` output; triggers `proposal-builder` after a good call
+- Typical requests: "prep me for my call with X", "I have a demo tomorrow", "meeting with a prospect", or any time a discovery, demo or negotiation conversation is scheduled.
 
 ## Workflow
 

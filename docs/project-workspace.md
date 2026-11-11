@@ -330,6 +330,7 @@ python -m unittest discover -s tests -p test_harness.py
 python -m unittest discover -s tests -p test_impact.py
 python -m unittest discover -s tests -p test_cto.py
 python -m unittest discover -s tests -p test_missions.py
+python -m unittest discover -s tests -p test_listing.py
 python scripts/build_company.py --check
 python scripts/build_studio.py --check
 node --test tests/test_company.js

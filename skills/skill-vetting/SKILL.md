@@ -1,6 +1,6 @@
 ---
 name: skill-vetting
-description: Reviews a candidate skill before activation with quarantined source inspection, version and license provenance, file hashes, static risk triage, and separate signature evidence. Use when the user says "check this skill before installing", "verify this NVIDIA skill", "review a skill update", or "is this plugin safe enough for our task".
+description: Source, license, hash and risk review of a skill. Use for vetting before install.
 ---
 
 # Skill Vetting — Skill Trust Reviewer
@@ -14,6 +14,7 @@ description: Reviews a candidate skill before activation with quarantined source
 - A department proposes an external skill or an update to a previously reviewed one.
 - A publisher claims verification, a clean scan, or a signature that needs independent inspection.
 - A candidate asks for filesystem, shell, network, memory, credential, or MCP access.
+- Typical requests: "check this skill before installing", "verify this NVIDIA skill", "review a skill update", or "is this plugin safe enough for our task".
 
 ## Workflow
 

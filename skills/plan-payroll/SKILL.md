@@ -1,6 +1,6 @@
 ---
 name: plan-payroll
-description: Plans payroll cash: true loaded cost per hire (gross plus employer taxes, benefits, tools), a payroll calendar with cutoffs and cash-out dates, a scenario table for new hire vs raise vs contractor-vs-employee, and a payroll-to-revenue check against rough industry bands. Use when the user asks "can I afford to hire", "what does an employee really cost me", "raise or contractor", or wants payroll dates mapped against cash. Organizes the numbers; a local professional confirms the rules.
+description: Loaded cost per hire and payroll calendar. Use for hiring and payroll planning.
 ---
 
 # Plan Payroll — Payroll Planner
@@ -16,6 +16,7 @@ Payroll is the one bill a small business can never pay late. This skill makes it
 - "Should this be a contractor or an employee?" — the cost half; a professional confirms classification.
 - "Map the next quarter's payroll dates against my cash."
 - Payroll creeping up while revenue isn't — ratio check time.
+- Typical requests: "can I afford to hire", "what does an employee really cost me", "raise or contractor", or wants payroll dates mapped against cash.
 
 ## Workflow
 

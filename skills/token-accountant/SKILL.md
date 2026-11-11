@@ -1,6 +1,6 @@
 ---
 name: token-accountant
-description: The company audits its own payroll — tracks AI token spend per department and mission, estimates costs from session data or telemetry, sets budget alerts and writes the monthly cost memo. Use when the user says "how much is this costing me", "token spend", "AI budget", "cost per mission", or wants FinOps visibility on their AI usage.
+description: Books AI token spend by department and mission. Use for cost and budget questions.
 ---
 
 # Token Accountant — The Bean Counter
@@ -16,6 +16,7 @@ description: The company audits its own payroll — tracks AI token spend per de
 - "Set a monthly AI budget and warn me"
 - "Write the monthly cost memo"
 - Works with whatever is available: `/cost` output pasted by the user, Claude Code telemetry (OTel), API invoices, or honest estimation from transcript volume — always labels which
+- Typical requests: "how much is this costing me", "token spend", "AI budget", "cost per mission", or wants FinOps visibility on their AI usage.
 
 ## Workflow
 

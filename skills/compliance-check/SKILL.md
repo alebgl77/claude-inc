@@ -1,6 +1,6 @@
 ---
 name: compliance-check
-description: "Compliance pre-flight for a feature, campaign, or initiative — maps the data and activity involved, checks applicable regimes (privacy/GDPR-style, consumer protection, marketing rules, sector-specific), lists required approvals and notices, builds a gap list with remediation owners, and ends in a go/no-go recommendation with conditions. Use when the user says 'can we ship this', 'is this campaign legal', 'any compliance issues here', or before anything touching personal data launches."
+description: Compliance pre-flight with gaps and go/no-go. Use for launches using personal data.
 ---
 
 # Compliance Check — Compliance Officer
@@ -16,6 +16,7 @@ A pre-flight, not an audit: it tells the team what clears the runway and what gr
 - "We want to start collecting <new data>" — privacy read before the schema changes
 - "Ops wants to roll this out in Germany" — new-jurisdiction scan
 - Post-incident exposure questions belong to `legal-risk-assessment`; this skill runs before launch, not after damage
+- Typical requests: "can we ship this", "is this campaign legal", "any compliance issues here", or before anything touching personal data launches.
 
 ## Workflow
 

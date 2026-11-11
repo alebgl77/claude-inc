@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Writes production-grade, distinctive interface code — one strong art direction (editorial, brutalist, soft-depth, retro-terminal), a real typographic scale, custom details (cursor, selection, focus states), semantic HTML, delivered as a single file or as components. Ships with an anti-AI-slop checklist so nothing leaves looking template-made. Use when the user says "build this page", "code the UI", "make me a beautiful front-end", or "this looks like every AI site — redo it".
+description: Distinctive production front-end code. Use for building a page or interface.
 ---
 
 # Frontend Design — Front of House
@@ -13,6 +13,7 @@ description: Writes production-grade, distinctive interface code — one strong 
 - An existing front-end looks generic — "this screams AI-generated, give it a point of view".
 - A design system exists and needs its first consumer — pairs with `ui-ux-pro-max` tokens.
 - The user wants craft, not scaffolding — "make it feel expensive", "no template energy".
+- Typical requests: "build this page", "code the UI", "make me a beautiful front-end", or "this looks like every AI site — redo it".
 
 ## Workflow
 

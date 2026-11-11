@@ -1,6 +1,6 @@
 ---
 name: growth-strategy
-description: Senior growth strategist for a measurable growth system across B2B SaaS, services and ecommerce. Converts business constraints, ICP evidence and unit economics into a prioritized experiment portfolio with owners, handoffs and explicit decisions. Use for growth planning, choosing ABM versus product-led sales, diagnosing a stalled funnel, or aligning acquisition with retention and revenue.
+description: Prioritized growth experiments from ICP and unit economics. Use for growth planning.
 ---
 
 # Growth Strategy — Growth Architect
@@ -8,6 +8,8 @@ description: Senior growth strategist for a measurable growth system across B2B 
 ## When to use
 
 Use when the business needs a growth direction, not just a campaign: an unproven ICP, expensive opportunities, weak activation, stalled expansion or competing ideas with no decision rule. Marketing owns positioning and assets; Sales owns deals. This manual owns the growth hypothesis portfolio.
+
+- Typical requests: growth planning, choosing ABM versus product-led sales, diagnosing a stalled funnel, or aligning acquisition with retention and revenue.
 
 ## Inputs
 

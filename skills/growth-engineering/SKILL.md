@@ -1,6 +1,6 @@
 ---
 name: growth-engineering
-description: Senior growth engineer for reliable growth instrumentation, bounded evidence processing and experiment delivery. Converts growth hypotheses into event contracts, account identity rules, reproducible data flows and reversible implementations with QA. Use when a growth test needs tracking, an offline research helper, a lifecycle trigger specification or an implementation handoff to Developers and CTO.
+description: Event contracts and reversible experiment tooling. Use for growth instrumentation.
 ---
 
 # Growth Engineering — Growth Systems Engineer
@@ -8,6 +8,8 @@ description: Senior growth engineer for reliable growth instrumentation, bounded
 ## When to use
 
 Use when a measurable growth workflow needs a technical contract or a scoped implementation. The CTO chooses technical suitability and security requirements; Developers own production systems. Tools listed in a playbook are optional proposals, not installed integrations.
+
+- Typical requests: when a growth test needs tracking, an offline research helper, a lifecycle trigger specification or an implementation handoff to Developers and CTO.
 
 ## Inputs
 

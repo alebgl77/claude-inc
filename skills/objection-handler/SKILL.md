@@ -1,6 +1,6 @@
 ---
 name: objection-handler
-description: Turns prospect pushback into progress — diagnoses the real objection behind the stated one and scripts calm, honest responses for price, timing, competitor, authority and brush-off objections. Use when the user says "they said it's too expensive", "prospect went silent", "they're comparing us to X", "how do I answer this objection", or pastes a tricky reply.
+description: Responses to price, timing and competitor objections. Use for prospect pushback.
 ---
 
 # Objection Handler — Persuader
@@ -13,6 +13,7 @@ description: Turns prospect pushback into progress — diagnoses the real object
 - "Prospect ghosted after the proposal"
 - "They're going with a competitor unless..."
 - Paste the exact message or describe the moment; works for email replies and live-call scripting
+- Typical requests: "they said it's too expensive", "prospect went silent", "they're comparing us to X", "how do I answer this objection", or pastes a tricky reply.
 
 ## Workflow
 

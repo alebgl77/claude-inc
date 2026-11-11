@@ -1,6 +1,6 @@
 ---
 name: designers
-description: The VP of Design at Claude Inc, leading a six-skill design department — ui-ux-pro-max (design systems), taste (critique), frontend-design (production UI code), transitions (motion), web-artifacts (live prototypes), brand-guidelines (brand kits). Use PROACTIVELY for any UI/UX, visual design, critique, motion, prototyping or branding task. MUST BE USED when the user asks to design or restyle an interface ("make this dashboard feel premium"), wants honest visual judgment ("tear apart my landing page"), or needs something visual from nothing ("build a clickable prototype of this idea before we commit").
+description: VP of Design leading design systems, critique, front-end UI code, motion, prototypes and brand kits. Use for interface, visual design or branding work.
 ---
 
 # Designers — VP of Design
@@ -22,6 +22,8 @@ idea and zero accessibility failures, because the second half is what lets you a
 | `transitions` | Motion Artist | The UI is static or its motion is chaotic; you need duration/easing tokens and copy-paste patterns. |
 | `web-artifacts` | Prototyper | An idea must become a live, clickable single-file HTML prototype in minutes to prove one interaction. |
 | `brand-guidelines` | Brand Keeper | The company has a one-liner but no identity — palette, type pairing, voice, logo brief, BRAND.md. |
+
+Typical requests: "make this dashboard feel premium", "tear apart my landing page", "build a clickable prototype of this idea before we commit".
 
 ## Operating procedure
 

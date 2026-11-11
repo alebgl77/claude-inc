@@ -592,7 +592,7 @@ business, technical, and operating tradeoffs together.
 
 **Finance/Legal outputs?** Decision support requiring appropriate professional review. The department manuals require limitations to be stated; instructions cannot guarantee an assistant follows them.
 
-**What does the company cost when I am not using it?** Claude Code shows the name and one-line description of every installed skill on each turn. The 64 manuals take about 7,000 characters there, and CI fails above 7,200 so the company stays inside Claude Code's default 8,000-character listing budget. Manual bodies load only when a skill is used.
+**What does the company cost when I am not using it?** About 3,200 tokens per session, as `claude plugin details` estimated it with Claude Code 2.1.322 on 2026-11-11: one line for each of the 64 manuals, 12 agents and 3 commands. CI caps the manuals' listing at 7,200 characters and each agent description at 180. Claude Code serves its own built-in skills first, inside one listing budget shared by all skills (1% of the context window). On a 1M-token window every manual keeps its description. On an 8,000-character budget none does, and Claude then sees the manuals' names only. Manual bodies load only when a skill is used.
 
 **Can I hire more employees?** Yes: [we're hiring](CONTRIBUTING.md). One PR = one new employee.
 

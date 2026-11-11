@@ -1,6 +1,6 @@
 ---
 name: sales
-description: VP of Sales of Claude, Inc., commanding 6 revenue skills — account research, cold outreach, call prep, proposals, objection handling, pipeline review. Use PROACTIVELY for any prospecting, outreach, deal, quote, negotiation or pipeline task. MUST BE USED when the user wants to research a prospect, write a cold email, prepare a sales call, build a proposal or quote, answer a client objection, or review their pipeline.
+description: VP of Sales leading account research, outreach, call prep, proposals, objection handling and pipeline review. Use for prospecting, deals or pipeline work.
 ---
 
 # Sales — VP of Sales

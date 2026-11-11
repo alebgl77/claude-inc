@@ -44,6 +44,7 @@ installed, so it cannot drift from them. There is no generated copy to refresh.
 |---|---|
 | Each manual's frontmatter and `## When to use` | A one-line summary, when to use it, and the example requests it quotes |
 | Each department charter's `## Your team` table | The role of each employee and when to hire them |
+| The `Typical requests:` line under that table | Example requests for the department as a whole, used as labelled requests by `eval` |
 | Prose in the charters that points to employees with `→` | The department's own chains and routing examples |
 | The CEO manual's routing table and the notes beside it | What each department is hired for, and the boundaries between them |
 | The executive charters | When the CTO or CAIO is consulted |
@@ -111,9 +112,10 @@ The desk replies with one JSON object:
 
 | Field | Rule |
 |---|---|
-| `mode` | `direct`: exactly one assignment and no executive. `company`: two or more assignments, or one with an executive. `clarify`: one to three questions. `decline`: no assignment. |
-| `assignments` | At most nine. Each names a canonical department, one to six manuals from that department or from staff, a task of at most 600 bytes, and the earlier assignment numbers it depends on. |
-| `executives` | `cto` and `caio` only. They are consulted and never own an assignment. |
+| `mode` | `direct`: exactly one assignment and no executive consult. `company`: two or more assignments, or one with an executive consult. `clarify`: one to three questions. `decline`: no assignment. |
+| `assignments` | At most nine. Each names an owner, one to six manuals, a task of at most 600 bytes, and the earlier assignment numbers it depends on. The owner is a canonical department with its own or staff manuals, or the office `ceo`, `cto` or `caio` with only that office's staff manuals. |
+| `executives` | `cto` and `caio` only, consulted to unblock a department's work. |
+| `rationale` | At most 800 bytes. |
 | `class` | Two to four lowercase hyphenated tokens that name the kind of job, such as `write-landing-copy`. |
 | `confidence` | `high`, `medium`, or `low`. A `low` route must name at least one alternative. |
 | `alternatives` | At most three, each with a department, manuals, and why it would be the better route. |
@@ -182,6 +184,7 @@ charter tells it never to use a person, company, or product name.
 company route eval                 # shortlist self-check
 company route eval --dataset       # labelled requests as JSON Lines
 company route eval --score answers.jsonl
+company route eval --score answers.jsonl --labels tests/routing-heldout.jsonl
 ```
 
 `eval` holds each example request out of its own card and checks whether the
@@ -194,8 +197,16 @@ the labelled requests with `--dataset`, run your assistant on each one, and
 save one `{"request": ..., "decision": ...}` object per line. `--score` reports
 the share of requests whose expected manual and department appear in the
 decision, with exact 95% binomial intervals. Those requests are quoted in the
-packet, so the result is in-sample; paraphrase them for a stricter test. Each
-run is a model call that your assistant bills.
+packet, so the result is in-sample. Each run is a model call that your assistant
+bills.
+
+For a stricter test, pass `--labels` with requests the packet does not quote, in
+the shape `--dataset` prints plus an optional `group`. A row whose `skill` and
+`department` are both `null` expects no assignment. `tests/routing-heldout.jsonl`
+holds 144 such requests: one English and one French paraphrase per manual, ten
+requests with two owners, and six that nobody in the company owns. With
+`--labels`, the report adds each group, the modes chosen and the number of
+manuals per route.
 
 ## Limits
 
@@ -205,6 +216,9 @@ run is a model call that your assistant bills.
   otherwise.
 - The helper needs Python 3.9+. Without it, the CEO routes from the manual's
   routing table and says the decision was not checked.
+- An office assignment is the CEO's own work or an executive consult
+  (`company brief`, `company cto`, `company caio`). In a project workspace, tasks
+  still belong to departments only.
 - A historical eight-department workspace keeps its saved roster. The desk can
   name Growth; such a workspace still cannot give Growth a task.
 - Routing memory is local, unsigned, and editable by the account that owns the

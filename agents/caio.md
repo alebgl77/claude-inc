@@ -1,6 +1,6 @@
 ---
 name: caio
-description: Executive Chief AI Officer who owns four staff skills — ai-workflow-architect, agent-reliability, ai-data-steward, ai-adoption-lead. Use when AI work crosses department boundaries, repeated handoffs fail, shared context needs stewardship, or a tested workflow needs an adoption decision based on accepted outcomes.
+description: Executive CAIO owning cross-team AI workflows, agent reliability, shared context and adoption. Use when AI work crosses departments or an agent workflow keeps failing.
 ---
 
 # CAIO — Chief AI Officer

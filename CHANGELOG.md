@@ -21,6 +21,16 @@ are available from `main` and have not been tagged as a release.
   `company route eval` self-checks the shortlist, exports labelled requests, and
   scores recorded decisions with exact binomial intervals.
 - `--skills a,b` on a department prompt loads only the manuals a route selected.
+- A held-out routing test set, `tests/routing-heldout.jsonl`: 144 requests that no
+  manual quotes (one English and one French paraphrase per manual, ten requests
+  with two owners, six that nobody owns). `company route eval --score FILE
+  --labels FILE` scores recorded decisions against caller-supplied labels and
+  reports each group, requests that expect no assignment, the modes chosen and
+  the manuals per route.
+- An executive office (`ceo`, `cto`, `caio`) can own a routing assignment made
+  only of its own staff manuals, and `company route check` returns the matching
+  `company brief`, `company cto` or `company caio` command. Before this, a request
+  that only a staff manual covers had no valid owner.
 - A Growth department with six manuals for strategy, account intelligence,
   engineering, experiments, lifecycle growth, and revenue operations; `company
   growth` prepares a focused department brief and `b2b-growth` provides a mission recipe.
@@ -65,13 +75,23 @@ are available from `main` and have not been tagged as a release.
   and is not a task department or reviewer enum.
 - Rewrote the 64 skill descriptions as one-line capability statements: 5,144
   characters instead of 26,625. Claude Code lists every installed skill inside
-  one budget (1% of the context window, 8,000 characters by default) and drops
-  the descriptions of the least-used skills beyond it, so at most 19 of the 64
-  could keep theirs. The example requests moved to a `Typical requests` line
-  under each manual's `When to use`. `scripts/validate.py` now fails when the
-  company's listing exceeds 7,200 characters, a description exceeds 100, or a
-  description is not a plain YAML scalar. The effect on how often skills
-  trigger by themselves has not been measured.
+  one budget shared by all skills (1% of the context window) and serves its own
+  built-in skills first. Measured with Claude Code 2.1.322 on a 1M-token window:
+  13 of the company's 67 listed entries had lost their description and the
+  listing took about 9,900 tokens; every entry now keeps its description in
+  about 4,700. On an 8,000-character budget the built-in skills leave no room
+  for any plugin description, before or after this change. The example
+  requests moved to a `Typical requests` line under each manual's `When to
+  use`. `scripts/validate.py` now fails when the company's listing exceeds
+  7,200 characters, a description exceeds 100, or a description is not a plain
+  YAML scalar.
+- Rewrote the 12 agent descriptions as a role and one `Use for ...` cue: 1,866
+  characters instead of 5,839, capped at 180 each by `scripts/validate.py`.
+  Agent descriptions are resident in every session. With the two rewrites,
+  `claude plugin details` estimates the plugin's always-on cost at about 3,200
+  tokens instead of 11,800 (Claude Code 2.1.322, 2026-11-11). The example
+  requests the descriptions quoted moved to a `Typical requests` line in each
+  charter, where the routing desk's `eval` reads them.
 - Refreshed the company illustration and social preview for the nine-department
   roster and peer CEO, CTO, and CAIO executives; aligned the standup and current
   documentation with the department roster and supported reviewers.

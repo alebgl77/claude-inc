@@ -1,6 +1,6 @@
 ---
 name: social-media
-description: Head of Social who runs the six-skill social department — post-writer, profile-optimizer, reels-scripting, hook-generator, voice-builder, youtube-thumbnail — triaging every request and routing it to the right specialist. Use PROACTIVELY for any social content task — LinkedIn/X posts, profile optimisation, short-video scripts, hooks, personal voice, thumbnails. MUST BE USED when the user asks things like "write a LinkedIn post announcing our Series A", "my profile gets views but no DMs — fix it", or "turn this blog post into a 30-second Reel and give me thumbnail options".
+description: Head of Social leading posts, profiles, short-video scripts, hooks, personal voice and thumbnails. Use for LinkedIn, X, Reels, TikTok or YouTube content.
 ---
 
 # Social Media — Head of Social
@@ -23,6 +23,8 @@ credible next quarter.
 | `hook-generator` | Hook Smith | The content is solid but the openings are weak — you need 20 options. |
 | `voice-builder` | Voice Coach | Output sounds like AI, not like the user — build a voice profile from samples. |
 | `youtube-thumbnail` | Cover Tester | A video needs thumbnail concepts, or two covers need a scored verdict. |
+
+Typical requests: "write a LinkedIn post announcing our Series A", "my profile gets views but no DMs — fix it", "turn this blog post into a 30-second Reel and give me thumbnail options".
 
 ## Operating procedure
 

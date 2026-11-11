@@ -45,11 +45,17 @@ PUBLIC_ONBOARDING_FILES = [
 ]
 REQUIRED_SECTIONS = ["When to use", "Workflow", "Output format", "Quality bar", "Example"]
 # Claude Code shows every installed skill's name and description on each turn, inside one
-# budget shared by all skills: 1% of the context window, 8,000 characters by default. Past
-# it, the least-used skills lose their descriptions. Documented behavior checked 2026-11-11:
-# https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short
-SKILL_LISTING_DEFAULT = 8000
-SKILL_LISTING_BUDGET = 7200  # the whole company stays under 90% of that default
+# budget shared by all skills (1% of the context window), and serves its own built-in skills
+# first: https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short
+# Measured with Claude Code 2.1.322 on 2026-11-11 (`/context`, clean configuration): its 14
+# built-in skills take about 2,300 tokens, and every entry of this company keeps its
+# description once the budget reaches about 16,000 characters. A 1M-token window gives more.
+# An 8,000-character budget leaves no plugin description at all, whatever its length.
+# The cap below keeps the company's own share from growing back.
+SKILL_LISTING_BUDGET = 7200
+# Agent descriptions are resident in every session and the skill listing budget does not
+# shorten them, so each one stays a role and a single "Use for ..." cue.
+AGENT_DESCRIPTION_MAX = 180
 SKILL_DESCRIPTION_MAX = 100
 SKILL_LISTING_PREFIX = PLUGIN_NAME + ":"  # plugin skills are listed with their namespace
 SKILL_LISTING_ENTRY = 5  # "- ", ": " and the line break around each entry
@@ -93,6 +99,10 @@ def frontmatter(path):
     return fm, text[m.end():]
 
 
+def plain_scalar(text):
+    return not (text[:1] in tuple("\"'[{>|*&!%@`#") or ": " in text or " #" in text)
+
+
 def listing_footprint(descriptions):
     """Estimated characters the company adds to the per-turn skill listing."""
     return sum(len(SKILL_LISTING_PREFIX + slug) + len(text) + SKILL_LISTING_ENTRY for slug, text in descriptions.items())
@@ -105,13 +115,25 @@ def listing_problems(descriptions):
         if len(text) > SKILL_DESCRIPTION_MAX:
             problems.append(f"{slug}: description is {len(text)} chars (max {SKILL_DESCRIPTION_MAX}); "
                             "keep the capability and one 'Use for ...' cue, and put example requests under '## When to use'")
-        if text[:1] in tuple("\"'[{>|*&!%@`#") or ": " in text or " #" in text:
+        if not plain_scalar(text):
             problems.append(f"{slug}: description must be a plain YAML scalar (no quotes, ': ' or ' #')")
     total = listing_footprint(descriptions)
     if total > SKILL_LISTING_BUDGET:
         problems.append(f"skill listing needs {total} chars, over the {SKILL_LISTING_BUDGET}-char company budget "
-                        f"(Claude Code's default listing budget is {SKILL_LISTING_DEFAULT}); shorten descriptions before hiring")
+                        "(Claude Code shares one listing budget between all skills); shorten descriptions before hiring")
     return total, problems
+
+
+def agent_listing_problems(descriptions):
+    """Return the characters the agent descriptions keep resident and every reason one is too heavy."""
+    problems = []
+    for name, text in sorted(descriptions.items()):
+        if len(text) > AGENT_DESCRIPTION_MAX:
+            problems.append(f"agent {name}: description is {len(text)} chars (max {AGENT_DESCRIPTION_MAX}); keep the role and one "
+                            "'Use for ...' cue, and quote example requests on the charter's 'Typical requests:' line")
+        if not plain_scalar(text):
+            problems.append(f"agent {name}: description must be a plain YAML scalar (no quotes, ': ' or ' #')")
+    return sum(len(text) for text in descriptions.values()), problems
 
 
 def check_listing(skills):
@@ -155,6 +177,7 @@ def check_employees(skills):
 
 
 def check_departments(agents):
+    descriptions = {}
     for name in agents:
         fm, _ = frontmatter(f"agents/{name}.md")
         if fm is None:
@@ -164,10 +187,15 @@ def check_departments(agents):
             err(f"agent {name}: frontmatter name != file name")
         if not fm.get("description"):
             err(f"agent {name}: missing description")
-        elif len(fm["description"]) > 1024:
-            err(f"agent {name}: description is {len(fm['description'])} chars (max 1024)")
+        else:
+            line = re.search(r"^description:[ \t]*(.*)$", open(f"agents/{name}.md", encoding="utf-8").read(), re.M)
+            descriptions[name] = line.group(1).strip()
         for extra in set(fm) - ALLOWED_AGENT_KEYS:
             warn(f"agent {name}: non-standard frontmatter key '{extra}'")
+    total, problems = agent_listing_problems(descriptions)
+    for problem in problems:
+        err(problem)
+    return total
 
 
 def check_roster(cli, skills, agents):
@@ -577,7 +605,7 @@ def main():
 
     check_employees(skills)
     listing = check_listing(skills)
-    check_departments(agents)
+    resident = check_departments(agents)
     check_roster(cli, skills, agents)
     check_docs(skills, agents)
     check_packaging(cli)
@@ -587,8 +615,8 @@ def main():
     staff = len(STAFF & set(skills))
     print(f"Claude, Inc.: {len(skills)} skills across {EXPECTED_DEPARTMENTS} departments, 2 executives and a routing desk "
           f"({len(skills) - staff} staffed + {staff} executive staff)")
-    print(f"Skill listing: {listing} of {SKILL_LISTING_BUDGET} budgeted characters "
-          f"(Claude Code default {SKILL_LISTING_DEFAULT})")
+    print(f"Skill listing: {listing} of {SKILL_LISTING_BUDGET} budgeted characters; "
+          f"agent descriptions: {resident} characters (max {AGENT_DESCRIPTION_MAX} each)")
     ci = os.getenv("GITHUB_ACTIONS")
     for w in warnings:
         print(f"::warning::{w}" if ci else f"  warning: {w}")

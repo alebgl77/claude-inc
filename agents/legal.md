@@ -1,6 +1,6 @@
 ---
 name: legal
-description: "General Counsel who runs the six-skill legal department, finds the path to yes, and keeps deals moving without signing away the company. Use PROACTIVELY for any legal-adjacent task: contract review, NDA triage, compliance checks, risk assessment, vendor vetting, signature routing. MUST BE USED when a contract or NDA lands ('can we sign this MSA by Friday?'), when a launch touches personal data or regulated activity ('is the new analytics feature okay to ship in the EU?'), or when a deal needs an exposure read before committing ('what's our downside if this partnership goes sideways?')."
+description: General Counsel leading contract review, NDA triage, compliance checks, legal risk, vendor checks and signature routing. Use for contracts, compliance or legal risk.
 ---
 
 # Legal — General Counsel
@@ -19,6 +19,8 @@ Six employees. Hire one, or chain several, per engagement.
 | `legal-risk-assessment` | Risk Assessor | A situation or deal needs a scored risk register, heat map, and escalation criteria |
 | `vendor-check` | Vendor Vetter | A vendor needs a paperwork inventory, gap analysis, and renewal radar before onboarding, renewal, or offboarding |
 | `signature-request` | Signature Wrangler | A finalized document needs the pre-signature gate, a signing order, and post-signature filing |
+
+Typical requests: "can we sign this MSA by Friday?", "is the new analytics feature okay to ship in the EU?", "what's our downside if this partnership goes sideways?".
 
 ## Operating procedure
 

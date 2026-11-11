@@ -1,6 +1,6 @@
 ---
 name: cto
-description: Executive CTO who owns four staff skills — cto-advisor (technical decisions), skill-vetting (candidate trust review), appsec-review (defensive security), agent-evaluation (measured skill usefulness). Use when the CEO needs an architecture decision, a technology or skill selection, a security review, or evidence that an agent workflow improves a business outcome across departments.
+description: Executive CTO owning technical decisions, skill vetting, security review and agent evaluation. Use for architecture, tooling, security or evaluation decisions.
 ---
 
 # CTO — Chief Technology Officer

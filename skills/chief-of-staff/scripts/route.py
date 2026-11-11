@@ -162,7 +162,7 @@ def compile_kb(root=ROOT):
         if slug not in hire_for:
             raise RouteError("the CEO routing table does not describe " + slug)
         departments.append({"id": slug, "name": name, "lead": lead, "hireFor": hire_for[slug], "skills": list(employees),
-                            "cues": re.findall(r'"([^"\n]{4,160})"', frontmatter_value(charter, "description")),
+                            "cues": re.findall(r'"([^"\n]{4,160})"', next((line for line in section(charter, "Your team") if line.startswith("Typical requests:")), "")),
                             "playbooks": playbooks(charter, employees)})
         skills += [card(employee, manuals[employee], slug, None, rows[employee]) for employee in employees]
     officers, staffed = [], {}
@@ -389,7 +389,7 @@ def render_packet(kb, request, memory, limit):
     for department in kb["departments"]:
         lines.append(department["id"] + " (" + department["lead"] + "): " + department["hireFor"])
         lines += ["- " + skill + ": " + cards[skill]["summary"] for skill in department["skills"]]
-    lines.append("staff (usable by any department):")
+    lines.append("staff (usable by any department; work that needs only an office's staff manuals is owned by that office, named in brackets):")
     lines += ["- " + item["id"] + " [" + item["office"] + "]: " + item["summary"] for item in kb["skills"] if item["owner"] == "staff"]
     lines += ["executives (consulted, never task owners): " + "; ".join(item["id"] + " = " + item["role"] for item in kb["executives"]), "",
               "## Department playbooks", "", "Chains and routing examples written in the department charters.", ""]
@@ -417,6 +417,10 @@ def check_decision(kb, decision, current=True):
         return ["decision must contain exactly these fields: " + ", ".join(fields)], []
     departments = {item["id"]: item for item in kb["departments"]}
     staff = {item["id"] for item in kb["skills"] if item["owner"] == "staff"}
+    offices = {}
+    for item in kb["skills"]:
+        if item["owner"] == "staff":
+            offices.setdefault(item["office"], []).append(item["id"])
 
     def text(value, label, limit):
         try:
@@ -426,14 +430,18 @@ def check_decision(kb, decision, current=True):
 
     def crew(item, label):
         department, skills = item.get("department"), item.get("skills")
-        if not isinstance(department, str) or department not in departments:
-            problems.append(label + " names an unknown department; use one of " + ", ".join(departments))
+        if not isinstance(department, str) or (department not in departments and department not in offices):
+            problems.append(label + " names an unknown department; use one of " + ", ".join(departments) + ", or the office ("
+                            + ", ".join(offices) + ") that owns the staff manuals when the work needs nothing else")
             return
         if not isinstance(skills, list) or not 1 <= len(skills) <= 6 or any(not isinstance(skill, str) for skill in skills) or len(set(skills)) != len(skills):
             problems.append(label + " needs one to six distinct manuals")
             return
         for skill in skills:
-            if skill not in departments[department]["skills"] and skill not in staff:
+            if department in offices:
+                if skill not in offices[department]:
+                    problems.append(label + " selects '" + skill + "', which is not a staff manual of the " + department + " office; let a department carry it")
+            elif skill not in departments[department]["skills"] and skill not in staff:
                 problems.append(label + " selects '" + skill + "', which is neither a " + department + " manual nor a staff manual")
 
     if type(decision["version"]) is not int or decision["version"] != 1:
@@ -486,7 +494,7 @@ def check_decision(kb, decision, current=True):
         text(value, "question " + str(index + 1), 400)
     count = len(assignments)
     if mode == "direct" and (count != 1 or executives):
-        problems.append("direct mode routes one assignment to one department with no executive consult; use company mode otherwise")
+        problems.append("direct mode routes one assignment to one owner with no executive consult; use company mode otherwise")
     if mode == "company" and count < 2 and not (count == 1 and executives):
         problems.append("company mode needs at least two assignments, or one assignment with an executive consult; use direct mode otherwise")
     if mode == "clarify" and not questions:
@@ -500,12 +508,18 @@ def check_decision(kb, decision, current=True):
     manuals = {slug: (ROOT / "skills" / slug / "SKILL.md") for slug in [item["id"] for item in kb["skills"]]}
     staffing = []
     for item in assignments:
-        charter = ROOT / "agents" / (item["department"] + ".md")
-        staffing.append({"department": item["department"], "charter": str(charter),
+        owner = item["department"]
+        if owner in offices:  # an office works from its own staff manuals; the CEO is briefed, the CTO and CAIO are consulted
+            charter = ROOT / ("commands/company.md" if owner == "ceo" else "agents/" + owner + ".md")
+            everything, argv = offices[owner], ["company", "brief" if owner == "ceo" else owner, item["task"]]
+        else:
+            charter = ROOT / "agents" / (owner + ".md")
+            everything, argv = departments[owner]["skills"], ["company", owner, "--skills", ",".join(item["skills"]), item["task"]]
+        staffing.append({"department": owner, "charter": str(charter),
                          "manuals": [{"id": skill, "path": str(manuals[skill])} for skill in item["skills"]],
                          "selectedManualBytes": sum(manuals[skill].stat().st_size for skill in item["skills"]),
-                         "departmentManualBytes": sum(manuals[skill].stat().st_size for skill in departments[item["department"]]["skills"]),
-                         "argv": ["company", item["department"], "--skills", ",".join(item["skills"]), item["task"]]})
+                         "departmentManualBytes": sum(manuals[skill].stat().st_size for skill in everything),
+                         "argv": argv})
     return [], staffing
 
 
@@ -555,37 +569,68 @@ def binomial_interval(successes, total, confidence=0.95):
     return [round(0.0 if successes == 0 else solve(alpha, successes), 4), round(1.0 if successes == total else solve(1 - alpha, successes + 1), 4)]
 
 
-def score_answers(kb, answers):
-    """Score recorded decisions against the labelled requests; the runs themselves happen elsewhere."""
-    labels = {}
-    for row in labelled_requests(kb):
-        labels.setdefault(row["request"], []).append(row)
-    counts = {"skill": [0, 0], "department": [0, 0]}
+def held_out_labels(kb, rows):
+    """Caller-supplied labels in the shape `--dataset` prints, plus an optional group. No owner means nobody should be assigned."""
+    owners = {item["id"]: (None if item["owner"] == "staff" else item["owner"]) for item in kb["skills"]}
+    departments = {department["id"] for department in kb["departments"]}
+    for row in rows:
+        if (not isinstance(row, dict) or not {"request", "skill", "department"} <= set(row) <= {"request", "skill", "department", "group"}
+                or not isinstance(row["request"], str) or not row["request"].strip()
+                or not (row["skill"] is None or isinstance(row["skill"], str) and row["skill"] in owners)
+                or not (row["department"] is None or isinstance(row["department"], str) and row["department"] in departments)
+                or (row["skill"] is not None and row["department"] != owners[row["skill"]])
+                or not (isinstance(row.get("group", "all"), str) and re.fullmatch(r"[a-z0-9-]{1,32}", row.get("group", "all")))):
+            raise RouteError('labels must be JSON Lines: {"request", "skill", "department"} as `eval --dataset` prints them, with an optional "group"')
+    return rows
+
+
+def score_answers(kb, answers, labels=None):
+    """Score recorded decisions against labelled requests; the runs themselves happen elsewhere."""
+    index = {}
+    for row in labelled_requests(kb) if labels is None else labels:
+        index.setdefault(row["request"], []).append(row)
+    totals = {"skill": [0, 0], "department": [0, 0], "unowned": [0, 0]}
+    groups, modes, wrong, crew = {}, {}, [], []
     invalid = unknown = 0
-    wrong = []
+
+    def count(group, key, hit):
+        for store in (totals, groups.setdefault(group, {})) if group else (totals,):
+            cell = store.setdefault(key, [0, 0])
+            cell[0] += hit
+            cell[1] += 1
+
     for answer in answers:
-        if not isinstance(answer, dict) or set(answer) != {"request", "decision"} or answer["request"] not in labels:
+        if not isinstance(answer, dict) or set(answer) != {"request", "decision"} or not isinstance(answer["request"], str) or answer["request"] not in index:
             unknown += 1
             continue
-        if check_decision(kb, answer["decision"], current=False)[0]:
-            invalid += 1
-            assignments = []
-        else:
-            assignments = answer["decision"]["assignments"]
+        valid = not check_decision(kb, answer["decision"], current=False)[0]
+        assignments = answer["decision"]["assignments"] if valid else []
         chosen_skills = {skill for item in assignments for skill in item["skills"]}
         chosen_departments = {item["department"] for item in assignments}
-        for row in labels[answer["request"]]:
-            for key, chosen in (("skill", chosen_skills), ("department", chosen_departments)):
-                if row[key]:
-                    counts[key][1] += 1
-                    if row[key] in chosen:
-                        counts[key][0] += 1
-                    elif len(wrong) < 20:
-                        wrong.append({"request": answer["request"], "expected": row[key], "chosen": sorted(chosen)})
-    return {"measure": "share of labelled requests whose expected owner appears in the recorded decision; phrases quoted in the packet are in-sample",
-            **{key: {"correct": value[0], "scored": value[1], "rate": round(value[0] / value[1], 4) if value[1] else None,
-                     "interval95": binomial_interval(value[0], value[1])} for key, value in counts.items()},
-            "invalidDecisions": invalid, "unlabelledAnswers": unknown, "wrong": wrong}
+        if valid:
+            modes[answer["decision"]["mode"]] = modes.get(answer["decision"]["mode"], 0) + 1
+            crew += [len(chosen_skills)] if assignments else []
+        else:
+            invalid += 1
+        for row in index[answer["request"]]:
+            expected = [(key, chosen) for key, chosen in (("skill", chosen_skills), ("department", chosen_departments)) if row[key]]
+            for key, chosen in expected or [("unowned", None)]:
+                hit = row[key] in chosen if expected else valid and not assignments
+                count(row.get("group"), key, hit)
+                if not hit and len(wrong) < 20:
+                    wrong.append({"request": answer["request"], "expected": row[key] if expected else None, "chosen": sorted(chosen_skills)})
+
+    def stats(cell):
+        return {"correct": cell[0], "scored": cell[1], "rate": round(cell[0] / cell[1], 4) if cell[1] else None, "interval95": binomial_interval(cell[0], cell[1])}
+
+    measure = "share of labelled requests whose expected owner appears in the recorded decision; "
+    result = {"measure": measure + ("phrases quoted in the packet are in-sample" if labels is None else "labels supplied by the caller; `unowned` requests expect no assignment"),
+              **{key: stats(cell) for key, cell in totals.items()},
+              "invalidDecisions": invalid, "unlabelledAnswers": unknown, "modes": dict(sorted(modes.items())),
+              "manualsPerRoute": round(sum(crew) / len(crew), 2) if crew else None, "wrong": wrong}
+    if groups:
+        result["groups"] = {group: {key: stats(cell) for key, cell in cells.items()} for group, cells in sorted(groups.items())}
+    return result
 
 
 # ----------------------------------------------------------------------------- CLI
@@ -636,6 +681,7 @@ def parser():
     group = review.add_mutually_exclusive_group()
     group.add_argument("--dataset", action="store_true")
     group.add_argument("--score")
+    review.add_argument("--labels")
     return root
 
 
@@ -668,17 +714,23 @@ def main(arguments=None):
             output = json.dumps(memory, ensure_ascii=False, indent=2) + "\n" if args.format == "json" else "\n".join(memory_lines(memory, MAX_CLASSES) or ["No route has been recorded in this folder yet."]) + "\n"
         elif args.command == "kb":
             output = json.dumps(kb, ensure_ascii=False, indent=2) + "\n"
+        elif args.command == "eval" and args.labels and not args.score:
+            raise RouteError("--labels applies to --score")
         elif args.dataset:
             output = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in labelled_requests(kb))
         elif args.score:
-            answers = []
-            for line in read_input(args.score, 4 * 1024 * 1024, "answers").splitlines():
-                if line.strip():
-                    try:
-                        answers.append(json.loads(line))
-                    except json.JSONDecodeError:
-                        raise RouteError("answers must be JSON Lines: one {\"request\", \"decision\"} object per line") from None
-            output = json.dumps(score_answers(kb, answers), ensure_ascii=False, indent=2) + "\n"
+            def lines(source, label, shape):
+                rows = []
+                for line in read_input(source, 4 * 1024 * 1024, label).splitlines():
+                    if line.strip():
+                        try:
+                            rows.append(json.loads(line))
+                        except (json.JSONDecodeError, RecursionError):
+                            raise RouteError(label + " must be JSON Lines: one " + shape + " object per line") from None
+                return rows
+            answers = lines(args.score, "answers", '{"request", "decision"}')
+            labels = held_out_labels(kb, lines(args.labels, "labels", '{"request", "skill", "department"}')) if args.labels else None
+            output = json.dumps(score_answers(kb, answers, labels), ensure_ascii=False, indent=2) + "\n"
         else:
             if not 1 <= args.top <= 12:
                 raise RouteError("--top must be between 1 and 12")

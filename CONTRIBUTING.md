@@ -25,8 +25,8 @@ description: <What it does, then one "Use for ..." or "Use when ..." cue. Third 
 
    Keep the description that short on purpose. Claude Code shows every installed
    skill's name and description on each turn inside one budget shared by all
-   skills (1% of the context window, 8,000 characters by default) and drops the
-   descriptions of the least-used skills beyond it. `python3 scripts/validate.py`
+   skills (1% of the context window), serves its own built-in skills first, and
+   drops the descriptions that no longer fit. `python3 scripts/validate.py`
    fails when the whole company needs more than 7,200 characters. End
    `## When to use` with a `- Typical requests: "...", "..."` line quoting real
    phrasings: that is where the detail belongs, it loads only when needed, and the
@@ -34,6 +34,11 @@ description: <What it does, then one "Use for ..." or "Use when ..." cue. Third 
 
 2. Put them on a team: add the slug to the VP roster in `agents/<department>.md`, to `skills_of()` in `bin/company`, and to the department table in `README.md`.
 3. That's it. Departments stay at whatever size makes sense — 6 was the founding class, not a law.
+
+A department or executive `description` in `agents/<name>.md` stays resident in every
+session, so the validator caps it at 180 characters: the role and one `Use for ...`
+cue. Quote example requests on a `Typical requests: "...", "..."` line under the
+charter's `## Your team` table instead; the routing desk's `eval` reads them from there.
 
 ## Quality bar (we do fire)
 

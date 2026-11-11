@@ -348,6 +348,82 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(result["wrong"][0], {"request": outreach, "expected": "draft-outreach", "chosen": ["triage-nda"]})
         self.assertIn("in-sample", result["measure"])
 
+    def test_an_office_owns_work_made_only_of_its_staff_manuals(self):
+        task = {"task": "Summarize each workstream and what needs a decision", "dependsOn": []}
+        for office, skills, argv in (("ceo", ["chief-of-staff", "token-accountant"], ["company", "brief"]), ("cto", ["cto-advisor", "appsec-review"], ["company", "cto"]),
+                                     ("caio", ["ai-data-steward"], ["company", "caio"])):
+            with self.subTest(office=office):
+                problems, staffing = route.check_decision(KB, decision(**{"class": "handle-office-work"}, assignments=[dict(task, department=office, skills=skills)],
+                                                                       alternatives=[{"department": office, "skills": skills[:1], "why": "Smaller crew"}]))
+                self.assertEqual(problems, [])
+                self.assertEqual(staffing[0]["argv"], argv + [task["task"]])
+                self.assertEqual(staffing[0]["charter"], str(ROOT / ("commands/company.md" if office == "ceo" else "agents/" + office + ".md")))
+                self.assertLessEqual(staffing[0]["selectedManualBytes"], staffing[0]["departmentManualBytes"])
+        for department, skills, message in (("staff", ["chief-of-staff"], "names an unknown department"), ("ceo", ["copywriting"], "not a staff manual of the ceo office"),
+                                            ("cto", ["ai-data-steward"], "not a staff manual of the cto office"), ("caio", ["chief-of-staff"], "not a staff manual of the caio office")):
+            with self.subTest(department=department):
+                problems = route.check_decision(KB, decision(assignments=[dict(task, department=department, skills=skills)]))[0]
+                self.assertEqual(len(problems), 1)
+                self.assertIn(message, problems[0])
+        mixed = decision(mode="company", **{"class": "ship-reviewed-release"}, assignments=[
+            dict(task, department="developers", skills=["webapp-testing"]), dict(task, department="cto", skills=["appsec-review"], dependsOn=[1])])
+        self.assertEqual(route.check_decision(KB, mixed)[0], [])
+        self.assertEqual(route.route_key(mixed), "developers:webapp-testing > cto:appsec-review")
+        self.assertIn("named in brackets", route.render_packet(KB, "check the release", route.empty_memory(), 1))
+
+    def test_department_cues_come_from_the_charter_body(self):
+        cues = {department["id"]: department["cues"] for department in KB["departments"]}
+        self.assertEqual({slug: len(found) for slug, found in cues.items() if found},
+                         dict.fromkeys(("developers", "designers", "marketing", "social-media", "finance", "small-business", "legal"), 3))
+        for slug, found in cues.items():
+            charter = (ROOT / "agents" / (slug + ".md")).read_text(encoding="utf-8")
+            self.assertNotIn('"', re.search(r"^description:[ \t]*(.*)$", charter, re.M).group(1), slug)
+            for cue in found:
+                self.assertIn('"' + cue + '"', charter.split("\n## Your team\n", 1)[1].split("\n## ", 1)[0], slug)
+
+    def test_held_out_requests_are_valid_labels_and_never_quoted(self):
+        rows = [json.loads(line) for line in (ROOT / "tests/routing-heldout.jsonl").read_text(encoding="utf-8").splitlines()]
+        self.assertIs(route.held_out_labels(KB, rows), rows)
+        self.assertFalse({row["request"] for row in route.labelled_requests(KB)} & {row["request"] for row in rows})
+        manuals = sorted(item["id"] for item in KB["skills"])
+        for group in ("english", "french"):
+            self.assertEqual(sorted(row["skill"] for row in rows if row["group"] == group), manuals, group)
+        self.assertEqual(sum(1 for row in rows if row["group"] == "composite"), 20)
+        unowned = [row for row in rows if row["group"] == "unowned"]
+        self.assertEqual(len(unowned), 6)
+        self.assertTrue(all(row["skill"] is None and row["department"] is None for row in unowned))
+
+    def test_caller_labels_score_groups_and_unowned_requests(self):
+        labels = [{"request": "Ein NDA zum Unterschreiben", "skill": "triage-nda", "department": "legal", "group": "german"},
+                  {"request": "Repair my bicycle", "skill": None, "department": None, "group": "unowned"},
+                  {"request": "Book a flight", "skill": None, "department": None, "group": "unowned"},
+                  {"request": "Both", "skill": "triage-nda", "department": "legal"},
+                  {"request": "Both", "skill": "appsec-review", "department": None}]
+        answers = [{"request": "Ein NDA zum Unterschreiben", "decision": decision()},
+                   {"request": "Repair my bicycle", "decision": decision(mode="decline", assignments=[])},
+                   {"request": "Book a flight", "decision": decision()},
+                   {"request": "Both", "decision": decision()},
+                   {"request": "can I sign this NDA", "decision": decision()}, {"request": ["not text"], "decision": decision()}]
+        result = route.score_answers(KB, answers, route.held_out_labels(KB, labels))
+        counts = {key: (result[key]["correct"], result[key]["scored"]) for key in ("skill", "department", "unowned")}
+        self.assertEqual(counts, {"skill": (2, 3), "department": (2, 2), "unowned": (1, 2)})
+        self.assertEqual((result["invalidDecisions"], result["unlabelledAnswers"]), (0, 2))
+        self.assertEqual((result["modes"], result["manualsPerRoute"]), ({"decline": 1, "direct": 3}, 1.0))
+        self.assertEqual(result["groups"], {"german": {"skill": {"correct": 1, "scored": 1, "rate": 1.0, "interval95": [0.025, 1.0]},
+                                                       "department": {"correct": 1, "scored": 1, "rate": 1.0, "interval95": [0.025, 1.0]}},
+                                            "unowned": {"unowned": {"correct": 1, "scored": 2, "rate": 0.5, "interval95": [0.0126, 0.9874]}}})
+        self.assertEqual(result["wrong"], [{"request": "Book a flight", "expected": None, "chosen": ["triage-nda"]},
+                                           {"request": "Both", "expected": "appsec-review", "chosen": ["triage-nda"]}])
+        self.assertIn("labels supplied by the caller", result["measure"])
+        self.assertNotIn("groups", route.score_answers(KB, answers[3:4], route.held_out_labels(KB, labels[3:])))
+        for bad in ("noise", {"request": "x", "skill": "nobody", "department": None}, {"request": "x", "skill": "triage-nda", "department": "sales"},
+                    {"request": "x", "skill": "triage-nda", "department": None}, {"request": " ", "skill": None, "department": None},
+                    {"request": "x", "skill": None, "department": None, "group": "Two Words"}, {"request": "x", "skill": None, "department": None, "note": "y"},
+                    {"request": "x", "skill": None}, {"request": "x", "skill": ["triage-nda"], "department": None}):
+            with self.subTest(bad=bad):
+                with self.assertRaises(route.RouteError):
+                    route.held_out_labels(KB, [bad])
+
 
 class CliTests(unittest.TestCase):
     @classmethod
@@ -427,6 +503,21 @@ class CliTests(unittest.TestCase):
         memory.unlink()
         project = subprocess.run([sys.executable, str(HELPER.parent / "project.py"), "context"], cwd=self.directory, capture_output=True, timeout=30)
         self.assertEqual((project.returncode, project.stdout, project.stderr), (0, b"", b""))
+
+    def test_helper_scores_against_caller_labels(self):
+        (self.directory / "labels.jsonl").write_text(json.dumps({"request": "Ein NDA", "skill": "triage-nda", "department": "legal", "group": "german"}) + "\n", encoding="utf-8")
+        (self.directory / "answers.jsonl").write_text(json.dumps({"request": "Ein NDA", "decision": decision()}) + "\n", encoding="utf-8")
+        scored = self.helper("eval", "--score", "answers.jsonl", "--labels", "labels.jsonl")
+        self.assertEqual((scored.returncode, scored.stderr), (0, b""))
+        self.assertEqual(json.loads(scored.stdout)["groups"]["german"]["skill"]["correct"], 1)
+        held_out = self.helper("eval", "--score", "answers.jsonl", "--labels", str(ROOT / "tests/routing-heldout.jsonl"))
+        self.assertEqual((held_out.returncode, json.loads(held_out.stdout)["unlabelledAnswers"]), (0, 1))
+        for args in (("eval", "--labels", "labels.jsonl"), ("eval", "--dataset", "--labels", "labels.jsonl"), ("eval", "--score", "answers.jsonl", "--labels", "missing.jsonl")):
+            self.assertEqual(self.helper(*args).returncode, 1, args)
+        (self.directory / "labels.jsonl").write_text('{"request": "x", "skill": "nobody", "department": null}\n', encoding="utf-8")
+        failed = self.helper("eval", "--score", "answers.jsonl", "--labels", "labels.jsonl")
+        self.assertEqual((failed.returncode, failed.stdout), (1, b""))
+        self.assertIn(b"labels must be JSON Lines", failed.stderr)
 
     def test_company_route_composes_the_desk_and_keeps_helper_boundaries(self):
         request = 'Who handles "the NDA"? caf\u00e9, $(touch NEVER) & `id`'

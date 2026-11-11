@@ -192,9 +192,8 @@ shortlist still finds that manual. On this source, measured 2026-11-11: 364 of
 405 phrases within the default six (0.90) and 284 first. This measures the word
 match only.
 
-**How well an assistant routes has not been measured.** To measure it, export
-the labelled requests with `--dataset`, run your assistant on each one, and
-save one `{"request": ..., "decision": ...}` object per line. `--score` reports
+To measure how well an assistant routes, export the labelled requests with
+`--dataset`, run your assistant on each one, and save one `{"request": ..., "decision": ...}` object per line. `--score` reports
 the share of requests whose expected manual and department appear in the
 decision, with exact 95% binomial intervals. Those requests are quoted in the
 packet, so the result is in-sample. Each run is a model call that your assistant
@@ -208,12 +207,50 @@ requests with two owners, and six that nobody in the company owns. With
 `--labels`, the report adds each group, the modes chosen and the number of
 manuals per route.
 
+### First measurement
+
+One run per request on the 144 held-out requests, 2026-11-11: Claude Code
+2.1.322 in print mode with its smallest model tier (`--model haiku`), default
+effort, no tools, a clean configuration, and the prompt that
+`company route "<request>" --print` composes. The assistant could not run the
+check itself, so the first rows describe its first reply.
+
+| Measure | Result | 95% interval |
+|---|---|---|
+| First replies `route check` accepted | 141 of 144 | 0.94 to 1.00 |
+| Accepted after one correction round | 144 of 144 | 0.97 to 1.00 |
+| Expected manual in the first reply, English | 62 of 64 | 0.89 to 1.00 |
+| Expected manual in the first reply, French | 63 of 64 | 0.92 to 1.00 |
+| Both owners named, requests with two owners | 10 of 10 | 0.69 to 1.00 |
+| Nobody assigned, requests nobody owns | 5 of 6 | 0.36 to 1.00 |
+
+Every accepted decision contained the expected manual. The three first replies
+that missed were rejected decisions: two request classes longer than four
+tokens and one reply without a decision. Once the helper's problems were sent
+back, all three were accepted and correct. Routes held 1.22 manuals on average.
+The expected manual was outside the lexical shortlist for 12 English and 31
+French requests, and the desk still named it in 42 of those 43 first replies:
+that is what the complete index is for. The request the desk should have left
+alone was a payment order, which it routed to `small-business` with
+`cash-flow-snapshot`. Claude Code estimated each decision at about $0.0024 at
+list prices and seven seconds.
+
+An earlier pass on the same requests had only 123 of 143 first replies
+accepted. The most frequent problems were a staff manual with no valid owner
+(13) and a rationale over 800 bytes (6). An office can now own work made only of
+its staff manuals, and the charter states the limit.
+
+Read these numbers for what they are: one model tier, one run per request, and
+requests written for this test, each with a clear owner by construction. Real
+requests are vaguer. They say nothing about another assistant: rerun the test
+on yours.
+
 ## Limits
 
 - The desk proposes staffing. It grants no permission to publish, send, buy,
   sign, install, or access anything, and the CEO or founder can overrule it.
 - A valid decision can still be a poor route. Only outcomes and measurement say
-  otherwise.
+  otherwise, and the first measurement above covers one model tier.
 - The helper needs Python 3.9+. Without it, the CEO routes from the manual's
   routing table and says the decision was not checked.
 - An office assignment is the CEO's own work or an executive consult

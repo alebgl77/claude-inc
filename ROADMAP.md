@@ -103,8 +103,10 @@ visible uncertainty; the company cannot assume it sees every consequence.
 
 **In the development source:** the routing desk records whether a routed request
 was accepted or rerouted, and treats a route as established after three accepted
-uses and no reroute. That is local evidence for one folder. It is not a held-out
-comparison, and routing quality has not been measured.
+uses and no reroute. That is local evidence for one folder, not a held-out
+comparison. A first held-out measurement of routing decisions is in the
+[routing desk guide](docs/routing-desk.md). How often routed work is accepted in
+practice has not been measured.
 
 **Planned after A/B:** propose staffing and business harness updates from the
 goal, project phase, risk, and previous failures. Stage changes separately from

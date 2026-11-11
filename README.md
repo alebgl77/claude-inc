@@ -339,9 +339,9 @@ Code the same desk is the `router` agent, which reads its packet outside the
 CEO's context and returns only the decision.
 
 `--skills` loads only the manuals a route selected instead of all six. A route
-is a staffing proposal, not authority, and how well an assistant routes has not
-been measured: the [routing desk guide](docs/routing-desk.md) explains how to
-measure it.
+is a staffing proposal, not authority. The [routing desk guide](docs/routing-desk.md)
+reports a first measurement on 144 held-out requests and explains how to rerun
+it on your assistant.
 
 ## Meet the company
 

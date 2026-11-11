@@ -26,7 +26,10 @@ are available from `main` and have not been tagged as a release.
   with two owners, six that nobody owns). `company route eval --score FILE
   --labels FILE` scores recorded decisions against caller-supplied labels and
   reports each group, requests that expect no assignment, the modes chosen and
-  the manuals per route.
+  the manuals per route. First measurement, one run per request with Claude
+  Code's smallest model tier on 2026-11-11: `route check` accepted 141 of 144
+  first replies and 144 after one correction round, and every accepted decision
+  contained the expected manual, in English and in French.
 - An executive office (`ceo`, `cto`, `caio`) can own a routing assignment made
   only of its own staff manuals, and `company route check` returns the matching
   `company brief`, `company cto` or `company caio` command. Before this, a request
@@ -91,7 +94,13 @@ are available from `main` and have not been tagged as a release.
   `claude plugin details` estimates the plugin's always-on cost at about 3,200
   tokens instead of 11,800 (Claude Code 2.1.322, 2026-11-11). The example
   requests the descriptions quoted moved to a `Typical requests` line in each
-  charter, where the routing desk's `eval` reads them.
+  charter, where the routing desk's `eval` reads them. Measured on 64 held-out
+  English requests with the smallest model tier, tools limited to skills and
+  agents, first two turns: a plain request reached the right manual or its
+  department in 13 runs with the original descriptions, 18 after the skill
+  rewrite and 25 after both. One run per request, so only the first-to-last
+  difference stands out (exact sign test p = 0.023, unadjusted). With names
+  only, 7 of 53. Department agents were called at most once in any version.
 - Refreshed the company illustration and social preview for the nine-department
   roster and peer CEO, CTO, and CAIO executives; aligned the standup and current
   documentation with the department roster and supported reviewers.
